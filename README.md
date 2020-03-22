@@ -1,8 +1,27 @@
-This repo is derived from the technion fork of Maia mailguard.
+This repo was originally derived from the technion fork of Maia mailguard.
 
-We are building on the updates from technion while holding off on certain changes e.g. scrypt, which we feel would be better suited to a version 1.1 release. Our goal is to obtain a stable, working install of the updated mailguard 1.0 branch, with a quick (for the common case) installation process.
+We've held off on certain changes e.g. scrypt, which we feel would be better suited to a version 1.1 release. Our goal is to obtain a stable, working install of the updated mailguard 1.0 branch, with a quick (for the common case) installation process.
 
-The initial target platform will be Centos 7 on openvz, due to the ease and speed of deployment. The other primary distros (SuSE/SLES, Debian/Ubuntu) will also be tested and verified. Other hardware platforms (lxc containers, VMs and conventional machines) will be tested as well. Everything in it's order, as time and resources allow.
+The initial target platform will be Centos 7 on openvz, due to the ease and speed of deployment. 
+
+It should be easy to adapt to Suse or Debian-based dstros, but the 
+initial focus on Centos 7, and openvz containers is the target platform.
+
+Scripts to install this mailguard release on other Linux distros wll be 
+happily accepted. In the meantime, it can be installed on other distros 
+via the manual procedure.
+
+Instructions: (this will evolve as we test and refine the process)
+
+For Centos 7, run the script "install-centos7.sh"
+
+For all other distros, one can puzzle through the manual procedure in the
+contrib directory, which, though written for maia 1.0.2, which used
+amavisd-new, replaced by maiad in the current version, still contains
+the gist of what is needed. It will eventually be brought up to date
+as well. 
+
+Contributions are welcome.
 
 -- 
 
