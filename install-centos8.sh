@@ -1,7 +1,9 @@
 # new version - gather info up front to use during the install process
 
 echo 
-echo "this script is meant for Centos 8" 
+echo "this script is written for Centos 8, using a mysql DB" 
+echo "if using postgresql or other DB, you'll need to manually"
+echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
 echo "if sendmail or other non-postfix MTA are installed," 
 echo "disable or uninstall them before continuing."
@@ -28,9 +30,7 @@ yum install -y postfix
 # add epel and get up to date
 yum install -y epel-release
 yum -y update
-#
 yum install -y telnet
-#
 yum install -y file
 yum install -y tar
 yum install -y perl-DBI 
@@ -101,10 +101,6 @@ chown -R maia.maia /var/lib/maia/tmp
 mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
 
-### proceed carefully past this point - 
-###	read
-###
-
 #
 # install the systemd unit files -
 #
@@ -143,13 +139,11 @@ echo "stage 1 install complete"
 #
 # start maiad 
 systemctl start maiad.service
+# run freshclam
+echo "running freshclam..."
+freshclam
 # start clamd
 systemctl start clamd.service
-#
-
-echo "verify that clamd and maiad both started successfully"
-echo "run freshclam if needed"
-read
 
 # load the spamassassin rulesets -
 #
@@ -172,13 +166,6 @@ yum install -y php-pear
 # smarty3 breaks maia
 # yum install -y php-Smarty
 tar -C /usr/share/php/ -xvf smarty2-maia.tar
-
-echo "php and smarty libs installed - proceed to pear install?"
-read
-
-### ###
-### The below pear steps were changed to install known working versions
-### ###
 
 echo
 echo "installing pear modules"
@@ -213,8 +200,7 @@ done
 
 chmod 775 /var/www/html/maia/themes/*/compiled
 chown apache.maia /var/www/html/maia/themes/*/compiled
-cp config.php mime.php /var/www/html/maia/
-cp configtest.php /var/www/html/maia/admin/
+cp config.php /var/www/html/maia/
 mkdir /var/www/cache
 chown apache.maia /var/www/cache
 chmod 775 /var/www/cache

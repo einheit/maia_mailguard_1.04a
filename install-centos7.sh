@@ -3,7 +3,7 @@
 echo 
 echo "this script is written for Centos 7, using a mysql DB" 
 echo "if using postgresql or other DB, you'll need to manually"
-echo "edit the configs in /etc/maia/, as well as config.php"
+echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
 echo "if sendmail or other non-postfix MTA are installed," 
 echo "disable or uninstall them before continuing."
@@ -169,13 +169,6 @@ yum install -y php-pear
 # smarty3 breaks maia
 # yum install -y php-Smarty
 tar -C /usr/share/php/ -xvf smarty2-maia.tar
-
-# echo "php and smarty libs installed - proceed to pear install?"
-# read
-
-### ###
-### The below pear steps were changed to install known working versions
-### ###
 
 echo
 echo "installing pear modules"
