@@ -1,26 +1,30 @@
 #!/usr/bin/env bash
 
-# is the default maia db password to be changed?
-MPRAW=`grep MAIAPASS installer.tmpl | wc -l`
-NEEDMP=`eval echo $MPRAW`
-if [ $NEEDMP -gt 0 ]; then
-  ./update-maia-pw.sh
-else
-  cp original/maia.conf.dist maia.conf 
-  cp original/maiad.conf.dist maiad.conf 
-  cp original/config.php.dist config.php
-fi
+/bin/rm -f maia.conf maiad.conf config.php
 
-# modify the working copy of maiad.conf in place
+cp cfg_tpl/maia.conf.tmpl maia.conf 
+cp cfg_tpl/maiad.conf.tmpl maiad.conf 
+cp cfg_tpl/config.php.tmpl config.php
+
+# modify the working copies of the config files in place
 HOST=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`
 FQDN=`grep FQDN installer.tmpl | awk -F\= '{ print $2 }'`
 DOMAIN=`grep DOMA installer.tmpl | awk -F\= '{ print $2 }'`
+dbhost=`grep DBSERVER installer.tmpl | awk -F\= '{ print $2 }'`
+passwd=`grep MAIAPASS installer.tmpl | awk -F\= '{ print $2 }'`
 
-export HOST FQDN DOMAIN
+export HOST FQDN DOMAIN dbhost passwd
 
-sh inline-edit.sh __DOMAIN__  $DOMAIN maiad.conf
-sh inline-edit.sh __HOST__ $HOST maiad.conf
-sh inline-edit.sh yourdomain.tld  $DOMAIN maiad.conf
-sh inline-edit.sh host.domain.tld $HOST maiad.conf
+ echo "editing HOST"
+ ./inline-edit.sh __HOST__ $HOST maiad.conf
+ echo "editing DOMAIN"
+ ./inline-edit.sh __DOMAIN__  $DOMAIN maiad.conf
 
+for i in config.php maia.conf maiad.conf
+do
+ echo "editing DBHOST"
+ ./inline-edit.sh __DBHOST__  $dbhost $i
+ echo "editing PASSWORD/${passwd}"
+ ./inline-edit.sh '__PASSWORD__'  $passwd $i
+done
 

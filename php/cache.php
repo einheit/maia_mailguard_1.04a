@@ -554,7 +554,7 @@ class MessageCache {
                     $rectmp = "";
                     foreach ($to_list as $recipient) {
                         if (isset($personal_addresses[$recipient]) || $domain_default) {
-                          $rectmp[] = $recipient;
+                          $rectmp = $recipient;
                         }
                     }
                     $rows[$count]['recipient_email'] = $rectmp;

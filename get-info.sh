@@ -37,9 +37,10 @@
 myroothazpass=0
 #myrootwantpass=0
 mydbpass=""
-mynewdbpass=0
+mynewdbpass=""
 needsmarthost=0
 localdb=0
+dbserver=localhost
 
 # find out whether to install local db server
 echo "Now we are determining whether you want to install a local db server"
@@ -51,56 +52,38 @@ echo
 [ "${junk}X" == "X" ] && junk="n"
 if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
   localdb=1
-fi
-
-# find out whether to set a new maia db password
-echo -n "Set the maia db password to be used? (y/N)"
-read junk
-echo
-
-[ "${junk}X" == "X" ] && junk="n"
-
-if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
-  mynewdbpass=1
-  echo "Enter the desired password for the maia db and press [ENTER]:"
-  read -s mydbpass
+else
+  echo -n "Enter the resolvable name or IP of the maia DB server:  "
+  read junk
+  dbserver=$junk
   echo
 fi
+
+echo "Enter the password for the maia db and press [ENTER]:"
+#read -s mydbpass
+read mydbpass
+echo
 
 # sort the mysql root password business
-echo -n "Is there a mysql root password assigned? (y/N)"
-read junk
-echo
-[ "${junk}X" == "X" ] && junk="n"
-
-if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
-  myroothazpass=1
-  myrootwantpass=1
-  echo "Enter the mysql root password and press [ENTER]:"
-  read -s rootmypass
+if [ $localdb -eq 1 ]; then
+  echo -n "Is there a mysql root password assigned? (y/N)"
+  read junk
   echo
-fi
-#elif [ $junk == 'n' ] || [ $junk == 'N' ]; then
-#  echo -n "Do you wish to assign a mysql root password at this time? (y/N)"
-#  read junk
-#  echo
-#  [ "${junk}X" == "X" ] && junk="n"
-#
-#  if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
-#    myrootwantpass=1
-#    echo "Enter the mysql root password and press [ENTER]:"
-#    read -s rootmypass
-#    echo
-#    myroothazpass=1
-#  fi
-#fi
-
-if [ $myroothazpass == 0 ]; then
-  echo "there is no mysql root password set"
-else
+ [ "${junk}X" == "X" ] && junk="n"
+ if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
+   myroothazpass=1
+   myrootwantpass=1
+   echo "Enter the mysql root password and press [ENTER]:"
+   read -s rootmypass
+   echo
+ fi
+ if [ $myroothazpass == 0 ]; then
+   echo "there is no mysql root password set"
+ else
   echo "a root password is set for mysql"
+ fi
+ echo
 fi
-echo
 
 #
 # get short hostname, domain name, and relayhost
@@ -109,18 +92,6 @@ echo
 shost=`hostname -s`
 fqdn=`hostname -f`
 domain=`echo $fqdn | sed s/${shost}\.//g`
-
-#echo "this server will use the hostname $shost - correct?"
-#echo "if this is correct, hit <ENTER> to continue"
-#echo "if not, CTRL-C now, correct the hostname and try again"
-#echo
-#read junk
-
-#echo "the fully qualified domain name is $fqdn - correct?"
-#echo "if this is correct, hit <ENTER> to continue"
-#echo "if not, CTRL-C now, correct the FQDN and try again"
-#echo
-#read junk
 
 echo "does this server require an smtp relayhost/smarthost?"
 echo -n "enter relayhost if required, otherwise just press enter:"
@@ -170,15 +141,13 @@ echo "settings correct? hit <ENTER> to continue, CTRL-C to abort"
 #
 
 read junk
-#if [ $mynewdbpass == 1 ] || [ $myroothazpass == 1 ]; then
-#  echo "not yet implemented"
-#  exit 1
-#fi
 
 echo > installer.tmpl
 echo "HOST=$shost" >> installer.tmpl
 echo "FQDN=$fqdn" >> installer.tmpl
 echo "DOMAIN=$domain" >> installer.tmpl
+echo "DBSERVER=$dbserver" >> installer.tmpl
+echo "MAIAPASS=$mydbpass" >> installer.tmpl
 
 [ $localdb == 1 ] && echo "DB_INSTALL" >> installer.tmpl
 [ $mynewdbpass == 1 ] && echo "MAIAPASS=$mydbpass" >> installer.tmpl

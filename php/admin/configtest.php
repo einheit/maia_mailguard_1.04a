@@ -145,7 +145,7 @@
     if (is_readable($smarty_base)){
       $dir = opendir($smarty_base); #open directory
       while ($f = readdir($dir)) { #read one file name
-        if (!eregi("^\..*$",$f) && $f!=='.' && $f!=='..'){
+	if (!preg_match("/^..$/",$f) && $f!=='.' && $f!=='..' && is_dir($f)){
           if (is_writable($smarty_base . "/" . $f . "/compiled")) {
             continue;
           } else {
@@ -458,15 +458,15 @@
 
     // PEAR::MDB2:mysql
     if ($have_pear) {
-        if (!in_array("mdb2_driver_mysql", $pear_list)) {
+        if (!in_array("mdb2_driver_mysqli", $pear_list)) {
             $result = "Not installed.  This PHP extension is required in order to provide " .
-                      "database abstraction.  Use <b>pear install MDB2#mysql</b> to install this.";
+                      "database abstraction.  Use <b>pear install MDB2#mysqli</b> to install this.";
             $status = ERROR;
         } else {
-            $result = "Pear::MDB2#mysql installed";
+            $result = "Pear::MDB2#mysqli installed";
             $status = OK;
         }
-        print_row("PEAR::MDB2#mysql", $result, $status);
+        print_row("PEAR::MDB2#mysqli", $result, $status);
     }
 
 //Database Version
@@ -729,7 +729,7 @@
     print_row("PEAR::Numbers_Words", $result, $status);
 
     // html purifier
-    if ( @include_once('HTMLPurifier.auto.php')) {
+      if ( @include_once('/var/htmlpurifier/library/HTMLPurifier.auto.php')) {
         $version = HTMLPurifier::VERSION;
         if ($version < "4.0.0") {
             $status = ERROR;

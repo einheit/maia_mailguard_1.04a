@@ -1,9 +1,7 @@
 # new version - gather info up front to use during the install process
 
 echo 
-echo "this script is written for Centos 7, using a mysql DB" 
-echo "if using postgresql or other DB, you'll need to manually"
-echo "edit the configs in /etc/maia/, as well as config.php"
+echo "this script is meant for Centos 8" 
 echo 
 echo "if sendmail or other non-postfix MTA are installed," 
 echo "disable or uninstall them before continuing."
@@ -39,11 +37,8 @@ yum install -y perl-DBI
 yum install -y spamassassin
 yum install -y perl-Archive-Zip
 yum install -y perl-BerkeleyDB
-yum install -y perl-Convert-TNEF
 yum install -y perl-Convert-UUlib
-yum install -y perl-Digest-SHA1
 yum install -y perl-DBD-MySQL perl-DBD-Pg
-yum install -y perl-Data-UUID
 yum install -y perl-Net-Server
 yum install -y perl-Net-DNS-Nameserver
 yum install -y perl-Text-CSV
@@ -54,7 +49,6 @@ yum install -y perl-Razor-Agent
 yum install -y perl-Template-Toolkit
 yum install -y perl-CPAN 
 yum install -y perl-Geo-IP
-#
 
 #
 # non-interactive cpan installs
@@ -63,6 +57,10 @@ yum install -y perl-App-cpanminus
 
 cpanm forks
 cpanm IP::Country::Fast
+cpanm Convert::TNEF
+cpanm Data::UUID
+cpanm Digest::SHA1
+cpanm Template
 
 yum install -y clamav 
 yum install -y clamav-update 
@@ -103,6 +101,10 @@ chown -R maia.maia /var/lib/maia/tmp
 mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
 
+### proceed carefully past this point - 
+###	read
+###
+
 #
 # install the systemd unit files -
 #
@@ -141,12 +143,13 @@ echo "stage 1 install complete"
 #
 # start maiad 
 systemctl start maiad.service
-# run freshclam
-echo "running freshclam..."
-freshclam
 # start clamd
 systemctl start clamd.service
 #
+
+echo "verify that clamd and maiad both started successfully"
+echo "run freshclam if needed"
+read
 
 # load the spamassassin rulesets -
 #
@@ -162,7 +165,7 @@ yum install -y php-gd
 yum install -y php-process
 yum install -y php-xml
 yum install -y php-mbstring
-yum install -y php-mysql
+yum install -y php-mysqlnd
 yum install -y php-bcmath
 yum install -y php-devel
 yum install -y php-pear
@@ -170,8 +173,8 @@ yum install -y php-pear
 # yum install -y php-Smarty
 tar -C /usr/share/php/ -xvf smarty2-maia.tar
 
-# echo "php and smarty libs installed - proceed to pear install?"
-# read
+echo "php and smarty libs installed - proceed to pear install?"
+read
 
 ### ###
 ### The below pear steps were changed to install known working versions
@@ -184,9 +187,8 @@ echo
 pear install Auth_SASL-1.0.6
 pear install DB-1.8.2
 pear install Log-1.12.9
-pear install MDB2
-pear install MDB2_Driver_mysql
-pear install MDB2_Driver_mysqli
+pear install MDB2-2.5.0b5
+pear install MDB2_Driver_mysqli-1.5.0b4
 pear install Mail_Mime-1.8.9
 pear install Mail_mimeDecode-1.5.5
 pear install Net_Socket-1.0.14
@@ -211,7 +213,8 @@ done
 
 chmod 775 /var/www/html/maia/themes/*/compiled
 chown apache.maia /var/www/html/maia/themes/*/compiled
-cp config.php /var/www/html/maia/
+cp config.php mime.php /var/www/html/maia/
+cp configtest.php /var/www/html/maia/admin/
 mkdir /var/www/cache
 chown apache.maia /var/www/cache
 chmod 775 /var/www/cache
