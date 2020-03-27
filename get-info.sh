@@ -37,7 +37,6 @@
 myroothazpass=0
 #myrootwantpass=0
 mydbpass=""
-mynewdbpass=""
 needsmarthost=0
 localdb=0
 dbserver=localhost
@@ -113,19 +112,7 @@ echo
 echo "the domain seems to be $domain"
 echo
 
-if [ $myroothazpass == 1 ]; then
-  echo "mysql password for root: $rootmypass"
-else 
-  echo "mysql will remain without root password"
-fi
-echo
-
-if [ $mynewdbpass == 1 ]; then
-  echo "mysql password for maia: $mydbpass"
-else
-  echo "default maia db password will be retained"
-fi
-echo
+echo "mysql password for maia: $mydbpass"
 
 if [ $needsmarthost == 1 ]; then
   echo "SMTP smarthost: $smarthost"
@@ -150,9 +137,6 @@ echo "DBSERVER=$dbserver" >> installer.tmpl
 echo "MAIAPASS=$mydbpass" >> installer.tmpl
 
 [ $localdb == 1 ] && echo "DB_INSTALL" >> installer.tmpl
-[ $mynewdbpass == 1 ] && echo "MAIAPASS=$mydbpass" >> installer.tmpl
-[ $myroothazpass == 1 ] && echo "ROOTPASS=$rootmypass" >> installer.tmpl
-
 [ $needsmarthost == 1 ] && echo "RELAY=$smarthost" >> installer.tmpl
 
 echo "installation parameters:"
