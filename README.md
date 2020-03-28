@@ -12,6 +12,8 @@ In the meantime, maia can be installed on other distros via the manual procedure
 
 Contributions are welcome.
 
+Updated Centos spamassassin rpms - https://github.com/einheit/maia-packages
+
 -- 
 
 The README from the original technion fork is below:
