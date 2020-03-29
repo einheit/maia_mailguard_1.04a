@@ -12,8 +12,12 @@ FQDN=`grep FQDN installer.tmpl | awk -F\= '{ print $2 }'`
 DOMAIN=`grep DOMA installer.tmpl | awk -F\= '{ print $2 }'`
 dbhost=`grep DBSERVER installer.tmpl | awk -F\= '{ print $2 }'`
 passwd=`grep MAIAPASS installer.tmpl | awk -F\= '{ print $2 }'`
+websrv=`grep WEBSRV installer.tmpl | awk -F\= '{ print $2 }'`
 
-export HOST FQDN DOMAIN dbhost passwd
+export HOST FQDN DOMAIN dbhost passwd websrv
+
+ echo "modifying maia base_url"
+ ./inline-edit.sh example.com ${websrv}/maia maia.conf
 
  echo "editing HOST"
  ./inline-edit.sh __HOST__ $HOST maiad.conf
