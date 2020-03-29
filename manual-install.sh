@@ -263,5 +263,5 @@ Here is an example crontab for root -
 3 3 * * * /usr/local/sbin/do-sa-update.sh
 --
 
-The original install document is available in contrib/Install-maia-56e6.txt
+The original install document is available in docs/Install-maia-56e6.txt
 
