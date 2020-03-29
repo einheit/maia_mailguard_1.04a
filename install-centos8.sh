@@ -229,8 +229,12 @@ echo
 echo 	"If that passes check the web at /maia/admin/config test"
 echo	"at http://$host/maia/admin/configtest.php"
 echo
-echo	"if everything passes, and you are creating a database for the
-echo	"first time, (no existing database) create the maia super user"
-echo	"by visiting http://$host/maia/internal-init.php"
+echo	"if everything passes, and you are creating a database for the"
+echo    "first time, (no existing database) create the initial maia user" 
+echo    "by visiting http://$host/maia/internal-init.php"
 echo
+echo    "You will also need to set up cron jobs to maintain your system"
+echo    "See docs/cronjob.txt for more info"
+echo
+
 

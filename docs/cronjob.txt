@@ -1,0 +1,28 @@
+After the install is complete, you'll want to update the maia rules database:
+
+$ /var/lib/maia/scripts/load-sa-rules.pl
+
+And put that in a cron job to run periodocally.
+
+In addition, you will want to set up cron jobs to maintain the
+spaamassassin rulesets & maia DB, report spam, & send notifications.
+
+Here is an example crontab for the maia user -
+--
+# m h dom mon dow  	command
+3 * * * *	/var/lib/maia/scripts/process-quarantine.pl > /dev/null
+2 * * * *	/var/lib/maia/scripts/stats-snapshot.pl > /dev/null
+7 23 * * *	/var/lib/maia/scripts/expire-quarantine-cache.pl > /dev/null
+#9 21 * * 1	/var/lib/maia/scripts/send-quarantine-reminders.pl > /dev/null
+5 11,17 * * *	/var/lib/maia/scripts/send-quarantine-digests.pl > /dev/null
+--
+
+Here is an example crontab for root - 
+--
+# m h dom mon dow       command
+3 3 * * * /usr/bin/sa-update
+--
+
+The original install document is available in contrib/Install-maia-56e6.txt
+
+
