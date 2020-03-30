@@ -226,15 +226,19 @@ echo
 echo 	"at this point, a good sanity check would be to run"
 echo	"/var/lib/maia/scripts/configtest.pl" 
 echo 
-echo 	"If that passes check the web at /maia/admin/config test"
+echo	"You may now need to edit firewall to allow http access"
+echo	"and set selinux to permissive to allow maia to operate"
+echo	"Until appropriate selinux policies can be developed"
+echo
+echo	"If configtest.pl passes, check the web configuration"
 echo	"at http://$host/maia/admin/configtest.php"
 echo
 echo	"if everything passes, and you are creating a database for the"
-echo    "first time, (no existing database) create the initial maia user" 
-echo    "by visiting http://$host/maia/internal-init.php"
+echo	"first time, (no existing database) create the initial maia user" 
+echo	"by visiting http://$host/maia/internal-init.php"
 echo
-echo    "You will also need to set up cron jobs to maintain your system"
-echo    "See docs/cronjob.txt for more info"
+echo	"You will also need to set up cron jobs to maintain your system"
+echo	"See docs/cronjob.txt for more info"
 echo
 
 
