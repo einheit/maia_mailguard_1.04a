@@ -6,7 +6,7 @@ needsmarthost=0
 localdb=0
 
 # find out whether to install local db server
-echo "Now we are determining whether you want to install a local db server"
+echo "Do you want to install a local db server?"
 echo "if there is already a maia database server, the answer is no"
 echo -n  "install a local maia db server? (y/N)"
 read junk
@@ -83,5 +83,15 @@ echo "WEBSRV=$fqdn" >> installer.tmpl
 
 echo "installation parameters:"
 cp installer.tmpl cfg_tpl/
+echo 
+echo "Verify the following parameters are correct:"
+echo
 cat installer.tmpl
+echo
+echo "If there are any incorrect parameters, open a new terminal"
+echo "and edit installer.tmpl to correct any errors"
+echo
+echo "Then return to this terminal and press <ENTER>"
+echo
+read
 

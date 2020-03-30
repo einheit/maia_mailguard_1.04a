@@ -1,6 +1,6 @@
 #/bin/bash
 
-DBG=1
+DBG=0
 
 old_str=$1
 new_str=$2
