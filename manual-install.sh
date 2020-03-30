@@ -3,18 +3,19 @@ This procedure documents the install process for maia maiguard 1.04x.
 We assume you have a working OS install. We've only tested on
 Linux distributions, but FreeBSD etc should be doable also.
 
+Note that there might be RHEL-isms, despite our effort at neutrality
+
 If sendmail or any other non-postfix MTA is installed, uninstall 
 or disable it before continuing.
 
-To begin with, make sure the following are present -
+Using whatever package management tools are included with your OS,
+make sure the following are installed -
+
 curl
 wget
 make
 gcc
 rsync 
-
-Using whatever package management tools are included with your OS,
-make sure the following are installed -
 
 tar
 file
@@ -262,6 +263,11 @@ Here is an example crontab for root -
 # m h dom mon dow       command
 3 3 * * * /usr/local/sbin/do-sa-update.sh
 --
+
+In case you find anything not working as it should be, please visit
+the issues page to see if there are workarounds -
+
+  https://github.com/einheit/maia_mailguard_1.04a/issues
 
 The original install document is available in docs/Install-maia-56e6.txt
 
