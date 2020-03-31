@@ -95,7 +95,8 @@ cp maiad /var/lib/maia/
 cp -r scripts/* /var/lib/maia/scripts/
 cp -r templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
-chown -R maia.maia /var/lib/maia/tmp
+chown -R maia.virusgroup /var/lib/maia/tmp
+chmod 775 /var/lib/maia/tmp
 
 #
 # web interface
