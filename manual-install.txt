@@ -20,47 +20,44 @@ rsync
 tar
 file
 postfix
+perl
 spamassassin
 
-perl
-perl-forks
-perl-DBI 
-perl-Archive-Zip
-perl-BerkeleyDB
-perl-Convert-TNEF
-perl-Convert-UUlib
-perl-Digest-SHA1
-perl-DBD-MySQL perl-DBD-Pg
-perl-Data-UUID
-perl-Net-Server
-perl-Net-DNS-Nameserver
-perl-Text-CSV
-perl-Net-CIDR-Lite
-perl-LDAP
-perl-Unix-Syslog
-perl-Razor-Agent
-perl-Template-Toolkit
-perl-CPAN 
-perl-Geo-IP
-perl-IP-Country-Fast
-perl-Convert-TNEF
-perl-Data-UUID
-perl-Digest-SHA1
-perl-Template
-
-if any of the above perl packages are not in your normal OS repos,
-you can use cpan or cpanminus to install them.
-
-For instance, we've had to use cpanminus to install:
-
-forks
-IP::Country::Fast
+Install the following perl modules -
+DBI 
+Archive::Zip
+BerkeleyDB
 Convert::TNEF
+Convert::UUlib
+CPAN 
 Data::UUID
 Digest::SHA1
+DBD::MySQL
+DBD::Pg
+Data::UUID
+forks
+Geo::IP
+IP::Country::Fast
+LDAP
+Net::Server
+Net::DNS-Nameserver
+Net::CIDR::Lite
+Razor::Agent
+Text::CSV
 Template
+Template::Toolkit
+Unix::Syslog
 
-e.g: "cpanm IP::Country::Fast"
+Note - your package manager may have different names -
+for instance might refer to "Text::CSV" as "perl-Text-CSV"
+
+For any of the above perl packages not in your OS repos,
+you can use cpan or cpanminus to install them.
+
+e.g. to install IP::Country::Fast, type the following:
+
+ $ cpanm IP::Country::Fast
+
 
 Install clamav. In centos, it's broken down into the following packages
 
@@ -173,7 +170,7 @@ php-gd
 php-process
 php-xml
 php-mbstring
-php-mysql (OR) php-mysqlnd
+php-mysql (php 5.x) or php-mysqlnd (php 7.x)
 php-bcmath
 php-devel
 php-pear
@@ -202,32 +199,43 @@ if you have php 7.x, install the following:
 $ pear install MDB2-2.5.0b5
 $ pear install MDB2_Driver_mysqli-1.5.0b4
 
+Install html purifier 
+$ pear channel-discover htmlpurifier.org
+$ pear install hp/HTMLPurifier
+
 Verify what's installed: 
 $ pear list
 
-Install html purifier: 
+NOTE - if pear is unable to install html purifier, install it separately -
+To install html purifier: 
+
 $ tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
 $ ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
-Fix the permissions on the themes directory: 
+
+Next, fix the permissions on the themes directory: 
+
  $ for i in /var/www/html/maia/themes/*
  $ do
    $ mkdir -p ${i}/compiled
  $ done
 
-$ chmod 775 /var/www/html/maia/themes/*/compiled
-$ chown apache.maia /var/www/html/maia/themes/*/compiled
-$ cp config.php /var/www/html/maia/
-$ mkdir /var/www/cache
-$ chown apache.maia /var/www/cache
-$ chmod 775 /var/www/cache
+ $ chmod 775 /var/www/html/maia/themes/*/compiled
+ $ chown apache.maia /var/www/html/maia/themes/*/compiled
+ $ cp config.php /var/www/html/maia/
+ $ mkdir /var/www/cache
+ $ chown apache.maia /var/www/cache
+ $ chmod 775 /var/www/cache
 
 Restart the httpd server
 
 Make sure your firewall rules allow access to the httpd server.
+If you are using selinux, you might need to put it in permissive mode
+to allow maia to work properly, until you can apply an appropriate policy.
 
 Edit your postfix configuration:
-$ sh postfix-setup.sh
+ $ sh postfix-setup.sh
+
 or manually edit postfix config to affect site specific configuration.
 
 Restart postfix
@@ -240,8 +248,46 @@ create the initial maia user by visiting:
 
 http://$host/maia/internal-init.php
 
-You will want to update the maia rules database:
-$ /var/lib/maia/scripts/load-sa-rules.pl
+if the initial user does not have superuser permissions, fix it
+in the database, as in the following example with "joe@usa.net":
+
+--
+ root@vzcentos1 ~]# mysql maia
+ Welcome to the MariaDB monitor.  Commands end with ; or \g.
+ Your MariaDB connection id is 25
+ Server version: 5.5.64-MariaDB MariaDB Server
+
+ Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+ MariaDB [maia]> select id,user_name,user_level from maia_users;
+ +----+----------------+------------+
+ | id | user_name      | user_level |
+ +----+----------------+------------+
+ |  1 | @.             | U          |
+ |  2 | joe@usa.net    | U          |
+ +----+----------------+------------+
+ 2 rows in set (0.00 sec)
+
+ MariaDB [maia]> update maia_users set user_level = "S" where id = 2;
+ Query OK, 1 rows affected (0.02 sec)
+ Rows matched: 1  Changed: 0  Warnings: 0
+
+ MariaDB [maia]> select id,user_name,user_level from maia_users;
+ +----+----------------+------------+
+ | id | user_name      | user_level |
+ +----+----------------+------------+
+ |  1 | @.             | U          |
+ |  2 | joe@usa.net    | S          |
+ +----+----------------+------------+
+ 2 rows in set (0.00 sec)
+--
+
+The admin symbol will then appear in the maia web interface when that user logs in
+
+You will also want to update the maia rules database:
+ $ /var/lib/maia/scripts/load-sa-rules.pl
 
 And perhaps put that in a cron job to run periodocally.
 
@@ -264,10 +310,11 @@ Here is an example crontab for root -
 3 3 * * * /usr/local/sbin/do-sa-update.sh
 --
 
-In case you find anything not working as it should be, please visit
+In case you find anything else not working as advertised, please visit
 the issues page to see if there are workarounds -
 
   https://github.com/einheit/maia_mailguard_1.04a/issues
 
 The original install document is available in docs/Install-maia-56e6.txt
+
 
