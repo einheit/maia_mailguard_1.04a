@@ -4,8 +4,11 @@ The goal is a stable, working install of the updated mailguard 1.0 branch, with 
 
 The current installer has been successfully tested on Centos 7 & 8, on bare metal, KVM VMs, and openvz containers. 
 
-For Centos 7, run the script "install-centos7.sh"
-For Centos 8, run the script "install-centos8.sh"
+To get started, run "install.sh" and the script will detect the OS and
+offer the best option for installing on your system. So far, Centos/RHEL
+versions 7 and 8 are explicitly supported, while other platforms can be
+set up manually, and the installer will be updated as automated install 
+support for other unix-like OSes is added.
 
 Contributed scripts for other platforms are welcome.
 In the meantime, maia can be installed on other distros via the manual procedure.
