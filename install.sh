@@ -22,15 +22,18 @@ if [ $LXTYPE == "RHEL" ]; then
     LVL=7
   elif [ $REL8 -eq 1 ]; then
     LVL=8
-    echo "centos/rhel version $LVL detected"
-    echo "copy & paste the following command to begin the install:"
-    echo
-    echo " bash install-centos$LVL.sh | tee installer.log 2>&1"
-    echo
   fi
-  else
-    echo "$LXTYPE type system detected, installer not present"
-    echo "refer to manual-install.txt for instructions"
+fi
+
+if [ $LXTYPE == "RHEL" ]; then
+  echo "centos/rhel version $LVL detected"
+  echo "copy & paste the following command to begin the install:"
+  echo
+  echo " bash install-centos$LVL.sh | tee installer.log 2>&1"
+  echo
+else
+  echo "$LXTYPE type system detected, installer not present"
+  echo "refer to manual-install.txt for instructions"
 fi
 
 
