@@ -2,8 +2,6 @@ This repo was derived from the technion fork of Maia mailguard some years ago.
 
 The goal is a stable, working install of the updated mailguard 1.0 branch, with a quick installation process, for the common case. 
 
-The current installer has been successfully tested on Centos 7 & 8, on bare metal, KVM VMs, and openvz containers. 
-
 To get started, run "install.sh" and the script will detect the OS and
 offer the best option for installing on your system. So far, Centos/RHEL
 versions 7 and 8 are explicitly supported, while other platforms can be
