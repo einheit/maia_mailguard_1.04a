@@ -9,9 +9,6 @@ set up manually, and the installer will be updated as automated install
 support for other unix-like OSes is added.
 
 Contributed scripts for other platforms are welcome.
-In the meantime, maia can be installed on other distros via the manual procedure.
-
-Contributions are welcome.
 
 Updated Centos spamassassin rpms - https://github.com/einheit/maia-packages
 
