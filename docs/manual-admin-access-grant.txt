@@ -1,0 +1,76 @@
+
+if you need to grant maia superuser permissions manually, you can 
+do it directly in the database. below is an example with "joe@usa.net":
+
+--
+ root@vzcentos1 ~]# mysql maia
+ Welcome to the MariaDB monitor.  Commands end with ; or \g.
+ Your MariaDB connection id is 25
+ Server version: 5.5.64-MariaDB MariaDB Server
+
+ Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+ MariaDB [maia]> select id,user_name,user_level from maia_users;
+ +----+----------------+------------+
+ | id | user_name      | user_level |
+ +----+----------------+------------+
+ |  1 | @.             | U          |
+ |  2 | joe@usa.net    | U          |
+ +----+----------------+------------+
+ 2 rows in set (0.00 sec)
+
+ MariaDB [maia]> update maia_users set user_level = "S" where id = 2;
+ Query OK, 1 rows affected (0.02 sec)
+ Rows matched: 1  Changed: 0  Warnings: 0
+
+ MariaDB [maia]> select id,user_name,user_level from maia_users;
+ +----+----------------+------------+
+ | id | user_name      | user_level |
+ +----+----------------+------------+
+ |  1 | @.             | U          |
+ |  2 | joe@usa.net    | S          |
+ +----+----------------+------------+
+ 2 rows in set (0.00 sec)
+--
+
+The admin symbol will then appear in the maia web interface when that user logs in
+
+You will also want to update the maia rules database:
+ $ /var/lib/maia/scripts/load-sa-rules.pl
+
+And perhaps put that in a cron job to run periodocally.
+
+In addition, you will want to set up cron jobs to maintain the
+spaamassassin rulesets & maia DB, report spam, & send notifications.
+
+Here is an example crontab for the maia user -
+--
+# m h dom mon dow  	command
+3 * * * *	/var/lib/maia/scripts/process-quarantine.pl > /dev/null
+2 * * * *	/var/lib/maia/scripts/stats-snapshot.pl > /dev/null
+7 23 * * *	/var/lib/maia/scripts/expire-quarantine-cache.pl > /dev/null
+#9 21 * * 1	/var/lib/maia/scripts/send-quarantine-reminders.pl > /dev/null
+5 11,17 * * *	/var/lib/maia/scripts/send-quarantine-digests.pl > /dev/null
+--
+
+Here is an example crontab for root - 
+--
+# m h dom mon dow       command
+3 3 * * * /usr/local/sbin/do-sa-update.sh
+--
+
+In case you find anything else not working as advertised, please visit
+the issues page to see if there are workarounds -
+
+  https://github.com/einheit/maia_mailguard_1.04a/issues
+
+An older contributed install document can be found in docs/Install-maia-56e6.txt
+
+The original install doc is online at http://www.maiamailguard.com/install.php
+
+# note - 
+# http://www.example.com/maia/login.php?super=register
+# http://www.example.com/maia/login.php?super=unregister
+

@@ -248,43 +248,13 @@ create the initial maia user by visiting:
 
 http://$host/maia/internal-init.php
 
-if the initial user does not have superuser permissions, fix it
-in the database, as in the following example with "joe@usa.net":
+When you receive the credentials emailed by maia, log in and grant 
+the user admin powers:
 
---
- root@vzcentos1 ~]# mysql maia
- Welcome to the MariaDB monitor.  Commands end with ; or \g.
- Your MariaDB connection id is 25
- Server version: 5.5.64-MariaDB MariaDB Server
+http://$host/maia/login.php?super=register
 
- Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
-
- Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
- MariaDB [maia]> select id,user_name,user_level from maia_users;
- +----+----------------+------------+
- | id | user_name      | user_level |
- +----+----------------+------------+
- |  1 | @.             | U          |
- |  2 | joe@usa.net    | U          |
- +----+----------------+------------+
- 2 rows in set (0.00 sec)
-
- MariaDB [maia]> update maia_users set user_level = "S" where id = 2;
- Query OK, 1 rows affected (0.02 sec)
- Rows matched: 1  Changed: 0  Warnings: 0
-
- MariaDB [maia]> select id,user_name,user_level from maia_users;
- +----+----------------+------------+
- | id | user_name      | user_level |
- +----+----------------+------------+
- |  1 | @.             | U          |
- |  2 | joe@usa.net    | S          |
- +----+----------------+------------+
- 2 rows in set (0.00 sec)
---
-
-The admin symbol will then appear in the maia web interface when that user logs in
+And you should then see the "admin" widget after logging in, right under
+the "settings" widget.
 
 You will also want to update the maia rules database:
  $ /var/lib/maia/scripts/load-sa-rules.pl
@@ -315,6 +285,11 @@ the issues page to see if there are workarounds -
 
   https://github.com/einheit/maia_mailguard_1.04a/issues
 
-The original install document is available in docs/Install-maia-56e6.txt
+An older contributed install document can be found in docs/Install-maia-56e6.txt
 
+The original install doc is online at http://www.maiamailguard.com/install.php
+
+# note - 
+# http://www.example.com/maia/login.php?super=register
+# http://www.example.com/maia/login.php?super=unregister
 

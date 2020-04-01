@@ -238,9 +238,10 @@ echo	"if everything passes, and you are creating a database for the"
 echo	"first time, (no existing database) create the initial maia user" 
 echo	"by visiting http://$host/maia/internal-init.php"
 echo
-echo	"If the user created by internal-init does not have admin"
-echo	"privileges, refer to the following issue for workaround"
-echo	"https://github.com/einheit/maia_mailguard_1.04a/issues/6
+echo	"maia will send your login credentials to the email addess you"
+echo	"supplied in the internal-init form. Use those credentials to"
+echo	"log into the url below (note the "super=register" arg)"
+echo	"http://${host}/maia/login.php?super=register"
 echo
 echo	"You will also need to set up cron jobs to maintain your system"
 echo	"See docs/cronjob.txt for more info"
