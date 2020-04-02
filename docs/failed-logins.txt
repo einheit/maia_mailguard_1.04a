@@ -1,0 +1,4 @@
+In cases where logging in with the correct credentials bounces you back out
+to the login screen, try logging in with a different browser, that hasn't been
+to that url before. if that works, you may want to clear your cookies on the
+original browser and log in again.

@@ -12,6 +12,9 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read junk
 echo 
 
+# set the tone 
+setenforce 0
+
 # rock bottom dependencies - 
 yum install -y curl wget make gcc sudo net-tools less which rsync 
 
@@ -21,18 +24,25 @@ yum install -y curl wget make gcc sudo net-tools less which rsync
 # looks like we need to make sure perl and postfix are installed first
 yum install -y perl
 yum install -y postfix
+systemctl enable postfix
+systemctl restart postfix
 
 # find out what we need to change
 ./process-changes.sh
 
 # continue with install
+# set up conditions for maia to operate
+yum install -y firewalld
+systemctl enable firewalld
+firewall-cmd --permanent --add-service smtp
+firewall-cmd --permanent --add-service smtps
+firewall-cmd --permanent --add-service http
+firewall-cmd --reload
 
 # add epel and get up to date
 yum install -y epel-release
 yum -y update
-#
 yum install -y telnet
-#
 yum install -y file
 yum install -y tar
 yum install -y perl-DBI 
@@ -70,6 +80,7 @@ yum install -y clamav-data
 yum install -y clamav-server
 
 yum install -y httpd httpd-tools
+systemctl enable httpd
 
 #
 # add maia user and chown/chmod its files/dirs
@@ -130,8 +141,18 @@ if [ $DB_INST -eq 1 ]; then
   systemctl enable mariadb.service
   systemctl start mariadb.service
   mysqladmin create maia
+  sleep 1
   mysql maia < maia-mysql.sql 
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "*** problem importing maia schema - db needs attention ***"
+  fi
+  sleep 1
   sh maia-grants.sh
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "*** problem granting maia privileges - db needs attention ***"
+  fi
 fi
 
 
@@ -229,14 +250,14 @@ echo
 
 echo 
 echo 	"at this point, a good sanity check would be to run"
-echo	"/var/lib/maia/scripts/configtest.pl" 
+echo	" /var/lib/maia/scripts/configtest.pl" 
 echo 
 echo	"You may now need to edit firewall to allow http access"
 echo	"and set selinux to permissive to allow maia to operate"
 echo	"Until appropriate selinux policies can be developed"
 echo
-echo 	"If configtest.pl passes, check the web configuration"
-echo	"at http://$host/maia/admin/configtest.php"
+echo 	"If configtest.pl passes, check the web configuration at"
+echo	" http://$host/maia/admin/configtest.php"
 echo
 echo	"if everything passes, and you are creating a database for the"
 echo	"first time, (no existing database) create the initial maia user"
@@ -245,7 +266,7 @@ echo
 echo	"maia will send your login credentials to the email addess you"
 echo	"supplied in the internal-init form. Use those credentials to"
 echo	"log into the url below (note the "super=register" arg)"
-echo	"http://${host}/maia/login.php?super=register"
+echo	" http://${host}/maia/login.php?super=register"
 echo
 echo	"You will also need to set up cron jobs to maintain your system"
 echo	"See docs/cronjob.txt for more info"
