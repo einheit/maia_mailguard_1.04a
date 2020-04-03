@@ -146,15 +146,16 @@ if [ $DB_INST -eq 1 ]; then
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem importing maia schema - db needs attention ***"
+    read
   fi
   sleep 1
   sh maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
+    read
   fi
 fi
-
 
 echo "stage 1 install complete"
 
