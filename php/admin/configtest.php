@@ -456,7 +456,7 @@
     }
     print_row("PEAR::MDB2", $result, $status);
 
-    // PEAR::MDB2:mysql
+    // PEAR::MDB2:mysqli
     if ($have_pear) {
         if (!in_array("mdb2_driver_mysqli", $pear_list)) {
             $result = "Not installed.  This PHP extension is required in order to provide " .

@@ -200,7 +200,6 @@ pear install Auth_SASL-1.0.6
 pear install DB-1.8.2
 pear install Log-1.12.9
 pear install MDB2
-pear install MDB2_Driver_mysql
 pear install MDB2_Driver_mysqli
 pear install Mail_Mime-1.8.9
 pear install Mail_mimeDecode-1.5.5
