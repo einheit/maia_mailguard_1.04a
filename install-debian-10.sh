@@ -74,6 +74,8 @@ apt-get install -y libtext-csv-perl
 apt-get install -y libunix-syslog-perl
 apt-get install -y perl-Net-DNS-Nameserver
 apt-get install -y postfix
+systemctl enable postfix
+systemctl start postfix
 apt-get install -y razor
 apt-get install -y spamassassin
 #
