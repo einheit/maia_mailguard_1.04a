@@ -21,6 +21,14 @@ yum install -y curl wget make gcc sudo net-tools less which rsync
 # get the info, write parames to a file
 ./get-info.sh
 
+echo "If there are no errors, this script will run to completion."
+echo
+echo "Note that the install could take a good while, dependng on"
+echo "available computing power and network bandwidth."
+echo
+echo "Feel free to take a break!"
+echo
+
 # looks like we need to make sure perl and postfix are installed first
 yum install -y perl
 yum install -y postfix

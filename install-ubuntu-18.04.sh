@@ -15,6 +15,14 @@ echo
 # get the info, write parames to a file
 ./get-info.sh
 
+echo "If there are no errors, this script will run to completion."
+echo
+echo "Note that the install could take a good while, dependng on"
+echo "available computing power and network bandwidth."
+echo
+echo "Feel free to take a break!"
+echo
+
 # install stage 1 packages
 
 WD=`pwd`
@@ -172,6 +180,9 @@ apt-get -y install php7.2-gd
 apt-get -y install php-xml
 apt-get -y install php-pear
 
+# smarty3 breaks maia
+# apt-get install -y Smarty
+tar -C /usr/share/php/ -xvf smarty2-maia.tar
 
 echo
 echo "installing pear modules"
@@ -192,12 +203,14 @@ pear install Net_Socket
 pear install Net_SMTP
 pear install Auth_SASL
 pear install Log
-pear channel-discover htmlpurifier.org
-pear install hp/HTMLPurifier
-echo "pear install HTMLPurifier status?"
-read
+#pear channel-discover htmlpurifier.org
+#pear install hp/HTMLPurifier
+#echo "pear install HTMLPurifier status?"
+#read
 pear list
-
+# install html purifier separately -
+tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
+ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 echo
 echo "preparing php directory"
