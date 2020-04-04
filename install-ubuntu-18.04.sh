@@ -82,6 +82,7 @@ apt-get install -y clamav-freshclam
 # add maia user and chown all its files/dirs
 #
 useradd -d /var/lib/maia maia
+mkdir -p /var/lib/maia
 chmod 755 /var/lib/maia
 
 # create and chown dirs

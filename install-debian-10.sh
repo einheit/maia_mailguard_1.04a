@@ -96,7 +96,9 @@ read
 # add maia user and chown all its files/dirs
 #
 useradd -d /var/lib/maia maia
+mkdir -p /var/lib/maia
 chmod 755 /var/lib/maia
+chown -R maia.maia /var/lib/maia
 
 # create and chown dirs
 mkdir -p /var/log/maia
@@ -153,7 +155,7 @@ DB_INST=`expr $DBINST`
 if [ $DB_INST -eq 1 ]; then
   echo "creating maia database..."
   # suppress dialog boxes during mysql install -
-  apt install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb
+  apt install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
   systemctl start mysql
   mysqladmin create maia
   sleep 1
