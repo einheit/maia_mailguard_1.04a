@@ -1,4 +1,4 @@
-# new version - gather info up front to use during the install process
+# first working centos 8 installer
 
 echo 
 echo "this script is written for Centos 8, using a mysql DB" 

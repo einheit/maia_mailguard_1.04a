@@ -1,4 +1,4 @@
-# new version - gather info up front to use during the install process
+# first working centos 7 installer
 
 echo 
 echo "this script is written for Centos 7, using a mysql DB" 
@@ -142,6 +142,8 @@ if [ $DB_INST -eq 1 ]; then
   systemctl start mariadb.service
   mysqladmin create maia
   sleep 1
+  sh maia-grants.sh
+  sleep 1
   mysql maia < maia-mysql.sql 
   status=$?
   if [ $status -ne 0 ]; then
@@ -149,7 +151,6 @@ if [ $DB_INST -eq 1 ]; then
     read
   fi
   sleep 1
-  sh maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"

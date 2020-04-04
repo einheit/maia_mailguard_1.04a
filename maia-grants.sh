@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+DBG=0
+
 PASSWD='password'
 PWCHANGE=0
 
@@ -9,8 +11,10 @@ NEWPW=`grep MAIAPASS installer.tmpl | awk -F\= '{ print $2 }'`
 [ $PWCHANGE -eq 1 ] && export PASSWD=$NEWPW
 
 export PASSWD PWCHANGE
-echo "PWCHANGE = $PWCHANGE"
-echo "PASSWORD = $PASSWD"
+if [ $DBG -ne 0 ]; then
+  echo "PWCHANGE = $PWCHANGE"
+  echo "PASSWORD = $PASSWD"
+  fi
 
 # is a mysql root password set?
 RPRAW=`grep ROOTPASS installer.tmpl | wc -l`
