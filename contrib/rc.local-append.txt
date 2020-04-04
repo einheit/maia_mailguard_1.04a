@@ -1,0 +1,5 @@
+
+# in case systemd fails us -
+sleep 60
+/root/check-clamd-restart.sh
+

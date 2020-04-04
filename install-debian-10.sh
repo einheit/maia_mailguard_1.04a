@@ -9,7 +9,7 @@ echo "if sendmail or other non-postfix MTA are installed,"
 echo "disable or uninstall them before continuing."
 echo 
 echo -n "<ENTER> to continue or CTRL-C to stop..."
-read junk
+read
 echo 
 
 # get the info, write parames to a file
@@ -50,47 +50,39 @@ apt-get -y install perl
 
 #
 echo "now installing packages.."
-apt install -y make gcc patch
-apt install -y curl wget telnet
+apt-get install -y make gcc patch
+apt-get install -y curl wget telnet
 #
-apt install -y file
-apt install -y libarchive-zip-perl
-apt install -y libberkeleydb-perl
-apt install -y libconvert-tnef-perl
-apt install -y libconvert-uulib-perl
-apt install -y libcrypt-openssl-rsa-perl
-apt install -y libdata-uuid-perl
-apt install -y libdbd-mysql-perl libdbd-pg-perl
-apt install -y libdbi-perl
-apt install -y libdigest-sha-perl
-apt install -y libencode-detect-perl
-apt install -y libforks-perl
-apt install -y libmail-dkim-perl
-apt install -y libnet-cidr-lite-perl
-apt-install -y libnet-ldap-perl
-apt install -y libnet-server-perl
-apt install -y libtemplate-perl
-apt install -y libtext-csv-perl
-apt install -y libunix-syslog-perl
-apt install -y perl-Net-DNS-Nameserver
-apt install -y postfix
-apt install -y razor
-apt install -y spamassassin
+apt-get install -y file
+apt-get install -y libarchive-zip-perl
+apt-get install -y libberkeleydb-perl
+apt-get install -y libconvert-tnef-perl
+apt-get install -y libconvert-uulib-perl
+apt-get install -y libcrypt-openssl-rsa-perl
+apt-get install -y libdata-uuid-perl
+apt-get install -y libdbd-mysql-perl libdbd-pg-perl
+apt-get install -y libdbi-perl
+apt-get install -y libdigest-sha-perl
+apt-get install -y libencode-detect-perl
+apt-get install -y libforks-perl
+apt-get install -y libmail-dkim-perl
+apt-get install -y libnet-cidr-lite-perl
+apt-get install -y libnet-ldap-perl
+apt-get install -y libnet-server-perl
+apt-get install -y libtemplate-perl
+apt-get install -y libtext-csv-perl
+apt-get install -y libunix-syslog-perl
+apt-get install -y perl-Net-DNS-Nameserver
+apt-get install -y postfix
+apt-get install -y razor
+apt-get install -y spamassassin
 #
-#
-echo "checkpoint - basic packages installed"
-echo "proceed?"
-read
 
-apt install -y apache2 apache2-utils 
+apt-get install -y apache2 apache2-utils 
 
-apt install -y clamav 
-apt install -y clamav-daemon
-apt install -y clamav-freshclam
-
-echo "checkpoint - clam packages installed (?)"
-echo "proceed?"
-read
+apt-get install -y clamav 
+apt-get install -y clamav-daemon
+apt-get install -y clamav-freshclam
 
 #
 # add maia user and chown all its files/dirs
@@ -128,10 +120,6 @@ echo "done with file copy, starting package install"
 cp contrib/maiad_init_ubuntu /etc/init.d/maiad
 systemctl enable maiad
 
-echo "checkpoint - maiad installed (?)"
-echo "proceed?"
-read
-
 #
 # non-interactive cpan installs
 #
@@ -144,10 +132,6 @@ cpanm LWP
 cpanm Net::LDAP::LDIF
 cpanm Razor2::Client::Agent
 
-echo "checkpoint - cpan installs completed (?)"
-echo "proceed?"
-read
-
 DBINST=`grep DB_INSTALL cfg_tpl/installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
 
@@ -155,7 +139,7 @@ DB_INST=`expr $DBINST`
 if [ $DB_INST -eq 1 ]; then
   echo "creating maia database..."
   # suppress dialog boxes during mysql install -
-  apt install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
+  apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
   systemctl start mysql
   mysqladmin create maia
   sleep 1
@@ -193,20 +177,16 @@ echo "stage 1 install complete"
 cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
 # /var/lib/maia/scripts/load-sa-rules.pl
 
-echo "checkpoint - maiad and clamd started (?)"
-echo "proceed?"
-read
-
 echo
 echo "installing php modules"
 echo
-apt install -y libapache2-mod-php7.3
-apt install -y php-mysql
-apt install -y php-mbstring
-apt install -y php-bcmath
-apt install -y php-gd
-apt install -y php-xml
-apt install -y php-pear
+apt-get install -y libapache2-mod-php7.3
+apt-get install -y php-mysql
+apt-get install -y php-mbstring
+apt-get install -y php-bcmath
+apt-get install -y php-gd
+apt-get install -y php-xml
+apt-get install -y php-pear
 
 # smarty3 breaks maia
 # apt-get install -y Smarty

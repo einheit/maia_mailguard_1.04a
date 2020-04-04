@@ -9,7 +9,7 @@ echo "if sendmail or other non-postfix MTA are installed,"
 echo "disable or uninstall them before continuing."
 echo 
 echo -n "<ENTER> to continue or CTRL-C to stop..."
-read junk
+read
 echo 
 
 # get the info, write parames to a file
@@ -208,7 +208,7 @@ pear install Log
 #pear install hp/HTMLPurifier
 #echo "pear install HTMLPurifier status?"
 #read
-pear list
+#pear list
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
