@@ -169,7 +169,9 @@ echo "stage 1 install complete"
 #
 # start maiad 
 /etc/init.d/maiad start
-# start clamd
+# set up and start clamd
+cp /etc/clamav/clamd.conf /etc/clamav/clamd.conf_debian_orig-$$
+cp contrib/clamd-debian-maia-tcp.conf /etc/clamav/clamd.conf 
 /etc/init.d/clamav-daemon start
 /etc/init.d/clamav-freshclam start
 
