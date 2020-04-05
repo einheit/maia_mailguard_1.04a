@@ -15,7 +15,7 @@ use strict;
 #       column of the smtp-maia interface.
 #   * Start with 2, increase gradually as needed (2-15 is common)
 
-$max_servers = 2;
+$max_servers = 3;
 
 
 # Maiad will run as user ($daemon_user)
@@ -153,14 +153,14 @@ $forward_method = 'smtp:[127.0.0.1]:10025';
 #   * Increase temporarily as needed to diagnose problems, but
 #       set to 0 or 1 for production servers.
 
-$log_level = 0;
+$log_level = 1;
 
 
 # Use syslog? ($DO_SYSLOG)
 #   * Set to 1 to send logs to syslog, 0 to disable
 #   * If enabled, configure $SYSLOG_LEVEL as well
 
-$DO_SYSLOG = 0;
+$DO_SYSLOG = 1;
 
 
 # Syslog logging facility and level ($SYSLOG_LEVEL)
