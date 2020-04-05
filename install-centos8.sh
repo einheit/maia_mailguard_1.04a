@@ -7,6 +7,11 @@ echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
 echo "if sendmail or other non-postfix MTA are installed," 
 echo "disable or uninstall them before continuing."
+echo
+echo "Note that selinux will be set to permissive mode."
+echo
+echo "For full functionality, an appropriate selinux policy"
+echo "needs to be installed for maia in selinux enforcing mode"
 echo 
 echo -n "<ENTER> to continue or CTRL-C to stop..."
 read junk
@@ -26,7 +31,7 @@ echo
 echo "Note that the install could take a good while, dependng on"
 echo "available computing power and network bandwidth."
 echo
-echo "Feel free to take a break!"
+echo -n "Feel free to take a break - <ENTER> to proceed  "
 echo
 
 # looks like we need to make sure perl and postfix are installed first
