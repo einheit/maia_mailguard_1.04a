@@ -131,6 +131,10 @@ start the db
 import the maia schema:
 
  $ mysqladmin create maia
+
+ *** Run the following mysql command to so mysql can import the schema ***
+ mysql> ALTER DATABASE maia CHARACTER SET utf8 COLLATE utf8_bin;
+
  $ mysql maia < maia-mysql.sql 
  $ sh maia-grants.sh
 

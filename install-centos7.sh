@@ -99,6 +99,7 @@ systemctl enable httpd
 # add maia user and chown/chmod its files/dirs
 #
 useradd -d /var/lib/maia maia
+mkdir -p /var/lib/maia
 chmod 755 /var/lib/maia
 
 # create and chown dirs
@@ -156,7 +157,12 @@ if [ $DB_INST -eq 1 ]; then
   mysqladmin create maia
   sleep 1
   sh maia-grants.sh
+  status=$?
   sleep 1
+  if [ $status -ne 0 ]; then
+    echo "*** problem granting maia privileges - db needs attention ***"
+    read
+  fi
   mysql maia < maia-mysql.sql 
   status=$?
   if [ $status -ne 0 ]; then
@@ -164,11 +170,6 @@ if [ $DB_INST -eq 1 ]; then
     read
   fi
   sleep 1
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "*** problem granting maia privileges - db needs attention ***"
-    read
-  fi
 fi
 
 echo "stage 1 install complete"
@@ -221,7 +222,7 @@ pear install Mail_mimeDecode-1.5.5
 pear install Net_Socket-1.0.14
 pear install Net_SMTP-1.6.2
 pear install Pager-2.4.9
-pear list
+per list
 
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
