@@ -125,18 +125,23 @@ $ cp scan.conf /etc/clamd.d/
 install mariadb or mysql
 
 If creating a database server, run the following commands -
-install mariadb-server
+install the mysql or mariadb server
 enable the db server to start on boot
-start the db
-import the maia schema:
+start the db server, then:
 
+create the maia db
  $ mysqladmin create maia
 
- *** Run the following mysql command to so mysql can import the schema ***
+ *** Run the following mysql command so mysql can import the schema ***
  mysql> ALTER DATABASE maia CHARACTER SET utf8 COLLATE utf8_bin;
 
+ *** Run the following mysql command to grant maia user proper rights ***
+ mysql> GRANT CREATE, DROP, ALTER, SELECT, INSERT, UPDATE, DELETE ON maia.* 
+   TO maia@localhost IDENTIFIED BY "password";
+  (where "password" is defined as whatever password you choose)
+
+import the maia schema:
  $ mysql maia < maia-mysql.sql 
- $ sh maia-grants.sh
 
 The database should be working at this point.
 
