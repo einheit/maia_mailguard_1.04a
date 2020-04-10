@@ -1,5 +1,6 @@
-Credit: David Byte
 
+--
+Credit: David Byte
 --
 
 I’ve just brought the parts salient to using Maia here.
@@ -35,4 +36,29 @@ amavis:
   driver = smtp
   port = 10024
 
+
+--
+Credit: Manny Marinho 
+--
+
+My Router:
+
+amavis:
+driver = manualroute
+condition = "${if eq {$interface_port}{10025} {0}{1}}"
+condition = "${if eq {$spam_score_int}{}{1}{${if <=
+{${spam_score_int}}{00}{0}{1}}}}"
+domains = +local_domains
+transport = amavis
+route_list = "* localhost byname"
+self = send
+verify_recipient = false
+
+
+My Transport:
+
+amavis:
+driver = smtp
+port = 10024
+allow_localhost
 
