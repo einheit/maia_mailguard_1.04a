@@ -135,20 +135,16 @@ if [ $DB_INST -eq 1 ]; then
   apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
   systemctl start mysql
   mysqladmin create maia
-  sleep 1
-  sh maia-grants.sh
-  sleep 1
-  mysql maia < maia-mysql.sql
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "*** problem importing maia schema - db needs attention ***"
-    read
-  fi
-  sleep 1
   sh maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
+    read
+  fi
+  mysql maia < maia-mysql.sql
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "*** problem importing maia schema - db needs attention ***"
     read
   fi
 fi
