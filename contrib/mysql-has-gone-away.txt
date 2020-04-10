@@ -1,0 +1,8 @@
+After some time without maia activity, a new email message could result in a message like this:
+Apr  9 07:05:17 ivanka maiad[29361]: (29361-02) TROUBLE in check_mail: cached FAILED: DBD::mysql::st execute failed: MySQL server has gone away at (eval 103) line 259, <GEN10> line 478.
+
+To keep the mysql connection alive, one could add a cron job to query the maia database periodically. In a pinch, one could simply run configtest.pl once every 2 or 3 hours, or however often it's required to keep the connection alive.
+
+# keep database connection alive
+0-23/3 * * * * /var/lib/maia/scripts/configtest.pl
+

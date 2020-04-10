@@ -1,0 +1,38 @@
+Credit: David Byte
+
+--
+
+I’ve just brought the parts salient to using Maia here.
+
+Start by verifying with routers that do nothing but verify alias, mailing lists, etc.
+Next pass the mail to a router that can send it to the Maia server
+
+check_system_aliases:
+  driver = redirect
+  allow_fail
+  allow_defer
+  data = ${lookup{$local_part}lsearch{/etc/aliases}}
+  verify_only
+  pass_router = amavis
+
+
+And here is the amavis router
+amavis:
+  # Do NOT run if received via 10025/tcp or if already spam-scanned
+  # or if bounce message ($sender_address="")
+  condition = "${if or {{eq {$interface_port}{10025}} \
+        {eq {$received_protocol}{spam-scanned}}\
+        {eq {$received_protocol}{local}}\
+        {eq {$sender_address}{}} \
+        }{0}{1} }"
+  transport = amavis
+  route_list = "* mailguard.myhost.net byname"
+  self = send
+
+
+And this in my transport definition
+amavis:
+  driver = smtp
+  port = 10024
+
+

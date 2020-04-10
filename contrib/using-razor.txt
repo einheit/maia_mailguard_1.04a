@@ -1,0 +1,34 @@
+if razor is installed, and you wish to use it, these commands should be performed as the maia user, in order to facilitate the process:
+
+$ razor-client 
+$ razor-admin -register
+$ razor-admin -create
+$ razor-admin -discover
+
+if register complains, you may have to specify one or more of the options:
+$ razor-admin -home=/var/lib/maia/.razor -register -user maia@yourdomain.org
+
+If all is successful, the .razor directory will be populated:
+
+rwxrwxrwx. 1 maia maia  19 Apr 10 12:06 identity -> identity-rup9Xn9buF
+-rw-------. 1 maia maia  90 Apr 10 12:06 identity-rup9Xn9buF
+-rw-rw-r--. 1 maia maia 706 Apr 10 12:11 razor-agent.conf
+-rw-rw-r--. 1 maia maia 857 Apr 10 12:11 razor-agent.log
+-rw-r-----. 1 maia maia 998 Apr  9 15:46 server.c301.cloudmark.com.conf
+-rw-r-----. 1 maia maia 998 Apr 10 11:25 server.c302.cloudmark.com.conf
+-rw-r-----. 1 maia maia 998 Apr  8 16:47 server.c303.cloudmark.com.conf
+-rw-rw-r--. 1 maia maia 845 Apr 10 12:06 server.n002.cloudmark.com.conf
+-rw-r-----. 1 maia maia  57 Apr 10 12:11 servers.catalogue.lst
+-rw-r-----. 1 maia maia  30 Apr 10 12:11 servers.discovery.lst
+-rw-r-----. 1 maia maia  76 Apr 10 12:11 servers.nomination.lst
+
+a quick look at razor-check is useful to confirm everything:
+$ razor-check -d
+ Razor-Log: Computed razorhome from env: /var/lib/maia/.razor
+ Razor-Log: Found razorhome: /var/lib/maia/.razor
+ Razor-Log: read_file: 15 items read from /var/lib/maia/.razor/razor-agent.conf
+Apr 10 12:24:30.355624 check[21206]: [ 2] [bootup] Logging initiated LogDebugLevel=9 to stdout
+Apr 10 12:24:30.355818 check[21206]: [ 5] computed razorhome=/var/lib/maia/.razor, conf=/var/lib/maia/.razor/razor-agent.conf, ident=/var/lib/maia/.razor/identity-rup9Xn9buF
+Apr 10 12:24:30.355858 check[21206]: [ 2]  Razor-Agents v2.84 starting razor-check -d
+^C
+
