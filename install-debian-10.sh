@@ -27,8 +27,6 @@ read
 
 # install stage 1 packages
 
-WD=`pwd`
-
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
 
@@ -36,7 +34,6 @@ export DEBIAN_FRONTEND=noninteractive
 apt install -y locales
 cp contrib/locale.gen /etc
 /usr/sbin/locale-gen
-
 
 echo "get up-to-date before proceeding"
 apt-get -y update

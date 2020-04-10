@@ -22,10 +22,10 @@ echo "available computing power and network bandwidth."
 echo
 echo "Feel free to take a break!"
 echo
+echo "proceed? "
+read
 
 # install stage 1 packages
-
-WD=`pwd`
 
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
@@ -40,7 +40,6 @@ apt-get -y install perl
 # find out what we need to change
 ./process-changes.sh
 
-#
 echo "now installing packages.."
 apt-get install -y make gcc patch
 apt-get install -y curl wget telnet
@@ -70,8 +69,6 @@ apt-get install -y postfix
 apt-get install -y razor
 apt-get install -y spamassassin
 #
-#
-
 apt-get install -y apache2 apache2-utils 
 
 apt-get install -y clamav 

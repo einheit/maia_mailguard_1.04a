@@ -33,6 +33,8 @@ echo "available computing power and network bandwidth."
 echo
 echo -n "Feel free to take a break - <ENTER> to proceed  "
 echo
+echo "proceed? "
+read
 
 # looks like we need to make sure perl and postfix are installed first
 yum install -y perl
