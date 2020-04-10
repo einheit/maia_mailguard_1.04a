@@ -5,8 +5,10 @@ echo "this script is written for Centos 8, using a mysql DB"
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
-echo "if sendmail or other non-postfix MTA are installed," 
-echo "disable or uninstall them before continuing."
+echo "This script installs and configures the postfix MTA"
+echo "If you wish to use something other than postfix,"
+echo "you will need to install and set up that MTA after"
+echo "the completion of this script, or install manually"
 echo
 echo "Note that selinux will be set to permissive mode."
 echo
