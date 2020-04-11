@@ -4,11 +4,11 @@ Our goal is not to add any new features, but to be good stewards of the maia mai
 
 Maia is flexible and scalable. It can be deployed in a number of configurations, from everything on a single box, to banks of MTAs talking to banks of maiad/spamassasin servers, talking to dedicated clamav scanner instances and database servers, and accessed via dedicated web servers.
 
-To get started, run "./install" and the script will detect the OS and offer the best option for installing on your system. Centos/RHEL versions 7 and 8 were the first supported platforms, and other platforms are being added as time allows. The script could fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. 
+To get started, run "./install" and the script will detect the OS and offer the best option for installing on your system. Centos/RHEL versions 7 and 8 were the first supported platforms, then ubuntu 18.04 and Debian 10 were tested and verified. Other platforms will be tested and added as time allows. 
 
-Some or all maia components should be able to run on any Unix-like OS.
+The script could very well fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. It's safe to say that some or all maia components should be able to run on any Unix-like OS.
 
-Contributed scripts for other platforms are welcome.
+Contributed scripts for additional distros/platforms are welcome.
 
 Updated Centos spamassassin rpms - https://github.com/einheit/maia-packages
 
