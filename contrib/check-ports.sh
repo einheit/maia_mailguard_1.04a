@@ -1,3 +1,6 @@
+#
+# a collection of one liners to check postfix, maia and clamd ports 
+#
 # try this - 
 $ ss -tulw4n|grep -e 25 -e 3310 -e 10024
 
