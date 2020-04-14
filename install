@@ -52,27 +52,28 @@ if [ $LXTYPE == "DEBIAN" ]; then
 fi
  
 if [ $LXTYPE == "RHEL" ]; then
-  if [ -f install-centos$LVL.sh ]; then
+  if [ -f centos-$LVL.sh ]; then
     SUPPORTED=1
     echo "centos/rhel version $LVL detected"
     echo "copy & paste the following command to begin the install:"
     echo
-    echo " bash install-centos$LVL.sh | tee installer.log 2>&1"
+    echo " bash centos-$LVL.sh | tee installer.log 2>&1"
     echo
   fi
 fi
 
 if [ $LXTYPE == "DEBIAN" ]; then
-  if [ -f install-${ID}-${VER}.sh ]; then
-    SUPPORTED=1
-    echo "Debian or derivative detected:"
-    echo "$ID version $VER"
-    echo
-    echo "copy & paste the following command to begin the install:"
-    echo
-    echo " bash install-${ID}-${VER}.sh | tee installer.log 2>&1"
-    echo
-  fi
+#  if [ $ID == "debian" ]; then
+    if [ -f ${ID}-${VER}.sh ]; then
+      SUPPORTED=1
+      echo "Debian or derivative detected:"
+      echo "$ID version $VER"
+      echo
+      echo "copy & paste the following command to begin the install:"
+      echo
+      echo " bash ${ID}-${VER}.sh | tee installer.log 2>&1"
+      echo
+    fi
 fi
 
 if [ $SUPPORTED == 0 ]; then
