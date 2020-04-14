@@ -144,7 +144,7 @@ systemctl enable maiad.service
 systemctl enable clamd.service
 
 # provide config files
-cp scan.conf /etc/clamd.d/
+cp contrib/el-scan.conf /etc/clamd.d/
 
 # install mysql client to begin with - 
 yum install -y mariadb 

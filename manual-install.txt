@@ -118,9 +118,6 @@ $ cp clamd.service /etc/systemd/system/
 $ systemctl enable maiad.service
 $ systemctl enable clamd.service
 
-# provide config files
-$ cp scan.conf /etc/clamd.d/
-
 # install mysql client to begin with - 
 install mariadb or mysql
 
