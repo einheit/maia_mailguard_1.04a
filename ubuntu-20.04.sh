@@ -66,7 +66,7 @@ apt-get install -y libnet-server-perl
 apt-get install -y libtemplate-perl
 apt-get install -y libtext-csv-perl
 apt-get install -y libunix-syslog-perl
-apt-get install -y perl-Net-DNS-Nameserver
+apt-get install -y libgeoip2-perl
 apt-get install -y pyzor
 apt-get install -y razor
 apt-get install -y spamassassin
@@ -118,7 +118,6 @@ chgrp -R clamav /var/lib/maia/tmp
 #
 # web interface
 #
-
 apt-get install -y apache2 apache2-utils 
 mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
@@ -127,6 +126,7 @@ echo "done with file copy, starting package install"
 # enable services
 cp contrib/maiad_init_ubuntu /etc/init.d/maiad
 systemctl enable maiad
+
 
 DBINST=`grep DB_INSTALL cfg_tpl/installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
@@ -172,11 +172,11 @@ cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
 echo
 echo "installing php modules"
 echo
-apt-get -y install libapache2-mod-php7.2
-apt-get -y install php7.2-mysql
-apt-get -y install php7.2-mbstring
-apt-get -y install php7.2-bcmath
-apt-get -y install php7.2-gd
+apt-get -y install libapache2-mod-php
+apt-get -y install php-mysql
+apt-get -y install php-mbstring
+apt-get -y install php-bcmath
+apt-get -y install php-gd
 apt-get -y install php-xml
 apt-get -y install php-pear
 
