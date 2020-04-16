@@ -1,3 +1,5 @@
+![maia web interface](https://github.com/einheit/maia-screenshots/blob/master/01-maia-login-screen.png "maia web interface")
+
 This repo was derived from the technion fork of Maia mailguard some years ago.
 
 Our goal is not to add any new features, but to be good stewards of the maia mailguard 1.0 branch, maintain compatibility with current Linux distributions, and provide a quick installation process, for the common case, as we await the arrival of maia 2.0
@@ -13,6 +15,9 @@ The script could very well fail to detect a supported OS, which, in and of itsel
 Contributed scripts for additional distros/platforms are welcome.
 
 Updated Centos spamassassin rpms - https://github.com/einheit/maia-packages
+
+More Screenshots - https://github.com/einheit/maia-screenshots
+
 
 -- 
 
