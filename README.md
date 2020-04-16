@@ -1,4 +1,4 @@
-![maia stats](https://github.com/einheit/maia_mailguard_1.04a/blob/master/contrib/000-maia-stats.png "maia stats")
+![maia web interface](https://github.com/einheit/maia-screenshots/blob/master/01-maia-login-screen.png "maia web interface")
 
 This repo was derived from the technion fork of Maia mailguard some years ago.
 
