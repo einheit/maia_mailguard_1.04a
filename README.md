@@ -1,3 +1,5 @@
+![maia stats](https://github.com/einheit/maia_mailguard_1.04a/blob/master/contrib/000-maia-stats.png "maia stats")
+
 This repo was derived from the technion fork of Maia mailguard some years ago.
 
 Our goal is not to add any new features, but to be good stewards of the maia mailguard 1.0 branch, maintain compatibility with current Linux distributions, and provide a quick installation process, for the common case, as we await the arrival of maia 2.0
