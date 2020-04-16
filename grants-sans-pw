@@ -1,4 +1,4 @@
-mysql -p $rootpw <<ZZ
+mysql <<ZZ
   ALTER DATABASE maia CHARACTER SET utf8 COLLATE utf8_bin;
   CREATE USER maia@localhost IDENTIFIED BY "$PASSWD";
   GRANT CREATE, DROP, ALTER, SELECT, INSERT, UPDATE, DELETE ON maia.* TO maia@localhost;
