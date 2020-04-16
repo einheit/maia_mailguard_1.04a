@@ -92,11 +92,13 @@ zypper in -y apache2
 zypper in -y apache2-mod_php7
 systemctl enable apache2
 systemctl start apache2
+a2enmod php7
 
 #
 # add maia user and chown/chmod its files/dirs
 #
-useradd -d /var/lib/maia maia
+groupadd maia
+useradd -d /var/lib/maia -g maia maia
 mkdir -p /var/lib/maia
 chmod 755 /var/lib/maia
 
@@ -131,7 +133,6 @@ cp -r php/* /srv/www/htdocs/maia
 # install the systemd unit files -
 #
 cp maiad.service /etc/systemd/system/
-cp clamd.service /etc/systemd/system/
 
 # enable services
 systemctl enable maiad.service
@@ -247,8 +248,9 @@ done
 chmod 775 /var/www/html/maia/themes/*/compiled
 chown wwwrun.maia /var/www/html/maia/themes/*/compiled
 cp config.php /srv/www/htdocs/maia/
+ln -s /srv/www /var/www
 mkdir /var/www/cache
-chown www-data.maia /var/www/cache
+chown wwwrun.maia /var/www/cache
 chmod 775 /var/www/cache
 
 echo
