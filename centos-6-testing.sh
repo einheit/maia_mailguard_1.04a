@@ -235,8 +235,8 @@ done
 
 chmod 775 /var/www/html/maia/themes/*/compiled
 chown apache.maia /var/www/html/maia/themes/*/compiled
-# el6 uses mysql driver, not mysqli
-perl -pi -e "s%mysqli%mysql%g" config.php
+# turns out el6 can use mysqli
+# perl -pi -e "s%mysqli%mysql%g" config.php
 cp config.php /var/www/html/maia/
 mkdir /var/www/cache
 chown apache.maia /var/www/cache
