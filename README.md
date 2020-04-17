@@ -10,7 +10,7 @@ Maia is flexible and scalable. It can be deployed in a number of configurations,
 
 Centos/RHEL versions 7 and 8 were the first supported platforms, then Debian 10, ubuntu 18.04 and ubuntu 20.04 were tested and verified. A centos 6 installer was also tested and added, as there are apparently still users. Other platforms will be added as time allows. 
 
-The install scripts are a kludge, but they are convenient and they work fairly well. The installer could fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. It's safe to say that some or all maia components should be able to run on any Unix-like OS.
+The install scripts are a kludge, but they save time and they work fairly well. The installer could fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. It's safe to say that some or all maia components should be able to run on any Unix-like OS.
 
 Contributed scripts for additional distros/platforms are welcome.
 
