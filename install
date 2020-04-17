@@ -16,16 +16,25 @@ elif [ -f /etc/gentoo-release ]; then
 fi
 
 if [ $LXTYPE == "RHEL" ]; then
-  RREL=`grep -i version_id /etc/os-release | awk -F\= '{ print $2 }'`
+  if [ -f /etc/os-release ]; then
+    RREL=`grep -i version_id /etc/os-release | awk -F\= '{ print $2 }'`
+  else
+    RREL=`cat /etc/redhat-release`
+  fi
+fi
+    
 
+  REL6=`echo $RREL | grep ' 6'|wc -w`
   REL7=`echo $RREL | grep 7|wc -w`
   REL8=`echo $RREL | grep 8|wc -w`
-  if [ $REL7 -eq 1 ]; then
+
+  if [ $REL6 -ge 1 ]; then
+    LVL=6
+  elif [ $REL7 -eq 1 ]; then
     LVL=7
   elif [ $REL8 -eq 1 ]; then
     LVL=8
   fi
-fi
 
 if [ $LXTYPE == "DEBIAN" ]; then
     ID=`grep ^ID= /etc/os-release | awk -F\= '{ print $2 }'`
