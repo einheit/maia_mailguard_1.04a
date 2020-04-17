@@ -8,6 +8,11 @@
 # description: maiad is an interface between MTA and content checkers
 # processname: maiad
 # pidfile: /var/maia/maiad.pid
+PID_DIR=/var/run/maia
+PID_FILE=${PID_DIR}/maiad.pid
+LOCK_DIR=/var/lock/maia
+LOCK_FILE=${LOCK_DIR}/maiad.lock
+
 
 # Source function library.
 . /etc/rc.d/init.d/functions
@@ -27,6 +32,11 @@ prog_config_file="/etc/maia/maiad.conf"
 #[ ${NETWORKING} = "no" ] && exit 0
 
 RETVAL=0
+
+mkdir -p $PID_DIR
+chown -R maia.maia $PID_DIR
+mkdir -p $LOCK_DIR
+chown -R maia.maia $LOCK_DIR
 
 # See how we were called.
 case "$1" in
