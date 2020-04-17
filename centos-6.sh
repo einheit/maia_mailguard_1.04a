@@ -1,7 +1,7 @@
-# first working centos 7 installer
+# first cut at centos 6 installer
 
 echo 
-echo "This script is written for Centos 7, using a mysql DB" 
+echo "This script is written for Centos 6, using a mysql DB" 
 echo "If using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
