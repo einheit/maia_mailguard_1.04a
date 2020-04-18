@@ -44,9 +44,8 @@ firewall-cmd --permanent --add-service smtps
 firewall-cmd --permanent --add-service http
 firewall-cmd --reload
 
-# add pacman and get up to date
-#zypper install -y epel-release
-zypper -y up
+# get up to date
+zypper up
 zypper in -y telnet
 zypper in -y file
 zypper in -y tar
