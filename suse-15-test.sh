@@ -90,6 +90,10 @@ freshclam
 
 zypper in -y apache2
 zypper in -y apache2-mod_php7
+
+# permit apache to operate
+./inline-edit.sh 'Options None' 'Options Indexes Includes FollowSymLinks' /etc/apache2/default-server.conf
+
 systemctl enable apache2
 systemctl start apache2
 a2enmod php7
