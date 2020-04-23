@@ -143,9 +143,6 @@ cp clamd.service /etc/systemd/system/
 systemctl enable maiad.service
 systemctl enable clamd.service
 
-# provide config files
-cp contrib/el-scan.conf /etc/clamd.d/
-
 # install mysql client to begin with - 
 yum install -y mariadb 
 
@@ -189,7 +186,7 @@ systemctl start clamd.service
 
 # load the spamassassin rulesets -
 #
-cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
+cp files/*.cf /etc/mail/spamassassin/
 # /var/lib/maia/scripts/load-sa-rules.pl
 
 echo
@@ -223,7 +220,7 @@ pear install Pager-2.4.9
 pear list
 
 # install html purifier separately -
-tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
+tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 ### checkpoint 3

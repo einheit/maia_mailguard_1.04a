@@ -173,7 +173,7 @@ cp contrib/clamd-debian-maia-tcp.conf /etc/clamav/clamd.conf
 #
 # load the spamassassin rulesets -
 #
-cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
+cp files/*.cf /etc/mail/spamassassin/
 # /var/lib/maia/scripts/load-sa-rules.pl
 
 echo
@@ -206,7 +206,7 @@ pear install Auth_SASL
 pear install Log
 
 # install html purifier separately -
-tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
+tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 echo
@@ -242,14 +242,11 @@ host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`
 echo
 echo	"any other site specific MTA configuration can be applied now - "
 echo
-
 echo
 echo    "at this point, a good sanity check would be to run"
 echo    " /var/lib/maia/scripts/configtest.pl"
 echo
 echo    "You may now need to edit firewall to allow http access"
-echo    "and set selinux to permissive to allow maia to operate"
-echo    "Until appropriate selinux policies can be developed"
 echo
 echo    "If configtest.pl passes, check the web configuration at"
 echo    " http://$host/maia/admin/configtest.php"

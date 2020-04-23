@@ -189,7 +189,7 @@ systemctl start clamd.service
 
 # load the spamassassin rulesets -
 #
-cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
+cp files/*.cf /etc/mail/spamassassin/
 # /var/lib/maia/scripts/load-sa-rules.pl
 
 echo
@@ -208,9 +208,7 @@ zypper in -y php7-devel
 zypper in -y php7-openssl
 zypper in -y php7-pear
 zypper in -y php7-wddx
-# smarty3 breaks maia
-# zypper install -y php-Smarty
-tar -C /usr/share/php7/ -xvf smarty2-maia.tar
+zypper in -y php-Smarty
 
 echo
 echo "installing pear modules"
@@ -234,7 +232,7 @@ pear install Pager
 pear list
 
 # install html purifier separately -
-tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
+tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 ### checkpoint 3

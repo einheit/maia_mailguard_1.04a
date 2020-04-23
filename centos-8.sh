@@ -188,7 +188,7 @@ systemctl start clamd.service
 
 # load the spamassassin rulesets -
 #
-cp clamav.cf sanesecurity.cf /etc/mail/spamassassin/
+cp files/*.cf /etc/mail/spamassassin/
 # /var/lib/maia/scripts/load-sa-rules.pl
 
 echo
@@ -205,7 +205,7 @@ yum install -y php-bcmath
 yum install -y php-devel
 yum install -y php-pear
 
-tar -C /usr/share/php/ -xvf smarty3-maia.tgz
+tar -C /usr/share/php/ -xvf files/smarty3-maia.tgz
 
 echo
 echo "installing pear modules"
@@ -223,7 +223,7 @@ pear install Pager-2.4.9
 pear list
 
 # install html purifier separately -
-tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
+tar -C /var -xvf tarfiles/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 ### checkpoint 3
