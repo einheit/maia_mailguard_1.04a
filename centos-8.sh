@@ -136,15 +136,12 @@ cp -r php/* /var/www/html/maia
 #
 # install the systemd unit files -
 #
-cp maiad.service /etc/systemd/system/
-cp clamd.service /etc/systemd/system/
+cp contrib/maiad.service /etc/systemd/system/
+cp contrib/clamd.service /etc/systemd/system/
 
 # enable services
 systemctl enable maiad.service
 systemctl enable clamd.service
-
-# provide config files
-cp contrib/el-scan.conf /etc/clamd.d/
 
 # install mysql client to begin with - 
 yum install -y mariadb 

@@ -135,7 +135,7 @@ cp -r php/* /srv/www/htdocs/maia
 #
 # install the systemd unit files -
 #
-cp maiad.service /etc/systemd/system/
+cp contrib/maiad.service /etc/systemd/system/
 
 # enable services
 systemctl enable maiad.service
