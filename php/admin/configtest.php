@@ -9,7 +9,7 @@
      * All rights reserved.
      *
      * PREAMBLE
-     *
+     
      * This License is designed for users of Maia Mailguard
      * ("the Software") who wish to support the Maia Mailguard project by
      * leaving "Maia Mailguard" branding information in the HTML output
@@ -385,6 +385,7 @@
   function strip_tailing_slash($path) {
     return rtrim($path, '/');
   }
+
 
     // PEAR::MDB2
     if ($have_pear) {
