@@ -1,4 +1,4 @@
-# first cut at debian installer
+# debian 10 installer
 
 echo 
 echo "This install script is for Debian 10 Buster using mysql"
@@ -187,17 +187,12 @@ apt-get install -y php-gd
 apt-get install -y php-xml
 apt-get install -y php-pear
 
-# smarty3 breaks maia
-# apt-get install -y Smarty
-tar -C /usr/share/php/ -xvf smarty2-maia.tar
+apt-get install -y smarty3
+ln -s /usr/share/php/smarty3/ /usr/share/php/Smarty
 
 echo
 echo "installing pear modules"
 echo
-
-# Do not use latest pear as it causes problems with this code
-# DB no longer used
-#
 
 pear channel-update pear.php.net
 
@@ -209,11 +204,6 @@ pear install Net_Socket
 pear install Net_SMTP
 pear install Auth_SASL
 pear install Log
-#pear channel-discover htmlpurifier.org
-#pear install hp/HTMLPurifier
-#echo "pear install HTMLPurifier status?"
-#pear list
-#read
 
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz

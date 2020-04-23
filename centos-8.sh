@@ -1,4 +1,4 @@
-# first working centos 8 installer
+# centos 8 installer
 
 echo 
 echo "this script is written for Centos 8, using a mysql DB" 
@@ -204,9 +204,8 @@ yum install -y php-mysqlnd
 yum install -y php-bcmath
 yum install -y php-devel
 yum install -y php-pear
-# smarty3 breaks maia
-# yum install -y php-Smarty
-tar -C /usr/share/php/ -xvf smarty2-maia.tar
+
+tar -C /usr/share/php/ -xvf smarty3-maia.tgz
 
 echo
 echo "installing pear modules"

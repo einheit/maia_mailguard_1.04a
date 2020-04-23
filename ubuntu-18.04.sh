@@ -1,4 +1,4 @@
-# first cut at ubuntu installer
+# ubuntu 18.04 installer
 
 echo 
 echo "this is for ubuntu 18.04 LTS (Bionic Beaver) using mysql"
@@ -106,7 +106,7 @@ chown -R maia.maia /var/lib/maia/db
 chown -R maia /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
 
-# configtest.pl should work, unless you're installing a local database server
+# configtest.pl should work now, unless installing a local db server
 
 apt-get install -y postfix
 
@@ -180,16 +180,15 @@ apt-get -y install php7.2-gd
 apt-get -y install php-xml
 apt-get -y install php-pear
 
-# smarty3 breaks maia
-# apt-get install -y Smarty
-tar -C /usr/share/php/ -xvf smarty2-maia.tar
+apt-get install -y smarty3
+ln -s /usr/share/php/smarty3 /usr/share/php/Smarty
 
 echo
 echo "installing pear modules"
 echo
 
-# Do not use latest pear as it causes problems with this code
-# DB no longer used - 
+# 
+# pear-DB no longer used - 
 #
 
 pear channel-update pear.php.net
@@ -202,11 +201,14 @@ pear install Net_Socket
 pear install Net_SMTP
 pear install Auth_SASL
 pear install Log
-#pear channel-discover htmlpurifier.org
-#pear install hp/HTMLPurifier
-#echo "pear install HTMLPurifier status?"
-#read
-#pear list
+ 
+#
+# pear can't install htmlpurifier 
+#
+# pear channel-discover htmlpurifier.org
+# pear install hp/HTMLPurifier
+# pear list
+
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier

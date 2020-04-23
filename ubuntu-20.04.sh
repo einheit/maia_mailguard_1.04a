@@ -1,7 +1,7 @@
-# first cut at ubuntu installer
+# ubuntu 20.04 installer
 
 echo 
-echo "this is for ubuntu 18.04 LTS (Bionic Beaver) using mysql"
+echo "this is for ubuntu 20.04 LTS (Focal Fossa) using mysql"
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
@@ -180,9 +180,8 @@ apt-get -y install php-gd
 apt-get -y install php-xml
 apt-get -y install php-pear
 
-# smarty3 breaks maia
-# apt-get install -y Smarty
-tar -C /usr/share/php/ -xvf smarty2-maia.tar
+apt-get install -y smarty3
+ln -s /usr/share/php/smarty3 /usr/share/php/Smarty
 
 echo
 echo "installing pear modules"
@@ -202,11 +201,7 @@ pear install Net_Socket
 pear install Net_SMTP
 pear install Auth_SASL
 pear install Log
-#pear channel-discover htmlpurifier.org
-#pear install hp/HTMLPurifier
-#echo "pear install HTMLPurifier status?"
-#read
-#pear list
+
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier

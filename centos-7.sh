@@ -1,4 +1,4 @@
-# first working centos 7 installer
+# centos 7 installer
 
 echo 
 echo "This script is written for Centos 7, using a mysql DB" 
@@ -205,9 +205,7 @@ yum install -y php-mysql
 yum install -y php-bcmath
 yum install -y php-devel
 yum install -y php-pear
-# smarty3 breaks maia
-# yum install -y php-Smarty
-tar -C /usr/share/php/ -xvf smarty2-maia.tar
+yum install -y php-Smarty
 
 echo
 echo "installing pear modules"

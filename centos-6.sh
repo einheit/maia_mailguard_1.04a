@@ -1,4 +1,4 @@
-# first cut at centos 6 installer
+# centos 6 installer
 
 echo 
 echo "This script is written for Centos 6, using a mysql DB" 
