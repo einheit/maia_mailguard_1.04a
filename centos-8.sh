@@ -213,7 +213,6 @@ echo "installing pear modules"
 echo
 
 pear install Auth_SASL-1.0.6
-pear install DB-1.8.2
 pear install Log-1.12.9
 pear install MDB2-2.5.0b5
 pear install MDB2_Driver_mysqli-1.5.0b4

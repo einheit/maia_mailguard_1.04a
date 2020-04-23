@@ -386,42 +386,6 @@
     return rtrim($path, '/');
   }
 
-
-   // PEAR::DB
-    if ($have_pear) {
-        if (!in_array("db", $pear_list)) {
-            $result = "Not installed.  This PHP extension is required in order to provide " .
-                      "database abstraction.  Use <b>pear install DB</b> to install this.";
-            $status = ERROR;
-        } else {
-          $db_info = $pear_reg->packageInfo("DB");
-          $pathArray = explode( PATH_SEPARATOR, get_include_path() );
-          $pathArray = array_map('strip_tailing_slash', $pathArray);
-          $db_path = dirname($db_info['filelist']['DB.php']['installed_as']);
-          if (in_array($db_path, $pathArray)) {
-            include_once ("DB.php");               // PEAR::DB
-            $test_dbh = DB::connect($maia_sql_dsn);
-            if (DB::isError($test_dbh)) {
-                $result = "Could not connect to database.  Check the \$maia_sql_dsn setting in config.php.";
-                  $status = ERROR;
-            } else {
-                $result = $db_version = is_array($db_info["version"])?$db_info["version"]["release"]:$db_info["version"];
-                $result .= " DB.php installed as: " . $db_info['filelist']['DB.php']['installed_as'];
-                $db_type = $test_dbh->phptype;
-                
-            }
-          } else {
-            $result = "DB.php installed in: " . $db_path . " but not in include path: " . get_include_path();
-            $status = ERROR;
-          }
-        }
-    } else {
-        $result = "Requires PEAR";
-        $status = WARN;
-    }
-    print_row("PEAR::DB", $result, $status);
-
-
     // PEAR::MDB2
     if ($have_pear) {
         if (!in_array("mdb2", $pear_list)) {

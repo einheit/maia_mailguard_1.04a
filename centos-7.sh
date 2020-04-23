@@ -214,7 +214,6 @@ echo "installing pear modules"
 echo
 
 pear install Auth_SASL-1.0.6
-pear install DB-1.8.2
 pear install Log-1.12.9
 pear install MDB2
 pear install MDB2_Driver_mysqli
@@ -223,7 +222,7 @@ pear install Mail_mimeDecode-1.5.5
 pear install Net_Socket-1.0.14
 pear install Net_SMTP-1.6.2
 pear install Pager-2.4.9
-per list
+pear list
 
 # install html purifier separately -
 tar -C /var -xvf htmlpurifier-4.12.0.tar.gz

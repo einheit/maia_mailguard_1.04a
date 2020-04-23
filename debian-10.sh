@@ -196,12 +196,11 @@ echo "installing pear modules"
 echo
 
 # Do not use latest pear as it causes problems with this code
-# we also found that we need to specify DB version 1.8.2
+# DB no longer used
 #
 
 pear channel-update pear.php.net
 
-pear install DB-1.8.2
 pear install MDB2-2.5.0b5
 pear install MDB2_Driver_mysqli-1.5.0b4
 pear install Mail_mimeDecode
