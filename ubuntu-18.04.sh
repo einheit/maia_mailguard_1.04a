@@ -128,7 +128,7 @@ echo "done with file copy, starting package install"
 cp contrib/maiad_init_ubuntu /etc/init.d/maiad
 systemctl enable maiad
 
-DBINST=`grep DB_INSTALL cfg_tpl/installer.tmpl | wc -l`
+DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
 
 # install mysql server if called for -

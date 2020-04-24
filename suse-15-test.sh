@@ -148,7 +148,7 @@ systemctl enable clamd.service
 # install mysql client to begin with - 
 zypper install -y mariadb-client 
 
-DBINST=`grep DB_INSTALL cfg_tpl/installer.tmpl | wc -l`
+DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
 
 # install mysql server if called for - 

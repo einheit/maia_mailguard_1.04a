@@ -133,7 +133,7 @@ cpanm LWP
 cpanm Net::LDAP::LDIF
 cpanm Razor2::Client::Agent
 
-DBINST=`grep DB_INSTALL cfg_tpl/installer.tmpl | wc -l`
+DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
 
 # install mysql server if called for -

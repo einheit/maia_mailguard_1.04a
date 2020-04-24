@@ -82,11 +82,10 @@ echo "WEBSRV=$fqdn" >> installer.tmpl
 [ $needsmarthost == 1 ] && echo "RELAY=$smarthost" >> installer.tmpl
 
 echo "installation parameters:"
-cp installer.tmpl cfg_tpl/
+cat installer.tmpl
 echo 
 echo "Verify the following parameters are correct:"
 echo
-cat installer.tmpl
 echo
 echo "If there are any incorrect parameters, open a new terminal"
 echo "and edit installer.tmpl to correct any errors"
