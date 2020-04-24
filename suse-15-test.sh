@@ -82,6 +82,11 @@ cpanm Data::UUID
 #cpanm Digest::SHA1
 #cpanm Template
 
+mkdir -p /etc/maia
+cp maia.conf maiad.conf /etc/maia/
+
+# configtest.pl should work unless installing local DB
+
 zypper in -y clamav
 
 echo "updating virus sigs - this could take awhile..."
@@ -111,9 +116,6 @@ chown -R maia.maia /var/log/maia
 
 mkdir -p /var/log/clamav
 #chmod 775 /var/lib/clamav/
-
-mkdir -p /etc/maia
-cp maia.conf maiad.conf /etc/maia/
 
 mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
@@ -208,7 +210,9 @@ zypper in -y php7-devel
 zypper in -y php7-openssl
 zypper in -y php7-pear
 zypper in -y php7-wddx
-zypper in -y php-Smarty
+#zypper in -y php-Smarty
+
+tar -C /usr/share/php7 -xvf files/smarty3-maia.tgz
 
 echo
 echo "installing pear modules"
@@ -221,7 +225,6 @@ zypper in -y php7-pear-Mail_Mime
 pear install Log-1.12.9
 
 pear install Auth_SASL-1.0.6
-pear install DB-1.8.2
 #pear install MDB2-2.5.0b5
 #pear install MDB2_Driver_mysqli-1.5.0b4
 #pear install Mail_Mime-1.8.9
