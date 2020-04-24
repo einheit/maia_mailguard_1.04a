@@ -96,6 +96,10 @@ yum install -y clamav-update
 yum install -y clamav-data 
 yum install -y clamav-server
 
+mv /etc/clamd.d/scan.conf /etc/clamd.d/scan.conf-`date +%F`
+cp contrib/el-scan.conf /etc/clamd.d/scan.conf
+cp contrib/el-clamd.service /etc/systemd/system/
+
 yum install -y httpd httpd-tools
 systemctl enable httpd
 
@@ -113,9 +117,6 @@ chown -R maia.maia /var/log/maia
 mkdir -p /var/log/clamav
 chmod 775 /var/lib/clamav/
 
-mkdir -p /etc/maia
-cp maia.conf maiad.conf /etc/maia/
-
 mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
@@ -127,17 +128,17 @@ chown -R maia.maia /var/lib/maia/db
 chown -R maia.virusgroup /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
 
+mkdir -p /etc/maia
+cp maia.conf maiad.conf /etc/maia/
+cp contrib/maiad.service /etc/systemd/system/
+
+# configtest.pl should work now unless installing a local DB server
+
 #
 # web interface
 #
 mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
-
-#
-# install the systemd unit files -
-#
-cp contrib/maiad.service /etc/systemd/system/
-cp contrib/clamd.service /etc/systemd/system/
 
 # enable services
 systemctl enable maiad.service
@@ -220,7 +221,7 @@ pear install Pager-2.4.9
 pear list
 
 # install html purifier separately -
-tar -C /var -xvf tarfiles/htmlpurifier-4.12.0.tar.gz
+tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
 
 ### checkpoint 3

@@ -1,0 +1,6 @@
+The tips at the folllowing URL were incorporated into our clamav configuration 
+and may prove helpful to those seeing clamd die shortly after being started
+by systemd -
+
+https://gist.github.com/AfroThundr3007730/91a3e2cbfc848088b70d731133ff3f2a
+
