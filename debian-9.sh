@@ -1,7 +1,7 @@
-# debian 10 installer
+# debian 9 installer
 
 echo 
-echo "This install script is for Debian 10 Buster using mysql"
+echo "This install script is for Debian 9 Stretch using mysql"
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
@@ -51,6 +51,7 @@ apt-get -y install perl
 echo "now installing packages.."
 apt-get install -y make gcc patch
 apt-get install -y curl wget telnet
+
 #
 apt-get install -y file
 apt-get install -y libarchive-zip-perl
@@ -71,9 +72,10 @@ apt-get install -y libnet-server-perl
 apt-get install -y libtemplate-perl
 apt-get install -y libtext-csv-perl
 apt-get install -y libunix-syslog-perl
-apt-get install -y perl-Net-DNS-Nameserver
+#apt-get install -y perl-Net-DNS-Nameserver
 apt-get install -y razor
 apt-get install -y spamassassin
+
 #
 #
 # non-interactive cpan installs
@@ -83,12 +85,10 @@ apt-get install -y cpanminus
 
 cpanm Digest::SHA1
 cpanm IP::Country::Fast
-cpanm LWP
-cpanm Net::LDAP::LDIF
+#cpanm LWP
+#cpanm Net::LDAP::LDIF
 #cpanm Razor2::Client::Agent
 
-
-#
 # add maia user and chown all its files/dirs
 #
 useradd -d /var/lib/maia maia
@@ -172,6 +172,7 @@ cp contrib/clamd-debian-maia-tcp.conf /etc/clamav/clamd.conf
 # start maiad 
 /etc/init.d/maiad start
 
+#
 # load the spamassassin rulesets -
 #
 cp files/*.cf /etc/mail/spamassassin/
@@ -228,6 +229,7 @@ chmod 775 /var/www/cache
 
 echo
 echo "reloading http server"
+
 apachectl restart
 
 echo "stage 2 complete"
