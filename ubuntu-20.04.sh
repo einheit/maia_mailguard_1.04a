@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # ubuntu 20.04 installer
+#
 
 echo 
 echo "this is for ubuntu 20.04 LTS (Focal Fossa) using mysql"

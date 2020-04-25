@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # centos 8 installer
+#
 
 echo 
 echo "this script is written for Centos 8, using a mysql DB" 

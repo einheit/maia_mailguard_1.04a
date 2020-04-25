@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # debian 9 installer
+#
 
 echo 
 echo "This install script is for Debian 9 Stretch using mysql"

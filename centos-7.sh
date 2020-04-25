@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # centos 7 installer
+#
 
 echo 
 echo "This script is written for Centos 7, using a mysql DB" 

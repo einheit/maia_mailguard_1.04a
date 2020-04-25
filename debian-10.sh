@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # debian 10 installer
+#
 
 echo 
 echo "This install script is for Debian 10 Buster using mysql"

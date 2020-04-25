@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # debian 8 installer
+#
 
 echo 
 echo "This install script is for Debian 8 Jesse using mysql"

@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # ubuntu 18.04 installer
+#
 
 echo 
 echo "this is for ubuntu 18.04 LTS (Bionic Beaver) using mysql"

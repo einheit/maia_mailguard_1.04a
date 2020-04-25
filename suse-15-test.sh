@@ -1,4 +1,7 @@
+#!/usr/bin/env bash
+#
 # first attempt at a suse installer
+#
 
 echo 
 echo "this script is written for opensuse leap 15, using mysql DB" 
