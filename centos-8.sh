@@ -98,7 +98,7 @@ yum install -y clamav-server
 
 mv /etc/clamd.d/scan.conf /etc/clamd.d/scan.conf-`date +%F`
 cp contrib/el-scan.conf /etc/clamd.d/scan.conf
-cp contrib/el-clamd.service /etc/systemd/system/
+cp contrib/el-clamd.service /etc/systemd/system/clamd.service
 
 yum install -y httpd httpd-tools
 systemctl enable httpd
