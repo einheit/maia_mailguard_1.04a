@@ -1,0 +1,271 @@
+# debian 8 installer
+
+echo 
+echo "This install script is for Debian 8 Jesse using mysql"
+echo "if using postgresql or other DB, you'll need to manually"
+echo "edit configs in /etc/maia/ and ~www/maia/config.php"
+echo 
+echo "This script installs and configures the postfix MTA"
+echo "If you wish to use something other than postfix,"
+echo "you will need to install and set up that MTA after"
+echo "the completion of this script, or install manually"
+echo 
+echo -n "<ENTER> to continue or CTRL-C to stop..."
+read
+echo 
+
+# get the info, write parames to a file
+./get-info.sh
+
+echo "If there are no errors, this script will run to completion."
+echo
+echo "Note that the install could take a good while, dependng on"
+echo "available computing power and network bandwidth."
+echo
+echo "Feel free to take a break!"
+echo
+echo "proceed? "
+read
+
+# install stage 1 packages
+
+# suppress dialog boxes for package installs
+export DEBIAN_FRONTEND=noninteractive
+
+# get local set so apt can proceed
+apt install -y locales
+cp contrib/locale.gen /etc
+/usr/sbin/locale-gen
+
+echo "get up-to-date before proceeding"
+apt-get -y update
+apt-get -y upgrade
+
+# make sure perl is installed 
+apt-get -y install perl
+
+# find out what we need to change
+./process-changes.sh
+
+#
+echo "now installing packages.."
+apt-get install -y make gcc patch
+apt-get install -y curl wget telnet
+
+#
+apt-get install -y file
+apt-get install -y libarchive-zip-perl
+apt-get install -y libberkeleydb-perl
+apt-get install -y libconvert-tnef-perl
+apt-get install -y libconvert-uulib-perl
+apt-get install -y libcrypt-openssl-rsa-perl
+apt-get install -y libdata-uuid-perl
+apt-get install -y libdbd-mysql-perl libdbd-pg-perl
+apt-get install -y libdbi-perl
+apt-get install -y libdigest-sha-perl
+apt-get install -y libencode-detect-perl
+apt-get install -y libforks-perl
+apt-get install -y libmail-dkim-perl
+apt-get install -y libnet-cidr-lite-perl
+apt-get install -y libnet-ldap-perl
+apt-get install -y libnet-server-perl
+apt-get install -y libtemplate-perl
+apt-get install -y libtext-csv-perl
+apt-get install -y libunix-syslog-perl
+#apt-get install -y perl-Net-DNS-Nameserver
+apt-get install -y razor
+apt-get install -y spamassassin
+
+#
+#
+# non-interactive cpan installs
+#
+
+apt-get install -y cpanminus
+
+cpanm Digest::SHA1
+cpanm IP::Country::Fast
+#cpanm LWP
+#cpanm Net::LDAP::LDIF
+#cpanm Razor2::Client::Agent
+
+# add maia user and chown all its files/dirs
+#
+useradd -d /var/lib/maia maia
+mkdir -p /var/lib/maia
+chmod 755 /var/lib/maia
+chown -R maia.maia /var/lib/maia
+
+# create and chown dirs
+mkdir -p /var/log/maia
+chown -R maia.maia /var/log/maia
+
+mkdir -p  /var/lib/maia/tmp
+mkdir -p  /var/lib/maia/db
+mkdir -p  /var/lib/maia/scripts
+mkdir -p  /var/lib/maia/templates
+cp maiad /var/lib/maia/
+cp -r scripts/* /var/lib/maia/scripts/
+cp -r templates/* /var/lib/maia/templates/
+chown -R maia.maia /var/lib/maia/db
+chown -R maia /var/lib/maia/tmp
+
+mkdir -p /etc/maia
+cp maia.conf maiad.conf /etc/maia/
+
+# configtest.pl should work now unless installing a local DB server
+
+apt-get install -y postfix
+
+apt-get install -y clamav 
+apt-get install -y clamav-daemon
+apt-get install -y clamav-freshclam
+chgrp -R clamav /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
+
+
+#
+# web interface
+#
+
+apt-get install -y apache2 apache2-utils 
+mkdir -p /var/www/html/maia
+cp -r php/* /var/www/html/maia
+
+# enable services
+cp contrib/maiad_init_ubuntu /etc/init.d/maiad
+systemctl enable maiad
+
+DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
+DB_INST=`expr $DBINST`
+
+# install mysql server if called for -
+if [ $DB_INST -eq 1 ]; then
+  echo "creating maia database..."
+  # suppress dialog boxes during mysql install -
+  apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
+  systemctl start mysql
+  mysqladmin create maia
+  sh maia-grants.sh
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "*** problem granting maia privileges - db needs attention ***"
+    read
+  fi
+  mysql maia < maia-mysql.sql
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "*** problem importing maia schema - db needs attention ***"
+    read
+  fi
+fi
+
+echo "stage 1 install complete"
+
+#
+# the database should be working at this point.
+#
+
+# set up and start clamd
+systemctl stop clamav-daemon
+cp /etc/clamav/clamd.conf /etc/clamav/clamd.conf_debian_orig-$$
+cp contrib/clamd-debian-maia-tcp.conf /etc/clamav/clamd.conf 
+/etc/init.d/clamav-daemon restart
+/etc/init.d/clamav-freshclam start
+
+# start maiad 
+/etc/init.d/maiad start
+
+#
+# load the spamassassin rulesets -
+#
+cp files/*.cf /etc/mail/spamassassin/
+# /var/lib/maia/scripts/load-sa-rules.pl
+
+echo
+echo "installing php modules"
+echo
+apt-get install -y libapache2-mod-php5
+apt-get install -y php5-mysqlnd
+apt-get install -y php5-gd
+apt-get install -y php-xml-dtd
+apt-get install -y php-pear
+
+apt-get install -y smarty3
+ln -s /usr/share/php/smarty3/ /usr/share/php/Smarty
+
+echo
+echo "installing pear modules"
+echo
+
+pear channel-update pear.php.net
+
+pear install MDB2
+pear install MDB2_Driver_mysqli
+pear install Mail_Mime-1.10.2 
+pear install Mail_mimeDecode-1.5.6
+pear install Pager-2.5.1
+pear install Net_Socket-1.0.14
+pear install Net_SMTP-1.7.2
+pear install Auth_SASL-1.0.6
+pear install Log-1.13.1
+
+# install html purifier separately -
+tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
+ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
+
+echo
+echo "preparing php directory"
+
+# temp bug workaround
+for i in /var/www/html/maia/themes/*
+do
+ mkdir -p ${i}/compiled
+done
+
+chmod 775 /var/www/html/maia/themes/*/compiled
+chown maia.www-data /var/www/html/maia/themes/*/compiled
+cp config.php /var/www/html/maia/
+mkdir /var/www/cache
+chown www-data.maia /var/www/cache
+chmod 775 /var/www/cache
+
+echo
+echo "reloading http server"
+apachectl restart
+echo
+echo "stage 2 complete"
+
+# call postfix setup script
+systemctl enable postfix
+systemctl start postfix
+./postfix-setup.sh
+/etc/init.d/postfix restart
+
+host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`
+
+echo
+echo	"any other site specific MTA configuration can be applied now - "
+echo
+echo
+echo    "at this point, a good sanity check would be to run"
+echo    " /var/lib/maia/scripts/configtest.pl"
+echo
+echo    "You may now need to edit firewall to allow http access"
+echo
+echo    "If configtest.pl passes, check the web configuration at"
+echo    " http://$host/maia/admin/configtest.php"
+echo
+echo    "if everything passes, and you are creating a database for the"
+echo    "first time, (no existing database) create the initial maia user"
+echo    "by visiting http://$host/maia/internal-init.php"
+echo
+echo    "maia will send your login credentials to the email addess you"
+echo    "supplied in the internal-init form. Use those credentials to"
+echo    "log into the url below (note the "super=register" arg)"
+echo    " http://${host}/maia/login.php?super=register"
+echo
+echo    "You will also need to set up cron jobs to maintain your system"
+echo    "See docs/cronjob.txt for more info"
+echo
+
