@@ -225,6 +225,30 @@ pear install Net_SMTP
 pear install Pager
 pear list
 
+###
+### module versions known to work as of 20200501
+###
+#
+# Installed packages, channel pear.php.net:
+# =========================================
+# Package            Version State
+# Archive_Tar        1.4.9   stable
+# Auth_SASL          1.1.0   stable
+# Console_Getopt     1.4.3   stable
+# Log                1.13.1  stable
+# MDB2               2.5.0b5 beta
+# MDB2_Driver_mysqli 1.5.0b4 beta
+# Mail_Mime          1.10.7  stable
+# Mail_mimeDecode    1.5.6   stable
+# Net_SMTP           1.9.0   stable
+# Net_Socket         1.2.2   stable
+# PEAR               1.10.12 stable
+# PEAR_Manpages      1.10.0  stable
+# Pager              2.5.1   stable
+# Structures_Graph   1.1.1   stable
+# XML_Util           1.4.5   stable
+#
+
 # install html purifier separately -
 tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
