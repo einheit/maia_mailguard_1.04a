@@ -8,6 +8,8 @@ echo "This install script is for Debian 10 Buster using mysql"
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
+echo "Be sure the system is up to date before running this script!"
+echo 
 echo "This script installs and configures the postfix MTA"
 echo "If you wish to use something other than postfix,"
 echo "you will need to install and set up that MTA after"
@@ -35,14 +37,10 @@ read
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
 
-# get local set so apt can proceed
+# set locale for apt 
 apt install -y locales
 cp contrib/locale.gen /etc
 /usr/sbin/locale-gen
-
-echo "get up-to-date before proceeding"
-apt-get -y update
-apt-get -y upgrade
 
 # make sure perl is installed 
 apt-get -y install perl

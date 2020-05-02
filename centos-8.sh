@@ -8,6 +8,8 @@ echo "this script is written for Centos 8, using a mysql DB"
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
+echo "Be sure the system is up to date before running this script!"
+echo 
 echo "This script installs and configures the postfix MTA"
 echo "If you wish to use something other than postfix,"
 echo "you will need to install and set up that MTA after"
@@ -61,7 +63,6 @@ firewall-cmd --reload
 
 # add epel and get up to date
 yum install -y epel-release
-yum -y update
 yum install -y telnet
 yum install -y file
 yum install -y tar

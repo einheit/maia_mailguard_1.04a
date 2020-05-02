@@ -8,6 +8,8 @@ echo "This script is written for fedora 32-ish using mysql DB"
 echo "If using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
+echo "Be sure the system is up to date before running this script!"
+echo 
 echo "This script installs and configures the postfix MTA"
 echo "If you wish to use something other than postfix,"
 echo "you will need to install and set up that MTA after"
@@ -62,7 +64,6 @@ firewall-cmd --reload
 # add epel and get up to date
 # n/a for fedora 
 # yum install -y epel-release
-yum -y update
 yum install -y telnet
 yum install -y file
 yum install -y tar
@@ -99,17 +100,9 @@ yum install -y clamav-update
 yum install -y clamav-data 
 yum install -y clamav-server
 
-###
-### let's try default service/config files before using our own
-###
-
 mv /etc/clamd.d/scan.conf /etc/clamd.d/scan.conf-`date +%F`
 cp contrib/el-scan.conf /etc/clamd.d/scan.conf
 cp contrib/el-clamd.service /etc/systemd/system/clamd.service
-
-###
-### end of bypass
-###
 
 yum install -y httpd httpd-tools
 systemctl enable httpd
@@ -221,17 +214,15 @@ echo
 echo "installing pear modules"
 echo
 
-#pear install Auth_SASL-1.0.6
-#pear install Log-1.12.9
 pear install Auth_SASL
 pear install Log
 pear install MDB2-2.5.0b5
 pear install MDB2_Driver_mysqli-1.5.0b4
-#pear install Mail_Mime-1.8.9
-#pear install Mail_mimeDecode-1.5.5
-#pear install Net_Socket-1.0.14
-#pear install Net_SMTP-1.6.2
-pear install Pager-2.4.9
+pear install Mail_Mime
+pear install Mail_mimeDecode
+pear install Net_Socket
+pear install Net_SMTP
+pear install Pager
 pear list
 
 # install html purifier separately -
