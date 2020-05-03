@@ -36,6 +36,7 @@ shost=`hostname -s`
 fqdn=`hostname -f`
 domain=`echo $fqdn | sed s/${shost}\.//g`
 
+echo
 echo "does this server require an smtp relayhost/smarthost?"
 echo -n "enter relayhost if required, otherwise just press enter:"
 read smarthost

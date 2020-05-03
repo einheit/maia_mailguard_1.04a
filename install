@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-SUPPORTED=0
+DBG=0
+DEF=0
 
 # get os
 if [ -f /etc/redhat-release ]; then
@@ -16,71 +17,63 @@ elif [ -f /etc/gentoo-release ]; then
 fi
 
 if [ $LXTYPE == "RHEL" ]; then
+# RHEL variant -
+  DEF=1
   if [ -f /etc/os-release ]; then
-    RREL=`grep -i version_id /etc/os-release | awk -F\= '{ print $2 }'`
+    RHID=`grep '^ID=' /etc/os-release|awk -F= '{ print $2 }' | tr -d \"`
+    RREL=`grep '^VERSION_ID=' /etc/os-release | awk -F= '{ print $2 }' | tr -d \"`
   else
-    RREL=`cat /etc/redhat-release`
+    # looks like an older release
+    RAWVER=`cat /etc/redhat-release`
+    RREL=`echo $RAWVER|tr -d [A-Za-z\(\)]|tr -d " "|awk -F\. ' { print $1 }'`
+    RHID=`echo $RAWVER|tr -d [0-9\(\)]|awk '{print $1 }'| tr [A-Z] [a-z]`
   fi
-fi
-    
-
-  REL6=`echo $RREL | grep ' 6'|wc -w`
-  REL7=`echo $RREL | grep 7|wc -w`
-  REL8=`echo $RREL | grep 8|wc -w`
-
-  if [ $REL6 -ge 1 ]; then
-    LVL=6
-  elif [ $REL7 -eq 1 ]; then
-    LVL=7
-  elif [ $REL8 -eq 1 ]; then
-    LVL=8
+  if [ $DBG -ne 0 ]; then
+    echo
+    echo "### DEBUG ###"
+    echo "redhat-release: $RAWVER"
+    echo "VERSION_ID from os-release: $RHID"
+    echo "ID from os-release: $RREL"
+    echo "installer: ${RHID}-${RREL}.sh"
+    echo "### DEBUG ###"
+    echo
   fi
-
-if [ $LXTYPE == "DEBIAN" ]; then
-    ID=`grep ^ID= /etc/os-release | awk -F\= '{ print $2 }'`
-    RVER=`grep ^VERSION_ID= /etc/os-release | awk -F\= '{ print $2 }'`
-    echo "RVER = $RVER"
-    if [ $ID == "debian" ]; then
-      VER=`echo $RVER | tr -d \"`
-    elif [ $ID == "ubuntu" ]; then
-      NAME=`grep '^VERSION_CODENAME=' /etc/os-release | awk -F\= '{ print $2 }'`
-    case $NAME in
-	"bionic") VER=18.04
-	;;
-	"focal") VER=20.04
-	;;
-	*) echo "unsupported ubuntu"
-    esac
-  fi
-fi
- 
-if [ $LXTYPE == "RHEL" ]; then
-  if [ -f centos-$LVL.sh ]; then
-    SUPPORTED=1
-    echo "centos/rhel version $LVL detected"
+  if [ -f ${RHID}-${RREL}.sh ]; then
     echo "copy & paste the following command to begin the install:"
     echo
-    echo " bash centos-$LVL.sh | tee installer.log 2>&1"
+    echo " bash ${RHID}-${RREL}.sh | tee installer.log 2>&1"
     echo
+  else
+    DEF=0
   fi
 fi
 
 if [ $LXTYPE == "DEBIAN" ]; then
-#  if [ $ID == "debian" ]; then
-    if [ -f ${ID}-${VER}.sh ]; then
-      SUPPORTED=1
-      echo "Debian or derivative detected:"
-      echo "$ID version $VER"
-      echo
-      echo "copy & paste the following command to begin the install:"
-      echo
-      echo " bash ${ID}-${VER}.sh | tee installer.log 2>&1"
-      echo
-    fi
+  ID=`grep ^ID= /etc/os-release | awk -F\= '{ print $2 }'`
+  VER=`grep ^VERSION_ID= /etc/os-release | awk -F\= '{ print $2 }'| tr -d \"`
+
+  if [ -f ${ID}-${VER}.sh ]; then
+    DEF=1
+    echo "copy & paste the following command to begin the install:"
+    echo
+    echo " bash ${ID}-${VER}.sh | tee installer.log 2>&1"
+    echo
+  fi
+  if [ $DBG -ne 0 ]; then
+    echo
+    echo "### DEBUG ###"
+    echo "RVER = $RVER"
+    echo "Debian or derivative detected:"
+    echo "$ID version $VER"
+    echo "### DEBUG ###"
+    echo
+  fi
+ 
 fi
 
-if [ $SUPPORTED == 0 ]; then
-  echo "$LXTYPE type system detected, installer not present"
-  echo "refer to manual-install.txt for instructions"
+if [ $DEF == 0 ]; then
+  echo "$LXTYPE type system detected, you can try the installer for the"
+  echo "distro closest to yours, or refer to manual-install.txt to proceed"
 fi
+
 

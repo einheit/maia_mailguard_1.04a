@@ -206,6 +206,12 @@ pear install Net_Socket
 pear install Net_SMTP
 pear install Auth_SASL
 pear install Log
+pear install Image_Color
+pear install Image_Canvas-0.3.5
+pear install Image_Graph-0.8.0
+pear install Numbers_Roman
+pear install Numbers_Words-0.18.2
+pear list
  
 #
 # pear can't install htmlpurifier 

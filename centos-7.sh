@@ -222,6 +222,11 @@ pear install Mail_mimeDecode-1.5.5
 pear install Net_Socket-1.0.14
 pear install Net_SMTP-1.6.2
 pear install Pager-2.4.9
+pear install Image_Color
+pear install Image_Canvas-0.3.5
+pear install Image_Graph-0.8.0
+pear install Numbers_Roman
+pear install Numbers_Words-0.18.2
 pear list
 
 # install html purifier separately -
