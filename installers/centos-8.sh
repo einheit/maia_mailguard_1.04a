@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
 #
-# first attempt at a suse installer
+# centos 8 installer
 #
 
 echo 
-echo "this script is written for opensuse leap 15, using mysql DB" 
+echo "this script is written for Centos 8, using a mysql DB" 
 echo "if using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
-echo "if sendmail or other non-postfix MTA are installed," 
-echo "disable or uninstall them before continuing."
+echo "Be sure the system is up to date before running this script!"
+echo 
+echo "This script installs and configures the postfix MTA"
+echo "If you wish to use something other than postfix,"
+echo "you will need to install and set up that MTA after"
+echo "the completion of this script, or install manually"
 echo
+echo "Note that selinux will be set to permissive mode."
+echo
+echo "For full functionality, an appropriate selinux policy"
+echo "needs to be installed for maia in selinux enforcing mode"
+echo 
 echo -n "<ENTER> to continue or CTRL-C to stop..."
 read junk
 echo 
 
+# set the tone 
+setenforce 0
+
 # rock bottom dependencies - 
-zypper in -y curl wget make gcc gcc-c++ sudo net-tools less which rsync 
+yum install -y curl wget make gcc sudo net-tools less which rsync 
 
 # get the info, write parames to a file
 ./get-info.sh
@@ -28,10 +40,12 @@ echo "available computing power and network bandwidth."
 echo
 echo -n "Feel free to take a break - <ENTER> to proceed  "
 echo
+echo "proceed? "
+read
 
 # looks like we need to make sure perl and postfix are installed first
-zypper in -y perl
-zypper in -y postfix
+yum install -y perl
+yum install -y postfix
 systemctl enable postfix
 systemctl restart postfix
 
@@ -40,76 +54,63 @@ systemctl restart postfix
 
 # continue with install
 # set up conditions for maia to operate
-zypper install -y firewalld
+yum install -y firewalld
 systemctl enable firewalld
 firewall-cmd --permanent --add-service smtp
 firewall-cmd --permanent --add-service smtps
 firewall-cmd --permanent --add-service http
 firewall-cmd --reload
 
-# get up to date
-zypper up
-zypper in -y telnet
-zypper in -y file
-zypper in -y tar
-zypper in -y perl-DBI 
-zypper in -y spamassassin
-zypper in -y perl-Archive-Zip
-zypper in -y perl-BerkeleyDB
-zypper in -y perl-Convert-UUlib
-zypper in -y perl-DBD-mysql 
-zypper in -y perl-DBD-Pg
-#zypper install -y perl-Net-Server
-#zypper install -y perl-Net-DNS-Nameserver
-zypper in -y perl-Text-CSV
-#zypper install -y perl-Net-CIDR-Lite
-zypper in -y perl-ldap
-zypper in -y perl-Unix-Syslog
-#zypper install -y perl-razor-agents
-zypper in -y perl-Template-Toolkit
-#zypper install -y perl-Geo-IP
-zypper in -y perl-Convert-TNEF
-zypper in -y perl-forks
-zypper in -y perl-IP-Country
-
+# add epel and get up to date
+yum install -y epel-release
+yum install -y telnet
+yum install -y file
+yum install -y tar
+yum install -y perl-DBI 
+yum install -y spamassassin
+yum install -y perl-Archive-Zip
+yum install -y perl-BerkeleyDB
+yum install -y perl-Convert-UUlib
+yum install -y perl-DBD-MySQL perl-DBD-Pg
+yum install -y perl-Net-Server
+yum install -y perl-Net-DNS-Nameserver
+yum install -y perl-Text-CSV
+yum install -y perl-Net-CIDR-Lite
+yum install -y perl-LDAP
+yum install -y perl-Unix-Syslog
+yum install -y perl-Razor-Agent
+yum install -y perl-Template-Toolkit
+yum install -y perl-CPAN 
+yum install -y perl-Geo-IP
 
 #
 # non-interactive cpan installs
 #
-zypper in -y perl-App-cpanminus 
+yum install -y perl-App-cpanminus
 
+cpanm forks
+cpanm IP::Country::Fast
+cpanm Convert::TNEF
 cpanm Data::UUID
-#cpanm forks
-#cpanm IP::Country::Fast
-#cpanm Convert::TNEF
-#cpanm Digest::SHA1
-#cpanm Template
+cpanm Digest::SHA1
+cpanm Template
 
-mkdir -p /etc/maia
-cp maia.conf maiad.conf /etc/maia/
+yum install -y clamav 
+yum install -y clamav-update 
+yum install -y clamav-data 
+yum install -y clamav-server
 
-# configtest.pl should work unless installing local DB
+mv /etc/clamd.d/scan.conf /etc/clamd.d/scan.conf-`date +%F`
+cp contrib/el-scan.conf /etc/clamd.d/scan.conf
+cp contrib/el-clamd.service /etc/systemd/system/clamd.service
 
-zypper in -y clamav
-
-echo "updating virus sigs - this could take awhile..."
-freshclam
-
-zypper in -y apache2
-zypper in -y apache2-mod_php7
-
-# permit apache to operate
-./inline-edit.sh 'Options None' 'Options Indexes Includes FollowSymLinks' /etc/apache2/default-server.conf
-
-systemctl enable apache2
-systemctl start apache2
-a2enmod php7
+yum install -y httpd httpd-tools
+systemctl enable httpd
 
 #
 # add maia user and chown/chmod its files/dirs
 #
-groupadd maia
-useradd -d /var/lib/maia -g maia maia
+useradd -d /var/lib/maia maia
 mkdir -p /var/lib/maia
 chmod 755 /var/lib/maia
 
@@ -118,7 +119,7 @@ mkdir -p /var/log/maia
 chown -R maia.maia /var/log/maia
 
 mkdir -p /var/log/clamav
-#chmod 775 /var/lib/clamav/
+chmod 775 /var/lib/clamav/
 
 mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
@@ -128,30 +129,27 @@ cp maiad /var/lib/maia/
 cp -r scripts/* /var/lib/maia/scripts/
 cp -r templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
-chown -R maia.vscan /var/lib/maia/tmp
+chown -R maia.virusgroup /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
+
+mkdir -p /etc/maia
+cp maia.conf maiad.conf /etc/maia/
+cp contrib/maiad.service /etc/systemd/system/
+
+# configtest.pl should work now unless installing a local DB server
 
 #
 # web interface
 #
-mkdir -p /srv/www/htdocs/maia
-cp -r php/* /srv/www/htdocs/maia
-
-#
-# install the systemd unit files -
-#
-cp contrib/maiad.service /etc/systemd/system/
+mkdir -p /var/www/html/maia
+cp -r php/* /var/www/html/maia
 
 # enable services
 systemctl enable maiad.service
 systemctl enable clamd.service
 
-# provide config files
-# cp scan.conf /etc/clamd.d/
-# suse uses clamd.conf, and by default it's tcp 3310
-
 # install mysql client to begin with - 
-zypper install -y mariadb-client 
+yum install -y mariadb 
 
 DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
@@ -159,18 +157,16 @@ DB_INST=`expr $DBINST`
 # install mysql server if called for - 
 if [ $DB_INST -eq 1 ]; then
   echo "creating maia database..."
-  zypper install -y mariadb
+  yum install -y mariadb-server
   systemctl enable mariadb.service
   systemctl start mariadb.service
   mysqladmin create maia
-  sleep 1
   sh maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
     read
   fi
-  sleep 1
   mysql maia < maia-mysql.sql 
   status=$?
   if [ $status -ne 0 ]; then
@@ -200,41 +196,39 @@ cp files/*.cf /etc/mail/spamassassin/
 echo
 echo "installing php modules"
 echo
-#zypper install -y php
-zypper in -y php7-pdo
-zypper in -y php7-gd
-#zypper install -y php-process
-#zypper install -y php-xml # xmlreader? xmlwriter?
-zypper in -y php-mbstring
-zypper in -y php7-mysql
-zypper in -y php7-bcmath
-zypper in -y php7-pgsql
-zypper in -y php7-devel
-zypper in -y php7-openssl
-zypper in -y php7-pear
-zypper in -y php7-wddx
-#zypper in -y php-Smarty
+yum install -y php
+yum install -y php-pdo
+yum install -y php-gd
+yum install -y php-process
+yum install -y php-xml
+yum install -y php-mbstring
+yum install -y php-mysqlnd
+yum install -y php-bcmath
+yum install -y php-devel
+yum install -y php-pear
 
-tar -C /usr/share/php7 -xvf files/smarty3-maia.tgz
+tar -C /usr/share/php/ -xvf files/smarty3-maia.tgz
 
 echo
 echo "installing pear modules"
 echo
 
-zypper in -y php7-pear-MDB2
-zypper in -y php7-pear-MDB2_Driver_mysqli
-zypper in -y php7-pear-Mail_Mime
-
-pear install Log-1.12.9
+pear channel-update pear.php.net
 
 pear install Auth_SASL-1.0.6
-#pear install MDB2-2.5.0b5
-#pear install MDB2_Driver_mysqli-1.5.0b4
-#pear install Mail_Mime-1.8.9
-pear install Mail_mimeDecode
-pear install Pager
-#pear install Net_Socket-1.0.14
-#pear install Net_SMTP-1.6.2
+pear install Log-1.12.9
+pear install MDB2-2.5.0b5
+pear install MDB2_Driver_mysqli-1.5.0b4
+pear install Mail_Mime-1.8.9
+pear install Mail_mimeDecode-1.5.5
+pear install Net_Socket-1.0.14
+pear install Net_SMTP-1.6.2
+pear install Pager-2.4.9
+pear install Image_Color
+pear install Image_Canvas-0.3.5
+pear install Image_Graph-0.8.0
+pear install Numbers_Roman
+pear install Numbers_Words-0.18.2
 pear list
 
 # install html purifier separately -
@@ -247,17 +241,16 @@ echo
 echo "preparing php directory"
 
 # temp bug workaround
-for i in /srv/www/htdocs/maia/themes/*
+for i in /var/www/html/maia/themes/*
 do
  mkdir -p ${i}/compiled
 done
 
 chmod 775 /var/www/html/maia/themes/*/compiled
-chown wwwrun.maia /var/www/html/maia/themes/*/compiled
-cp config.php /srv/www/htdocs/maia/
-ln -s /srv/www /var/www
+chown apache.maia /var/www/html/maia/themes/*/compiled
+cp config.php /var/www/html/maia/
 mkdir /var/www/cache
-chown wwwrun.maia /var/www/cache
+chown apache.maia /var/www/cache
 chmod 775 /var/www/cache
 
 echo

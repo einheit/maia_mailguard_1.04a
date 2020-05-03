@@ -260,10 +260,6 @@ echo
 echo    "If configtest.pl passes, check the web configuration at"
 echo    " http://$host/maia/admin/configtest.php"
 echo
-echo	"*** to fix the configtest.php wddx issue, refer to the" 
-echo	"*** workaround posted here:" 
-echo	" https://github.com/einheit/maia_mailguard_1.04a/issues/11"
-echo
 echo    "if everything passes, and you are creating a database for the"
 echo    "first time, (no existing database) create the initial maia user"
 echo    "by visiting http://$host/maia/internal-init.php"

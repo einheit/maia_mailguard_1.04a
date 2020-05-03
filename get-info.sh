@@ -10,7 +10,6 @@ echo "Do you want to install a local db server?"
 echo "if there is already a maia database server, the answer is no"
 echo -n  "install a local maia db server? (y/N)"
 read junk
-echo
 
 [ "${junk}X" == "X" ] && junk="n"
 if [ $junk == 'y' ] || [ $junk == 'Y' ]; then
@@ -23,7 +22,8 @@ if [ $localdb -eq 0 ]; then
   read dbserver
 fi
 
-# find out whether to set a new maia db password
+# get the maia password
+echo
 echo -n "Enter the maia db password: "
 read mydbpass
 echo
@@ -36,7 +36,6 @@ shost=`hostname -s`
 fqdn=`hostname -f`
 domain=`echo $fqdn | sed s/${shost}\.//g`
 
-echo
 echo "does this server require an smtp relayhost/smarthost?"
 echo -n "enter relayhost if required, otherwise just press enter:"
 read smarthost
@@ -71,8 +70,7 @@ echo "settings correct? hit <ENTER> to continue, CTRL-C to abort"
 # final confirmation -
 #
 
-echo > installer.tmpl
-echo "HOST=$shost" >> installer.tmpl
+echo "HOST=$shost" > installer.tmpl
 echo "FQDN=$fqdn" >> installer.tmpl
 echo "DOMAIN=$domain" >> installer.tmpl
 echo "DBSERVER=$dbserver" >> installer.tmpl

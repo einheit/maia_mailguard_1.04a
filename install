@@ -18,7 +18,6 @@ fi
 
 if [ $LXTYPE == "RHEL" ]; then
 # RHEL variant -
-  DEF=1
   if [ -f /etc/os-release ]; then
     RHID=`grep '^ID=' /etc/os-release|awk -F= '{ print $2 }' | tr -d \"`
     RREL=`grep '^VERSION_ID=' /etc/os-release | awk -F= '{ print $2 }' | tr -d \"`
@@ -38,13 +37,12 @@ if [ $LXTYPE == "RHEL" ]; then
     echo "### DEBUG ###"
     echo
   fi
-  if [ -f ${RHID}-${RREL}.sh ]; then
+  if [ -f installers/${RHID}-${RREL}.sh ]; then
+    DEF=1
     echo "copy & paste the following command to begin the install:"
     echo
-    echo " bash ${RHID}-${RREL}.sh | tee installer.log 2>&1"
+    echo " bash installers/${RHID}-${RREL}.sh | tee installer.log 2>&1"
     echo
-  else
-    DEF=0
   fi
 fi
 
@@ -52,18 +50,18 @@ if [ $LXTYPE == "DEBIAN" ]; then
   ID=`grep ^ID= /etc/os-release | awk -F\= '{ print $2 }'`
   VER=`grep ^VERSION_ID= /etc/os-release | awk -F\= '{ print $2 }'| tr -d \"`
 
-  if [ -f ${ID}-${VER}.sh ]; then
+  if [ -f installers/${ID}-${VER}.sh ]; then
     DEF=1
     echo "copy & paste the following command to begin the install:"
     echo
-    echo " bash ${ID}-${VER}.sh | tee installer.log 2>&1"
+    echo " bash installers/${ID}-${VER}.sh | tee installer.log 2>&1"
     echo
   fi
   if [ $DBG -ne 0 ]; then
     echo
     echo "### DEBUG ###"
-    echo "RVER = $RVER"
     echo "Debian or derivative detected:"
+    echo "RVER = $RVER"
     echo "$ID version $VER"
     echo "### DEBUG ###"
     echo
@@ -72,8 +70,9 @@ if [ $LXTYPE == "DEBIAN" ]; then
 fi
 
 if [ $DEF == 0 ]; then
-  echo "$LXTYPE type system detected, you can try the installer for the"
-  echo "distro closest to yours, or refer to manual-install.txt to proceed"
+  echo "$LXTYPE type system detected, you can try the installer that seems"
+  echo "most closely related to yours (scripts in the installers directory)"
+  echo "or refer to manual-install.txt for generic install procedures"
 fi
 
 

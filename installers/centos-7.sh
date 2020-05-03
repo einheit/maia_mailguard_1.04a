@@ -213,6 +213,8 @@ echo
 echo "installing pear modules"
 echo
 
+pear channel-update pear.php.net
+
 pear install Auth_SASL-1.0.6
 pear install Log-1.12.9
 pear install MDB2
