@@ -54,7 +54,7 @@ for instance might refer to "Text::CSV" as "perl-Text-CSV"
 For any of the above perl packages not in your OS repos,
 you can use cpan or cpanminus to install them.
 
-e.g. to install IP::Country::Fast, type the following:
+e.g. to install IP::Country::Fast using cpanminus, type the following:
 
  $ cpanm IP::Country::Fast
 
