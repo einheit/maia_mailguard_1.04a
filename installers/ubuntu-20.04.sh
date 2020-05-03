@@ -19,8 +19,12 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read
 echo 
 
+# set path for the install - 
+PATH=`pwd`/scripts:$PATH
+export PATH
+
 # get the info, write parames to a file
-./get-info.sh
+get-info.sh
 
 echo "If there are no errors, this script will run to completion."
 echo
@@ -45,8 +49,8 @@ cp contrib/locale.gen /etc
 # make sure perl is installed 
 apt-get -y install perl
 
-# find out what we need to change
-./process-changes.sh
+# write changes to config files
+process-changes.sh
 
 echo "now installing packages.."
 apt-get install -y make gcc patch
@@ -105,13 +109,13 @@ mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
 cp maiad /var/lib/maia/
-cp -r scripts/* /var/lib/maia/scripts/
-cp -r templates/* /var/lib/maia/templates/
+cp -r maia_scripts/* /var/lib/maia/scripts/
+cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
 
-# configtest.pl should work, unless you're installing a local database server
+# configtest.pl should work now, unless installing a local db server
 
 apt-get install -y postfix
 
@@ -143,7 +147,7 @@ if [ $DB_INST -eq 1 ]; then
   apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
   systemctl start mysql
   mysqladmin create maia
-  sh maia-grants.sh
+  maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
@@ -192,10 +196,6 @@ echo
 echo "installing pear modules"
 echo
 
-# Do not use latest pear as it causes problems with this code
-# DB no longer used
-#
-
 pear channel-update pear.php.net
 
 pear install MDB2-2.5.0b5
@@ -241,8 +241,7 @@ apachectl restart
 echo "stage 2 complete"
 
 # call postfix setup script
-./postfix-setup.sh
-
+postfix-setup.sh
 /etc/init.d/postfix restart
 
 host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`

@@ -19,8 +19,12 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read
 echo 
 
+# set path for the install - 
+PATH=`pwd`/scripts:$PATH
+export PATH
+
 # get the info, write parames to a file
-./get-info.sh
+get-info.sh
 
 echo "If there are no errors, this script will run to completion."
 echo
@@ -46,7 +50,7 @@ cp contrib/locale.gen /etc
 apt-get -y install perl
 
 # find out what we need to change
-./process-changes.sh
+process-changes.sh
 
 #
 echo "now installing packages.."
@@ -106,8 +110,8 @@ mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
 cp maiad /var/lib/maia/
-cp -r scripts/* /var/lib/maia/scripts/
-cp -r templates/* /var/lib/maia/templates/
+cp -r maia_scripts/* /var/lib/maia/scripts/
+cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia.clamav /var/lib/maia/tmp
 
@@ -144,7 +148,7 @@ if [ $DB_INST -eq 1 ]; then
   apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
   systemctl start mysql
   mysqladmin create maia
-  sh maia-grants.sh
+  maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
@@ -242,7 +246,7 @@ echo "stage 2 complete"
 # call postfix setup script
 systemctl enable postfix
 systemctl start postfix
-./postfix-setup.sh
+postfix-setup.sh
 /etc/init.d/postfix restart
 
 host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`

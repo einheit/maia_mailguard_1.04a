@@ -5,7 +5,7 @@ echo
 cp /etc/postfix/main.cf /etc/postfix/main.cf-save-$$
 cp /etc/postfix/master.cf /etc/postfix/master.cf-save-$$
 
-cat master.cf-append >> /etc/postfix/master.cf
+cat contrib/master.cf-append >> /etc/postfix/master.cf
 
 postconf -e inet_interfaces=all
 postconf -e content_filter=maia:[127.0.0.1]:10024

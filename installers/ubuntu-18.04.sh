@@ -19,8 +19,12 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read
 echo 
 
+# set path for the install - 
+PATH=`pwd`/scripts:$PATH
+export PATH
+
 # get the info, write parames to a file
-./get-info.sh
+get-info.sh
 
 echo "If there are no errors, this script will run to completion."
 echo
@@ -45,8 +49,8 @@ cp contrib/locale.gen /etc
 # make sure perl is installed 
 apt-get -y install perl
 
-# find out what we need to change
-./process-changes.sh
+# write changes to config files
+process-changes.sh
 
 echo "now installing packages.."
 apt-get install -y make gcc patch
@@ -105,8 +109,8 @@ mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
 cp maiad /var/lib/maia/
-cp -r scripts/* /var/lib/maia/scripts/
-cp -r templates/* /var/lib/maia/templates/
+cp -r maia_scripts/* /var/lib/maia/scripts/
+cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
@@ -143,7 +147,7 @@ if [ $DB_INST -eq 1 ]; then
   apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
   systemctl start mysql
   mysqladmin create maia
-  sh maia-grants.sh
+  maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
@@ -177,11 +181,11 @@ cp files/*.cf /etc/mail/spamassassin/
 echo
 echo "installing php modules"
 echo
-apt-get -y install libapache2-mod-php7.2
-apt-get -y install php7.2-mysql
-apt-get -y install php7.2-mbstring
-apt-get -y install php7.2-bcmath
-apt-get -y install php7.2-gd
+apt-get -y install libapache2-mod-php
+apt-get -y install php-mysql
+apt-get -y install php-mbstring
+apt-get -y install php-bcmath
+apt-get -y install php-gd
 apt-get -y install php-xml
 apt-get -y install php-pear
 
@@ -191,10 +195,6 @@ ln -s /usr/share/php/smarty3 /usr/share/php/Smarty
 echo
 echo "installing pear modules"
 echo
-
-# 
-# pear-DB no longer used - 
-#
 
 pear channel-update pear.php.net
 
@@ -213,13 +213,6 @@ pear install Numbers_Roman
 pear install Numbers_Words-0.18.2
 pear list
  
-#
-# pear can't install htmlpurifier 
-#
-# pear channel-discover htmlpurifier.org
-# pear install hp/HTMLPurifier
-# pear list
-
 # install html purifier separately -
 tar -C /var -xvf files/htmlpurifier-4.12.0.tar.gz
 ln -s /var/htmlpurifier-4.12.0 /var/htmlpurifier
@@ -248,8 +241,7 @@ apachectl restart
 echo "stage 2 complete"
 
 # call postfix setup script
-./postfix-setup.sh
-
+postfix-setup.sh
 /etc/init.d/postfix restart
 
 host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`

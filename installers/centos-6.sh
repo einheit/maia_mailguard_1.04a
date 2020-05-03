@@ -24,14 +24,18 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read junk
 echo 
 
-# set the tone 
+# set path for the install - 
+PATH=`pwd`/scripts:$PATH
+export PATH
+
+# set selinux to warn mode
 setenforce 0
 
-# rock bottom dependencies - 
+# basic dependencies - 
 yum install -y curl wget make gcc sudo net-tools less which rsync 
 
 # get the info, write parames to a file
-./get-info.sh
+get-info.sh
 
 echo "If there are no errors, this script will run to completion."
 echo
@@ -49,11 +53,10 @@ yum install -y postfix
 chkconfig postfix on
 service postfix start
 
-# find out what we need to change
-./process-changes.sh
+# apply changes to config files
+process-changes.sh
 
 # continue with install
-
 # add epel and get up to date
 yum install -y epel-release
 yum install -y telnet
@@ -120,8 +123,8 @@ mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
 cp maiad /var/lib/maia/
-cp -r scripts/* /var/lib/maia/scripts/
-cp -r templates/* /var/lib/maia/templates/
+cp -r maia_scripts/* /var/lib/maia/scripts/
+cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia.clam /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
@@ -154,7 +157,7 @@ if [ $DB_INST -eq 1 ]; then
   chkconfig mysqld on
   service mysqld start
   mysqladmin create maia
-  sh maia-grants.sh
+  maia-grants.sh
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
@@ -241,8 +244,6 @@ done
 
 chmod 775 /var/www/html/maia/themes/*/compiled
 chown apache.maia /var/www/html/maia/themes/*/compiled
-# turns out el6 can use mysqli
-# perl -pi -e "s%mysqli%mysql%g" config.php
 cp config.php /var/www/html/maia/
 mkdir /var/www/cache
 chown apache.maia /var/www/cache
@@ -255,7 +256,7 @@ service httpd restart
 echo "stage 2 complete"
 
 # call postfix setup script
-./postfix-setup.sh
+postfix-setup.sh
 
 service postfix restart 
 

@@ -17,18 +17,18 @@ websrv=`grep WEBSRV installer.tmpl | awk -F\= '{ print $2 }'`
 export HOST FQDN DOMAIN dbhost passwd websrv
 
  echo "modifying maia base_url"
- ./inline-edit.sh example.com ${websrv}/maia maia.conf
+ inline-edit.sh example.com ${websrv}/maia maia.conf
 
  echo "editing HOST"
- ./inline-edit.sh __HOST__ $HOST maiad.conf
+ inline-edit.sh __HOST__ $HOST maiad.conf
  echo "editing DOMAIN"
- ./inline-edit.sh __DOMAIN__  $DOMAIN maiad.conf
+ inline-edit.sh __DOMAIN__  $DOMAIN maiad.conf
 
 for i in config.php maia.conf maiad.conf
 do
  echo "editing DBHOST"
- ./inline-edit.sh __DBHOST__  $dbhost $i
+ inline-edit.sh __DBHOST__  $dbhost $i
  echo "editing PASSWORD/${passwd}"
- ./inline-edit.sh '__PASSWORD__'  $passwd $i
+ inline-edit.sh '__PASSWORD__'  $passwd $i
 done
 

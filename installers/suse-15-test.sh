@@ -15,11 +15,16 @@ echo -n "<ENTER> to continue or CTRL-C to stop..."
 read junk
 echo 
 
-# rock bottom dependencies - 
+
+# set path for the install - 
+PATH=`pwd`/scripts:$PATH
+export PATH
+
+# basic dependencies - 
 zypper in -y curl wget make gcc gcc-c++ sudo net-tools less which rsync 
 
 # get the info, write parames to a file
-./get-info.sh
+get-info.sh
 
 echo "If there are no errors, this script will run to completion."
 echo
@@ -36,7 +41,7 @@ systemctl enable postfix
 systemctl restart postfix
 
 # find out what we need to change
-./process-changes.sh
+process-changes.sh
 
 # continue with install
 # set up conditions for maia to operate
@@ -47,8 +52,7 @@ firewall-cmd --permanent --add-service smtps
 firewall-cmd --permanent --add-service http
 firewall-cmd --reload
 
-# get up to date
-zypper up
+# continue installing required packages
 zypper in -y telnet
 zypper in -y file
 zypper in -y tar
@@ -99,7 +103,7 @@ zypper in -y apache2
 zypper in -y apache2-mod_php7
 
 # permit apache to operate
-./inline-edit.sh 'Options None' 'Options Indexes Includes FollowSymLinks' /etc/apache2/default-server.conf
+inline-edit.sh 'Options None' 'Options Indexes Includes FollowSymLinks' /etc/apache2/default-server.conf
 
 systemctl enable apache2
 systemctl start apache2
@@ -125,8 +129,8 @@ mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
 cp maiad /var/lib/maia/
-cp -r scripts/* /var/lib/maia/scripts/
-cp -r templates/* /var/lib/maia/templates/
+cp -r maia_scripts/* /var/lib/maia/scripts/
+cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia.vscan /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
@@ -267,7 +271,7 @@ systemctl restart httpd
 echo "stage 2 complete"
 
 # call postfix setup script
-./postfix-setup.sh
+postfix-setup.sh
 
 systemctl restart postfix
 
@@ -276,7 +280,6 @@ host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`
 echo
 echo	"any other site specific MTA configuration can be applied now - "
 echo
-
 echo 
 echo 	"at this point, a good sanity check would be to run"
 echo	" /var/lib/maia/scripts/configtest.pl" 
