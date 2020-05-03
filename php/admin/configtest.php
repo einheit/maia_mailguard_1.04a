@@ -235,20 +235,6 @@
     }
     print_row("Smarty Template Engine", $result, $status);
 
-/*
-    // wddx support
-    $have_wddx = false;
-    if(function_exists( 'wddx_serialize_value')) {
-        $have_wddx = true;
-        $result = "WDDX support available";
-        $status = OK;
-     } else {
-        $result = "WDDX support not available.  WDDX is needed for error reporting and debugging";
-        $status = ERROR;
-     }
-     print_row("WDDX Support", $result, $status);
-*/
-
      // multibyte support
      $have_mb = false;
      if(function_exists( 'mb_substr')) {
