@@ -41,7 +41,7 @@ read
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
 
-# get local set so apt can proceed
+# set locale for apt 
 apt install -y locales
 cp contrib/locale.gen /etc
 /usr/sbin/locale-gen
@@ -109,7 +109,7 @@ mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
-cp maiad /var/lib/maia/
+cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
@@ -154,7 +154,7 @@ if [ $DB_INST -eq 1 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
     read
   fi
-  mysql maia < maia-mysql.sql
+  mysql maia < files/maia-mysql.sql
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem importing maia schema - db needs attention ***"

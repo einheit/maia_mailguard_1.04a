@@ -108,7 +108,7 @@ mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
-cp maiad /var/lib/maia/
+cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
@@ -127,6 +127,7 @@ chgrp -R clamav /var/lib/maia/tmp
 #
 # web interface
 #
+
 apt-get install -y apache2 apache2-utils 
 mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
@@ -135,7 +136,6 @@ echo "done with file copy, starting package install"
 # enable services
 cp contrib/maiad_init_ubuntu /etc/init.d/maiad
 systemctl enable maiad
-
 
 DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
 DB_INST=`expr $DBINST`
@@ -153,7 +153,7 @@ if [ $DB_INST -eq 1 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
     read
   fi
-  mysql maia < maia-mysql.sql
+  mysql maia < files/maia-mysql.sql
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem importing maia schema - db needs attention ***"
@@ -249,7 +249,6 @@ host=`grep HOST installer.tmpl | awk -F\= '{ print $2 }'`
 echo
 echo	"any other site specific MTA configuration can be applied now - "
 echo
-
 echo
 echo    "at this point, a good sanity check would be to run"
 echo    " /var/lib/maia/scripts/configtest.pl"

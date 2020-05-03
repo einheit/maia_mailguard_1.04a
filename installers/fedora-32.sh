@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# first cut at fedora 32 installer
+# fedora 32 installer
 #
 
 echo 
-echo "This script is written for fedora 32-ish using mysql DB" 
+echo "This script is written for fedora 32 using a mysql DB" 
 echo "If using postgresql or other DB, you'll need to manually"
 echo "edit configs in /etc/maia/ and ~www/maia/config.php"
 echo 
@@ -34,7 +34,7 @@ setenforce 0
 # basic dependencies - 
 yum install -y curl wget make gcc sudo net-tools less which rsync 
 
-# get the info, write parames to a file
+# get the info, write params to file
 get-info.sh
 
 echo "If there are no errors, this script will run to completion."
@@ -126,7 +126,7 @@ mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
-cp maiad /var/lib/maia/
+cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
@@ -168,7 +168,7 @@ if [ $DB_INST -eq 1 ]; then
     echo "*** problem granting maia privileges - db needs attention ***"
     read
   fi
-  mysql maia < maia-mysql.sql 
+  mysql maia < files/maia-mysql.sql 
   status=$?
   if [ $status -ne 0 ]; then
     echo "*** problem importing maia schema - db needs attention ***"
@@ -207,9 +207,7 @@ yum install -y php-mysqlnd
 yum install -y php-bcmath
 yum install -y php-devel
 yum install -y php-pear
-
 yum install -y php-Smarty
-# tar -C /usr/share/php/ -xvf files/smarty3-maia.tgz
 
 echo
 echo "installing pear modules"
