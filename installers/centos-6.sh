@@ -56,8 +56,7 @@ service postfix start
 # apply changes to config files
 process-changes.sh
 
-# continue with install
-# add epel and get up to date
+# add epel and continue install
 yum install -y epel-release
 yum install -y telnet
 yum install -y file
@@ -128,6 +127,12 @@ cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia.clam /var/lib/maia/tmp
 chmod 775 /var/lib/maia/tmp
+
+# maiad helpers
+yum install -y arj
+yum install -y cpio
+yum install -y lzop
+yum install -y pax
 
 # configtest.pl should work now, unless installing a local DB
 

@@ -92,6 +92,14 @@ cpanm Data::UUID
 mkdir -p /etc/maia
 cp maia.conf maiad.conf /etc/maia/
 
+# maiad helpers
+zypper in -y arc
+zypper in -y arj
+zypper in -y cabextract
+zypper in -y lzop
+zypper in -y pax
+zypper in -y unrar
+
 # configtest.pl should work unless installing local DB
 
 zypper in -y clamav

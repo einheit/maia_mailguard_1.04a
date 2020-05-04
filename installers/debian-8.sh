@@ -118,6 +118,14 @@ chown -R maia /var/lib/maia/tmp
 mkdir -p /etc/maia
 cp maia.conf maiad.conf /etc/maia/
 
+# maiad helpers
+apt install -y arc
+apt install -y arj
+apt install -y cabextract
+apt install -y lzop
+apt install -y pax
+apt install -y unrar || apt install -y unrar-free || echo "unrar not found"
+
 # configtest.pl should work now unless installing a local DB server
 
 apt-get install -y postfix

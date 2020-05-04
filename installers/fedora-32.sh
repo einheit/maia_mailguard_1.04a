@@ -137,6 +137,13 @@ mkdir -p /etc/maia
 cp maia.conf maiad.conf /etc/maia/
 cp contrib/maiad.service /etc/systemd/system/
 
+# maiad helpers
+yum install -y arc
+yum install -y arj
+yum install -y cpio
+yum install -y lzop
+yum install -y pax
+
 # configtest.pl should work now unless installing a local DB server
 
 #
