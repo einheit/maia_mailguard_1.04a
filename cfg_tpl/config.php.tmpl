@@ -127,11 +127,12 @@
     // For more detailed information on the DSN syntax, see
     // http://pear.php.net/manual/en/package.database.db.intro-dsn.php
 
-    //$maia_sql_dsn = "dbtype://dbuser:passwd@tcp(hostname:port)/maia";
-    //$maia_sql_dsn = "mysql://dbuser:passwd@unix(/var/tmp/mysql.sock)/maia";
-    //$maia_sql_dsn = "mysql://dbuser:passwd/maia";
+    //$maia_sql_dsn = "dbtype://dbuser:passwd@tcp(hostname:port)/dbname";
+    //$maia_sql_dsn = "dbtype://dbuser:passwd@unix(/var/tmp/mysql.sock)/dbname";
+    // e.g.
+    //$maia_sql_dsn = "mysqli://maia:password@tcp(dbhost:3306)/maia";
     
-    $maia_sql_dsn = "mysqli://maia:__PASSWORD__@tcp(__DBHOST__:3306)/maia";
+    $maia_sql_dsn = "mysqli://maia:__PASSWORD__@tcp(__DBHOST__:3306)/__DBNAME__";
 
     // To pass more options into DB:connect, set them in this array
     // For more details, see:

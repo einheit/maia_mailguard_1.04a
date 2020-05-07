@@ -191,7 +191,7 @@ $LOGFILE = "/var/log/maia/maiad.log";
 #   * dbuser is the name of your Maia database user, typically 'maia'
 #   * dbpass is the Maia database user's password
 
-@lookup_sql_dsn = ( ['DBI:mysql:maia:__DBHOST__:3306', 'maia', '__PASSWORD__'] );
+@lookup_sql_dsn = ( ['DBI:mysql:__DBNAME__:__DBHOST__:3306', 'maia', '__PASSWORD__'] );
 
 
 # BerkeleyDB/libdb ($enable_db)
