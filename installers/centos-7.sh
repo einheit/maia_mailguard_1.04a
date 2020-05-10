@@ -134,7 +134,7 @@ cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia.virusgroup /var/lib/maia/tmp
-chmod 775 /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
 
 mkdir -p /etc/maia
 cp maia.conf maiad.conf /etc/maia/

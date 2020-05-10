@@ -125,8 +125,8 @@ cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
-chown -R maia.clam /var/lib/maia/tmp
-chmod 775 /var/lib/maia/tmp
+chown -R maia.clamav /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
 
 # maiad helpers
 yum install -y arj

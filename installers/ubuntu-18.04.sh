@@ -113,7 +113,6 @@ cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
 chown -R maia /var/lib/maia/tmp
-chmod 775 /var/lib/maia/tmp
 
 # maia helpers
 apt install -y arc
@@ -131,6 +130,7 @@ apt-get install -y clamav
 apt-get install -y clamav-daemon
 apt-get install -y clamav-freshclam
 chgrp -R clamav /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
 
 #
 # web interface

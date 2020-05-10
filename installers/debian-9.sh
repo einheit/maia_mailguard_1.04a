@@ -113,7 +113,7 @@ cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
 chown -R maia.maia /var/lib/maia/db
-chown -R maia.clamav /var/lib/maia/tmp
+chown -R maia /var/lib/maia/tmp
 
 mkdir -p /etc/maia
 cp maia.conf maiad.conf /etc/maia/
@@ -133,6 +133,9 @@ apt-get install -y postfix
 apt-get install -y clamav 
 apt-get install -y clamav-daemon
 apt-get install -y clamav-freshclam
+chgrp -R clamav /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
+
 
 #
 # web interface
