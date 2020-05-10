@@ -295,6 +295,8 @@ An older contributed install document can be found in docs/Install-maia-56e6.txt
 
 The original install doc is online at http://www.maiamailguard.com/install.php
 
+Additional contributed docs at http://www.maiamailguard.com/maia/wiki/ContribDocs
+
 # note - 
 # http://www.example.com/maia/login.php?super=register
 # http://www.example.com/maia/login.php?super=unregister
