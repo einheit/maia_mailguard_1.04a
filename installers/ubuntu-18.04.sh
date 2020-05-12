@@ -131,6 +131,8 @@ apt-get install -y clamav-daemon
 apt-get install -y clamav-freshclam
 chgrp -R clamav /var/lib/maia/tmp
 chmod 2775 /var/lib/maia/tmp
+cp /etc/clamav/clamd.conf /etc/clamav/clamd.conf_ubuntu_orig-$$
+cp contrib/clamd-ubuntu-maia-tcp.conf /etc/clamav/clamd.conf
 
 #
 # web interface
