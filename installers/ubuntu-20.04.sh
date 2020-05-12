@@ -152,8 +152,8 @@ DB_INST=`expr $DBINST`
 if [ $DB_INST -eq 1 ]; then
   echo "creating maia database..."
   # suppress dialog boxes during mysql install -
-  apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mysql-server
-  systemctl start mysql
+  apt-get install -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" mariadb-server
+  systemctl start mariadb
   mysqladmin create maia
   maia-grants.sh
   status=$?
