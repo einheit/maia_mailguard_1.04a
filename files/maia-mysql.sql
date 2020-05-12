@@ -227,7 +227,6 @@ CREATE TABLE maia_languages (
 ) ENGINE=InnoDB;
 
 
-
 -- [maia_users] contains mail filter settings that apply to
 -- e-mail recipients who have registered with Maia.  The
 -- user_level is stored as one of (U)ser, (A)dministrator,
@@ -434,7 +433,7 @@ CREATE TABLE maia_mail (
    subject          varchar(255) NOT NULL COLLATE utf8_unicode_ci,
    contents         longblob NOT NULL,
    score            float, -- only supplied for (S)pam
-   autolearn_status varchar(15) NOT NULL DEFAULT 'unavailable', -- 'ham', 'spam', 'no', 'disabled', 'failed', 'unavailable'
+   autolearn_status varchar(15) DEFAULT NULL,
    PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 CREATE INDEX maia_mail_idx_received_date ON maia_mail(received_date);
