@@ -4294,13 +4294,7 @@ sub maia_record_tests($$$$$) {
     if (!$mail_score) {
 	   $mail_score = 0.0;
     }
-
-    my($autolearn_status, $autolearn_status_force) = split(' ', $autolearn_status);
     $autolearn_status = validate($autolearn_status, '^([a-z]{2,15})$', 'si');
-    if(!$autolearn_status) {
-        $autolearn_status = 'unavailable';
-    }
-
     my $test_list = validate($spam_status, 'tests=(.*)', 'si');
     $test_list =~ s/[\s\t\n]//g;
     my @tests = split ",", $test_list;
@@ -13743,7 +13737,7 @@ sub ask_av {
       do_log(3,"Using ($av_name) on dir: $query");
     } else {                     # must check each file individually
       # replace {}/* with directory name and file, and * with current file name
-      $query =~ s[ (\{\}/)? \* ][ $1 eq '' ? $f : "$tempdir/parts/$f" ]gesx;
+      $query =~ s[ ({}/)? \* ][ $1 eq '' ? $f : "$tempdir/parts/$f" ]gesx;
       do_log(3,"Using ($av_name) on file: $query");
     }
     my($t_status,$t_output) = &$code($query, @_);
@@ -13810,11 +13804,10 @@ sub run_av {
     ($scan_status,$output,$virusnames) = &$command(@_);
   } else {
     my(@args) = split(' ',$args);
-    if (grep { m{^(\{\}/)?\*\z} } @args) {    #  {}/* or *, list each file
+    if (grep { m{^({}/)?\*\z} } @args) {    #  {}/* or *, list each file
       # replace asterisks with bare file names (basenames) if alone or in {}/*
       local($1);
-      @args = map { !m{^(\{\}/)?\*\z} ? $_
-
+      @args = map { !m{^({}/)?\*\z} ? $_
                                   : map {$1.untaint($_)} @$bare_fnames } @args;
     }
     for (@args) { s[{}][$tempdir/parts]g }  # replace {} with directory name
