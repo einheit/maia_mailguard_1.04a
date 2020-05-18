@@ -1,0 +1,9 @@
+Blocking Spam in Exim with URI Block Lists
+
+This document describes using SURBL (Spam URI Realtime Blocklists), URIBL, and the Spamhaus DBL in conjunction with the Exim MTA to block spam containing "spamvertizing" URLs. To achieve this, one can use the Perl script that is found below. This utilizes Exim's MIME and/or DATA ACLs and Exim's embedded Perl engine.
+
+The Perl routine from this page should be relatively easy to modify to use in any other MTA that can call an external script to scan a message.
+
+The SURBL, URIBL and Spamhaus DBL systems functions just like a normal DNSBL system but instead of containing a list of IPs of servers that send spam, they maintain a list of the domains that are found in the bodies of messages. These are the domains that are part of the URL the spammers want you to click on to buy their wares. It's quite an effective way of filtering for spam and can be used in conjunction with traditional DNSBLs for maximum effectiveness.
+
+See: https://www.teuton.org/~ejm/exim_surbl/

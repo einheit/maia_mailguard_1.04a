@@ -433,7 +433,9 @@ CREATE TABLE maia_mail (
    subject          varchar(255) NOT NULL COLLATE utf8_unicode_ci,
    contents         longblob NOT NULL,
    score            float, -- only supplied for (S)pam
-   autolearn_status varchar(15) DEFAULT NULL,
+   autolearn_status varchar(15) DEFAULT 'unavailable',  -- 'ham', 'spam', 'n
+o', 'disabled', 'failed', 'unavailable'
+
    PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 CREATE INDEX maia_mail_idx_received_date ON maia_mail(received_date);
