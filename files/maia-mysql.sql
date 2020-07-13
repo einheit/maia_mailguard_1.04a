@@ -433,8 +433,7 @@ CREATE TABLE maia_mail (
    subject          varchar(255) NOT NULL COLLATE utf8_unicode_ci,
    contents         longblob NOT NULL,
    score            float, -- only supplied for (S)pam
-   autolearn_status varchar(15) DEFAULT 'unavailable',  -- 'ham', 'spam', 'n
-o', 'disabled', 'failed', 'unavailable'
+   autolearn_status varchar(15) DEFAULT 'unavailable',  -- 'ham', 'spam', 'no', 'disabled', 'failed', 'unavailable'
 
    PRIMARY KEY (id)
 ) ENGINE=InnoDB;
