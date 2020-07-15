@@ -8,9 +8,9 @@ Maia is flexible and scalable. It can be deployed in a number of configurations,
 
  To get started, run "./install" and the script will try to detect the OS and offer the best option for installing on your system. 
 
-Centos/RHEL versions 7 and 8 were the first supported platforms, then Debian 10, ubuntu 18.04 and ubuntu 20.04 were tested and verified. A centos 6 installer was also tested and added, as there are apparently still users. Other platforms will be added as time allows. 
+Tested and verified install scripts are available for Centos/RHEL versions 6, 7, 8, Fedora 32, Debian 8, 8, 10, ubuntu 18.04 & 20.04. We've been trying to make SuSE work, without much success. Suse can and work for certain of the components, but the web interface is kaput, due to some persistent inability to play well with php and pear modules. If there are any SuSE engineers out there who could show us the secret to making it work, we'd love to add SuSE as a Tier One platform.
 
-The install scripts are a kludge, but they save time and they work fairly well. The installer could fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. It's safe to say that some or all maia components should be able to run on any Unix-like OS.
+The install scripts are perhaps something of a kludge, but they save time and they work fairly well. The installer could fail to detect a supported OS, which, in and of itself is not a show stopper, as the install scripts are merely a convenience. It's safe to say that some or all maia components should be able to run on any Unix-like OS.
 
 Contributed scripts for additional distros/platforms are welcome.
 
