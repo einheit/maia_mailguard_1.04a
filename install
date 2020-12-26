@@ -4,7 +4,9 @@ DBG=0
 DEF=0
 
 # get os
-if [ -f /etc/redhat-release ]; then
+if [ -f /etc/oracle-release ]; then
+  export LXTYPE=RHEL
+elif [ -f /etc/redhat-release ]; then
   export LXTYPE=RHEL
 elif [ -f /etc/SuSE-release ]; then
   export LXTYPE=SUSE
@@ -36,6 +38,11 @@ if [ $LXTYPE == "RHEL" ]; then
     echo "installer: ${RHID}-${RREL}.sh"
     echo "### DEBUG ###"
     echo
+  fi
+  if [ $RHID == 'ol' ];
+  then
+      RHID=oracle
+      RREL=`echo $RREL | awk -F\. '{ print $1 }'`
   fi
   if [ -f installers/${RHID}-${RREL}.sh ]; then
     DEF=1
