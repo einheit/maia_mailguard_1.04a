@@ -151,7 +151,7 @@ mkdir -p /var/www/html/maia
 cp -r php/* /var/www/html/maia
 
 # enable services
-cp contrib/maiad_init_ubuntu /etc/init.d/maiad
+cp contrib/maiad.service /etc/systemd/system
 systemctl enable maiad
 
 DBINST=`grep DB_INSTALL installer.tmpl | wc -l`
