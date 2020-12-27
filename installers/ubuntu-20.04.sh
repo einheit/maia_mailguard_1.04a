@@ -41,6 +41,9 @@ read
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
 
+# sanity check -
+apt update
+
 # set locale for apt 
 apt install -y locales
 cp contrib/locale.gen /etc

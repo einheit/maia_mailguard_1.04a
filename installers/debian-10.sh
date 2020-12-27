@@ -41,6 +41,9 @@ read
 # suppress dialog boxes for package installs
 export DEBIAN_FRONTEND=noninteractive
 
+# basic sanity check -
+apt update
+
 # set locale for apt 
 apt install -y locales
 cp contrib/locale.gen /etc
@@ -48,6 +51,10 @@ cp contrib/locale.gen /etc
 
 # make sure perl is installed 
 apt-get -y install perl
+
+# make sure we have postfix
+apt remove --purge exim4  exim4-base  exim4-config exim4-daemon-light
+apt-get install -y postfix
 
 # find out what we need to change
 process-changes.sh
@@ -112,7 +119,9 @@ mkdir -p  /var/lib/maia/templates
 cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
-chown -R maia.maia /var/lib/maia/db
+
+chown -R maia.maia /var/lib/maia
+chown root.root /var/lib/maia/maiad
 chown -R maia.clamav /var/lib/maia/tmp
 chmod 2775 /var/lib/maia/tmp
 
@@ -128,8 +137,6 @@ apt install -y pax
 apt install -y unrar || apt install -y unrar-free || echo "unrar not found"
 
 # configtest.pl should work now unless installing a local DB server
-
-apt-get install -y postfix
 
 apt-get install -y clamav 
 apt-get install -y clamav-daemon
