@@ -108,11 +108,16 @@ mkdir -p  /var/lib/maia/tmp
 mkdir -p  /var/lib/maia/db
 mkdir -p  /var/lib/maia/scripts
 mkdir -p  /var/lib/maia/templates
+
 cp files/maiad /var/lib/maia/
 cp -r maia_scripts/* /var/lib/maia/scripts/
 cp -r maia_templates/* /var/lib/maia/templates/
-chown -R maia.maia /var/lib/maia/db
-chown -R maia /var/lib/maia/tmp
+
+chown -R maia.maia /var/lib/maia
+chown root.root /var/lib/maia/maiad
+chown -R maia.clamav /var/lib/maia/tmp
+chmod 2775 /var/lib/maia/tmp
+
 
 # maia helpers
 apt install -y arc
@@ -129,8 +134,6 @@ apt-get install -y postfix
 apt-get install -y clamav 
 apt-get install -y clamav-daemon
 apt-get install -y clamav-freshclam
-chgrp -R clamav /var/lib/maia/tmp
-chmod 2775 /var/lib/maia/tmp
 cp /etc/clamav/clamd.conf /etc/clamav/clamd.conf_ubuntu_orig-$$
 cp contrib/clamd-ubuntu-maia-tcp.conf /etc/clamav/clamd.conf
 
@@ -176,11 +179,34 @@ echo "stage 1 install complete"
 #
 # the database should be working at this point.
 #
+
+# handle apparmor profiles for clamd and freshclam
+ln -s /etc/apparmor.d/usr.sbin.clamd /etc/apparmor.d/disable/
+apparmor_parser -R /etc/apparmor.d/disable/usr.sbin.clamd
+
+ln -s /etc/apparmor.d/usr.bin.freshclam /etc/apparmor.d/disable/
+apparmor_parser -R /etc/apparmor.d/disable/usr.bin.freshclam
+
+
+# populate the db before starting clamd
+freshclam
+
+# make sure the db is there before trying to start clamd
+go=`sigtool -V|awk -F\/ '{ print $2 }'|wc -w`
+while [ $go == "0" ]
+do
+	echo "waiting for clam signature db update"
+	sleep 10
+	go=`sigtool -V|awk -F\/ '{ print $2 }'|wc -w`
+done
+echo "database populated"
+
+# start freshclam and clamd
+/etc/init.d/clamav-freshclam start
+/etc/init.d/clamav-daemon start
+
 # start maiad 
 /etc/init.d/maiad start
-# start clamd
-/etc/init.d/clamav-daemon start
-/etc/init.d/clamav-freshclam start
 
 #
 # load the spamassassin rulesets -
