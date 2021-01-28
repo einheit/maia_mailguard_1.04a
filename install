@@ -22,7 +22,7 @@ if [ $LXTYPE == "RHEL" ]; then
 # RHEL variant -
   if [ -f /etc/os-release ]; then
     RHID=`grep '^ID=' /etc/os-release|awk -F= '{ print $2 }' | tr -d \"`
-    RREL=`grep '^VERSION_ID=' /etc/os-release | awk -F= '{ print $2 }' | tr -d \"`
+    RREL=`grep '^VERSION_ID=' /etc/os-release | awk -F= '{ print $2 }' | tr -d \" | cut -c1-1`
   else
     # looks like an older release
     RAWVER=`cat /etc/redhat-release`
