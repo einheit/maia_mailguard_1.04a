@@ -155,6 +155,7 @@ cp -r php/* /var/www/html/maia
 # enable services
 systemctl enable maiad.service
 systemctl enable clamd.service
+systemctl enable freshclam.service
 
 # install mysql client to begin with - 
 yum install -y mariadb 
