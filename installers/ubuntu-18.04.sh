@@ -70,7 +70,7 @@ apt-get install -y libencode-detect-perl
 apt-get install -y libforks-perl
 apt-get install -y libmail-dkim-perl
 apt-get install -y libnet-cidr-lite-perl
-apt-get-install -y libnet-ldap-perl
+apt-get install -y libnet-ldap-perl
 apt-get install -y libnet-server-perl
 apt-get install -y libtemplate-perl
 apt-get install -y libtext-csv-perl
