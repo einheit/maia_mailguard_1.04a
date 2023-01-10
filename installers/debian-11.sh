@@ -85,6 +85,7 @@ apt-get install -y libtext-csv-perl
 apt-get install -y libunix-syslog-perl
 apt-get install -y perl-Net-DNS-Nameserver
 apt-get install -y razor
+apt-get install -y libmail-spf-perl
 apt-get install -y spamassassin
 #
 #
@@ -135,6 +136,9 @@ apt install -y cabextract
 apt install -y lzop
 apt install -y pax
 apt install -y unrar || apt install -y unrar-free || echo "unrar not found"
+
+# a handy tool for a quick check
+cp -a contrib/check-maia-ports.sh /usr/local/bin/
 
 # configtest.pl should work now unless installing a local DB server
 

@@ -136,6 +136,9 @@ apt install -y lzop
 apt install -y pax
 apt install -y unrar || apt install -y unrar-free || echo "unrar not found"
 
+# a handy tool for a quick check
+cp -a contrib/check-maia-ports.sh /usr/local/bin/
+
 # configtest.pl should work now unless installing a local DB server
 
 apt-get install -y clamav 

@@ -100,6 +100,9 @@ zypper in -y lzop
 zypper in -y pax
 zypper in -y unrar
 
+# a handy tool for a quick check
+cp -a contrib/check-maia-ports.sh /usr/local/bin/
+
 # configtest.pl should work unless installing local DB
 
 zypper in -y clamav

@@ -134,6 +134,10 @@ yum install -y cpio
 yum install -y lzop
 yum install -y pax
 
+# a handy tool for a quick check
+cp -a contrib/check-maia-ports.sh /usr/local/bin/
+
+
 # configtest.pl should work now, unless installing a local DB
 
 #
