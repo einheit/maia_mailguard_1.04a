@@ -74,37 +74,39 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminviruses.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminviruses.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminviruses.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminviruses.php" . $sid);
+    exit();
+}
 
-    $sth = $dbh->prepare("SELECT virus_name, virus_alias, virus_id " .
+    $sth = $dbh->prepare(
+        "SELECT virus_name, virus_alias, virus_id " .
               "FROM maia_viruses, maia_virus_aliases " .
               "WHERE maia_viruses.id = maia_virus_aliases.virus_id " .
-              "ORDER BY virus_alias ASC");
+        "ORDER BY virus_alias ASC"
+    );
     $res = $sth->execute();
     if (PEAR::isError($sth)) { 
         die($sth->getMessage()); 
@@ -126,4 +128,4 @@
 
     $smarty->display('adminviruses.tpl');
     
-?>
+    ?>

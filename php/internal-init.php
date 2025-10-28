@@ -74,10 +74,10 @@
      *
      */
 
-    require_once ("./core.php");
-    require_once ("./maia_db.php");
-    require_once ("./display.php");
-    require_once ("./smtp.php");
+    require_once "./core.php";
+    require_once "./maia_db.php";
+    require_once "./display.php";
+    require_once "./smtp.php";
 
     // Set some default values so smarty.php doesn't choke.
     $uid = 0;
@@ -86,134 +86,139 @@
     $sid = ""; 
 
     // Determine the user's language preference
-    if (isset($_GET["lang"]) && strlen($_GET["lang"]) == 2 ) {
-       $display_language = trim($_GET["lang"]);
-    } else {
-       $display_language = $default_display_language;
-    }
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/smtp.php");
-    require_once ("./locale/$display_language/internal-init.php");
+if (isset($_GET["lang"]) && strlen($_GET["lang"]) == 2 ) {
+    $display_language = trim($_GET["lang"]);
+} else {
+    $display_language = $default_display_language;
+}
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/smtp.php";
+    require_once "./locale/$display_language/internal-init.php";
 
-    require_once ("./smarty.php");
-    $smarty->assign("display_language",$display_language);
-    $smarty->assign("error","");
+    require_once "./smarty.php";
+    $smarty->assign("display_language", $display_language);
+    $smarty->assign("error", "");
 
     // Only show this page if we've selected internal
     // authentication and there's no current superadmin
-    if (($auth_method != "internal") || (get_superadmin_id() > 0)) {
-        header("Location: /index.php");
-        exit();
+if (($auth_method != "internal") || (get_superadmin_id() > 0)) {
+    header("Location: /index.php");
+    exit();
+}
+
+if (isset($_POST["submit"])) {
+    $smarty->assign("submitted", true);
+    if (isset($_POST["your_email"])) {
+        $your_email = trim($_POST["your_email"]);
+    } else {
+        $your_email = "";
+    }
+    if (isset($_POST["admin_email"])) {
+        $admin_email = trim($_POST["admin_email"]);
+    } else {
+        $admin_email = "";
+    }
+    if (isset($_POST["reminder_login_url"])) {
+        $reminder_login_url = trim($_POST["reminder_login_url"]);
+    } else {
+        $reminder_login_url = "";
+    }
+    if (isset($_POST["newuser_template_file"])) {
+        $newuser_template_file = trim($_POST["newuser_template_file"]);
+    } else {
+        $newuser_template_file = "";
+    }
+        
+    if (isset($_POST["trusted_server"])) {
+        $trusted_server = trim($_POST["trusted_server"]);
+    } else {
+        $trusted_server = "";
+    }
+        
+    if (isset($_POST["trusted_port"])) {
+        $trusted_port = trim($_POST["trusted_port"]);
+    } else {
+        $trusted_port = "";
     }
 
-    if (isset($_POST["submit"])) {
-        $smarty->assign("submitted", true);
-        if (isset($_POST["your_email"])) {
-            $your_email = trim($_POST["your_email"]);
-        } else {
-            $your_email = "";
-        }
-        if (isset($_POST["admin_email"])) {
-            $admin_email = trim($_POST["admin_email"]);
-        } else {
-            $admin_email = "";
-        }
-        if (isset($_POST["reminder_login_url"])) {
-            $reminder_login_url = trim($_POST["reminder_login_url"]);
-        } else {
-            $reminder_login_url = "";
-        }
-        if (isset($_POST["newuser_template_file"])) {
-            $newuser_template_file = trim($_POST["newuser_template_file"]);
-        } else {
-            $newuser_template_file = "";
-        }
-        
-        if (isset($_POST["trusted_server"])) {
-            $trusted_server = trim($_POST["trusted_server"]);
-        } else {
-            $trusted_server = "";
-        }
-        
-        if (isset($_POST["trusted_port"])) {
-            $trusted_port = trim($_POST["trusted_port"]);
-        } else {
-            $trusted_port = "";
-        }
+    $sth = $dbh->prepare(
+        "UPDATE maia_config SET enable_user_autocreation = 'N', " .
+                                     "internal_auth = 'Y', " .
+                                     "admin_email = ?, " .
+                                     "reminder_login_url = ?, " .
+                                     "newuser_template_file = ?, " .
+                                     "smtp_server = ?, " .
+                                     "smtp_port = ? " . 
+                                   "WHERE id = 0"
+    );
+    $sth->execute(
+        array($admin_email,
+                               $reminder_login_url,
+                               $newuser_template_file,
+                               $trusted_server,
+                               $trusted_port
+                               )
+    );
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
 
-        $sth = $dbh->prepare("UPDATE maia_config SET enable_user_autocreation = 'N', " .
-                                         "internal_auth = 'Y', " .
-                                         "admin_email = ?, " .
-                                         "reminder_login_url = ?, " .
-                                         "newuser_template_file = ?, " .
-                                         "smtp_server = ?, " .
-                                         "smtp_port = ? " . 
-                                       "WHERE id = 0");
-        $sth->execute(array($admin_email,
-                                   $reminder_login_url,
-                                   $newuser_template_file,
-                                   $trusted_server,
-                                   $trusted_port
-                                   ));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
+    $new_email = get_rewritten_email_address($your_email, $address_rewriting_type);
+    $username = $new_email;
 
-        $new_email = get_rewritten_email_address($your_email, $address_rewriting_type);
-        $username = $new_email;
+    $new_user_id = add_user($username, $new_email);
+    if($new_user_id === -1) {
+        $smarty->assign("error", "This superuser account already exists. It must be removed from the database before recreating.");
+    }
 
-        $new_user_id = add_user($username, $new_email);
-        if($new_user_id === -1)
-        {
-		$smarty->assign("error", "This superuser account already exists. It must be removed from the database before recreating.");
-        }
+    // Generate a random password and assign it to the new user
+    list($password, $digest) = generate_random_password();
+    $sth = $dbh->prepare("UPDATE maia_users SET password = ? WHERE id = ?");
+    $sth->execute(array($digest, $new_user_id));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $sth->free();
 
-        // Generate a random password and assign it to the new user
-        list($password, $digest) = generate_random_password();
-        $sth = $dbh->prepare("UPDATE maia_users SET password = ? WHERE id = ?");
-        $sth->execute(array($digest, $new_user_id));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        $sth->free();
-
-        $fh = fopen($newuser_template_file, "r");
-        if ($fh) {
-          $body = fread($fh, filesize($newuser_template_file));
-          fclose($fh);
-          $body = preg_replace("/%%ADMINEMAIL%%/", $admin_email, $body);
-          $body = preg_replace("/%%LOGIN%%/", $username, $body);
-          $body = preg_replace("/%%PASSWORD%%/", $password, $body);
-          $body = preg_replace("/%%LOGINURL%%/", $reminder_login_url, $body);
-          $result = smtp_send($admin_email, $new_email, $body);
-          if (strncmp($result, "2", 1) != 0) {
+    $fh = fopen($newuser_template_file, "r");
+    if ($fh) {
+        $body = fread($fh, filesize($newuser_template_file));
+        fclose($fh);
+        $body = preg_replace("/%%ADMINEMAIL%%/", $admin_email, $body);
+        $body = preg_replace("/%%LOGIN%%/", $username, $body);
+        $body = preg_replace("/%%PASSWORD%%/", $password, $body);
+        $body = preg_replace("/%%LOGINURL%%/", $reminder_login_url, $body);
+        $result = smtp_send($admin_email, $new_email, $body);
+        if (strncmp($result, "2", 1) != 0) {
             $smarty->assign("error", $result);
-          }
-        } else {
-          $smarty->assign("error", "Unable to open newuser.tpl template file: Please check you path and permissions."); 
         }
     } else {
-        $smarty->assign("submitted", false);
-        $sth = $dbh->prepare("SELECT admin_email, " .
-                         "reminder_login_url, " .
-                         "newuser_template_file, " .
-                         "smtp_server, " .
-                         "smtp_port " .
-                  "FROM maia_config WHERE id = 0");
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        if ($row = $res->fetchrow()) {
-            $admin_email = $row["admin_email"];
-            $reminder_login_url = $row["reminder_login_url"];
-            $newuser_template_file = $row["newuser_template_file"];
-            $trusted_server = $row["smtp_server"];
-            $trusted_port = $row["smtp_port"];
+        $smarty->assign("error", "Unable to open newuser.tpl template file: Please check you path and permissions."); 
+    }
+} else {
+    $smarty->assign("submitted", false);
+    $sth = $dbh->prepare(
+        "SELECT admin_email, " .
+                     "reminder_login_url, " .
+                     "newuser_template_file, " .
+                     "smtp_server, " .
+                     "smtp_port " .
+              "FROM maia_config WHERE id = 0"
+    );
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    if ($row = $res->fetchrow()) {
+        $admin_email = $row["admin_email"];
+        $reminder_login_url = $row["reminder_login_url"];
+        $newuser_template_file = $row["newuser_template_file"];
+        $trusted_server = $row["smtp_server"];
+        $trusted_port = $row["smtp_port"];
             
-        }
-       $sth->free();
+    }
+    $sth->free();
 } 
 
        $smarty->assign("newuser_template_file", $newuser_template_file);

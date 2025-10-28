@@ -74,24 +74,24 @@
      */
 
     // Page subtitle
-    $lang['banner_subtitle']			=	"Amministrazione: Lingue";
+    $lang['banner_subtitle']            =    "Amministrazione: Lingue";
 
     // Table headers
-    $lang['header_languages_menu']		=	"Lingue Installate";
-    $lang['header_uninstall']			=	"Disinstalla";
-    $lang['header_language']			=	"Lingua";
-    $lang['header_abbrev']			=	"Codice";
-    $lang['header_install_language']		=	"Installa Nuova Lingua";
+    $lang['header_languages_menu']        =    "Lingue Installate";
+    $lang['header_uninstall']            =    "Disinstalla";
+    $lang['header_language']            =    "Lingua";
+    $lang['header_abbrev']            =    "Codice";
+    $lang['header_install_language']        =    "Installa Nuova Lingua";
 
     // Text messages
-    $lang['text_no_languages']			=	"Nessuna lingua è stata installata.";
-    $lang['text_no_uninstalled_languages']	=	"Nessuna lingua disinstallata è disponibile.";
-    $lang['text_required']			=	"richiesto";
+    $lang['text_no_languages']            =    "Nessuna lingua è stata installata.";
+    $lang['text_no_uninstalled_languages']    =    "Nessuna lingua disinstallata è disponibile.";
+    $lang['text_required']            =    "richiesto";
 
     // Buttons
-    $lang['button_uninstall']			=	"Disinstalla Lingue Selezionate";
-    $lang['button_install']			=	"Installa Lingua";
+    $lang['button_uninstall']            =    "Disinstalla Lingue Selezionate";
+    $lang['button_install']            =    "Installa Lingua";
 
     // Links
-    $lang['link_admin_menu']			=	"Ritorna al Menù Amministrazione";
+    $lang['link_admin_menu']            =    "Ritorna al Menù Amministrazione";
 ?>

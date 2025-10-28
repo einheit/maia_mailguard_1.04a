@@ -95,8 +95,8 @@
                                 "för virus och filtrera bort oönskad UBE (Unsolicited Bulk E-mail), " .
                                 "också känt som \"spam\".  För att få det mesta ut ur detta system " .
                                 "kan det vara intressant att läsa denna dokumentation till fullo." .
-				"<BR><i>Tyvärr har jag inte haft översätta denna till fullo. Bidrag gärna" . 
-				"till den del av översättningen som saknas. (översättarens anmärkning)</i>";
+                "<BR><i>Tyvärr har jag inte haft översätta denna till fullo. Bidrag gärna" . 
+                "till den del av översättningen som saknas. (översättarens anmärkning)</i>";
 
     $lang['help_introduction_2'] =  "Maia Mailguard is your interface for controlling the way the mail " .
                                 "server processes your mail.  As you're aware by now, you login using " .

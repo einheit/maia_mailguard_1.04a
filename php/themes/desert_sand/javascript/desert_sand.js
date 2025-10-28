@@ -78,14 +78,11 @@
      http://jqueryjs.googlecode.com/svn/trunk/plugins/checkboxes/jquery.checkboxes.js
      Copyright (c) 2006-2008 Sam Collett (http://www.texotela.co.uk)
      Used under MIT license.  */
-  jQuery.fn.toggleCheckboxes = function()
-  {
+  jQuery.fn.toggleCheckboxes = function () {
     this.each(
-        function()
-        {
+        function () {
             var checked = jQuery("input[type=checkbox]", this).each(
-                function()
-                {
+                function () {
                     this.checked = !this.checked;
                 }
             );
@@ -93,40 +90,36 @@
     );
   };
   
-  jQuery.fn.allCheckboxes = function()
-  {
-    this.each(
-        function()
-        {
-            var checked = jQuery("input[type=checkbox]", this).each(
-                function()
-                {
-                    this.checked = true;
-                }
-            );
+    jQuery.fn.allCheckboxes = function () {
+        this.each(
+            function () {
+                var checked = jQuery("input[type=checkbox]", this).each(
+                    function () {
+                        this.checked = true;
+                    }
+                );
+            }
+        );
+    };
+  
+    jQuery.fn.noCheckboxes = function () {
+        this.each(
+            function () {
+                var checked = jQuery("input[type=checkbox]", this).each(
+                    function () {
+                        this.checked = false;
+                    }
+                );
+            }
+        );
+    };
+  
+  
+  
+    $(document).ready(
+        function () {
+
+            $('#cachelist').simpletip('.HelpTipAnchor', {});
+
         }
     );
-  };
-  
-  jQuery.fn.noCheckboxes = function()
-  {
-    this.each(
-        function()
-        {
-            var checked = jQuery("input[type=checkbox]", this).each(
-                function()
-                {
-                    this.checked = false;
-                }
-            );
-        }
-    );
-  };
-  
-  
-  
-$(document).ready(function() {
-
-$('#cachelist').simpletip('.HelpTipAnchor', {});
-
-});

@@ -74,109 +74,109 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
-    require_once ("maia_db.php");
-    require_once ("mime.php");
-    require_once ("Mail/mimeDecode.php");  // PEAR::Mail::mimeDecode.php
-    if (extension_loaded('mcrypt')) {
-        require_once ("encrypt.php");
-    }
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "display.php";
+    require_once "maia_db.php";
+    require_once "mime.php";
+    require_once "Mail/mimeDecode.php";  // PEAR::Mail::mimeDecode.php
+if (extension_loaded('mcrypt')) {
+    include_once "encrypt.php";
+}
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/mime.php");
-    require_once ("./locale/$display_language/reportspam.php");
-    require_once ("./locale/$display_language/quarantine.php");
-    require_once ("./locale/$display_language/viewmail.php");
-    require_once ("./locale/$display_language/listcache.php");
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/mime.php";
+    require_once "./locale/$display_language/reportspam.php";
+    require_once "./locale/$display_language/quarantine.php";
+    require_once "./locale/$display_language/viewmail.php";
+    require_once "./locale/$display_language/listcache.php";
 
-	require_once ("smarty.php");
+    require_once "smarty.php";
 //print_r($_POST);
 //print_r($_GET);
 //      exit();
    // Admins (including the superadmin) should not be looking at
    // other people's mail!
-   if (!ok_to_impersonate($euid, $uid)) {
-       header("Location: stats.php" . $sid);
-       exit;
-   }
-   if (isset($_GET['mail_id'])) {
-	  $id = intval($_GET["mail_id"]);
-   } elseif (isset($_GET["id"])) {
-      $id = intval($_GET["id"]);
-   } else {
-      header("Location: list-cache.php" . $msid . "cache_type=ham");
-   }
-   if (isset($_GET["cache_type"])) {
-      $cache_type = trim($_GET["cache_type"]);
-   } else {
-      header("Location: list-cache.php" . $msid . "cache_type=ham");
-   }
-   if (isset($_GET["type"])) {//DGM FIXME is this needed?
-      $type = trim($_GET["type"]);
-   } else {
-      $type = "";
-   }
-   if (isset($_GET["raw"])) { 
-      $raw = (trim($_GET["raw"]) == "y");
-   } else {
-      $raw = false;
-   }
+if (!ok_to_impersonate($euid, $uid)) {
+    header("Location: stats.php" . $sid);
+    exit;
+}
+if (isset($_GET['mail_id'])) {
+    $id = intval($_GET["mail_id"]);
+} elseif (isset($_GET["id"])) {
+    $id = intval($_GET["id"]);
+} else {
+    header("Location: list-cache.php" . $msid . "cache_type=ham");
+}
+if (isset($_GET["cache_type"])) {
+    $cache_type = trim($_GET["cache_type"]);
+} else {
+    header("Location: list-cache.php" . $msid . "cache_type=ham");
+}
+if (isset($_GET["type"])) {//DGM FIXME is this needed?
+    $type = trim($_GET["type"]);
+} else {
+    $type = "";
+}
+if (isset($_GET["raw"])) { 
+    $raw = (trim($_GET["raw"]) == "y");
+} else {
+    $raw = false;
+}
    
-   if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == 'true') {
-       $ajax = true;
-   } else {
-       $ajax = false;
-   }
+if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == 'true') {
+    $ajax = true;
+} else {
+    $ajax = false;
+}
 
-   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-	    require_once ("cache.php");
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    include_once "cache.php";
 
-    	$cache= new MessageCache($cache_type,  $dbh, get_database_type($dbh), $smarty);
-	    $message = $cache->confirm_cache($euid);
-	    
-	    
-	    if ($ajax) { //this section should be moved to a template somewhere.
-	        ?>
-	        tb_remove();
-	        <?php
-	        if ($cache->confirmed_actions('resent') == 0) { // if a single message was resent we don't delete it from the list ?>
-	        $('#row_<?php echo $id; ?>').fadeOut("slow");
-	        $('#row_<?php echo $id; ?>').remove();
-	        <?php } ?>
-	        $('#messagebox').html('<div class="messagebox"><?php 
-	            echo strtr($message, array('\\'=>'\\\\',"'"=>"\\'",'"'=>'\\"',"\r"=>'\\r',"\n"=>'\\n','</'=>'<\/')); 
-	            //thanks to smarty or that escape function!
-	            ?></div>');
-	        $('#messagebox div').effect("highlight", { 
+    $cache= new MessageCache($cache_type,  $dbh, get_database_type($dbh), $smarty);
+    $message = $cache->confirm_cache($euid);
+        
+        
+    if ($ajax) { //this section should be moved to a template somewhere.
+        ?>
+            tb_remove();
+            <?php
+            if ($cache->confirmed_actions('resent') == 0) { // if a single message was resent we don't delete it from the list ?>
+            $('#row_<?php echo $id; ?>').fadeOut("slow");
+            $('#row_<?php echo $id; ?>').remove();
+            <?php } ?>
+            $('#messagebox').html('<div class="messagebox"><?php 
+                echo strtr($message, array('\\'=>'\\\\',"'"=>"\\'",'"'=>'\\"',"\r"=>'\\r',"\n"=>'\\n','</'=>'<\/')); 
+                //thanks to smarty or that escape function!
+            ?></div>');
+            $('#messagebox div').effect("highlight", { 
                     color: "#FFD324" 
                 }, 
                 2000);
-	            <?php
-	        exit;
-	    } else {
-          $_SESSION['message'] = $message;
-          header("Location: list-cache.php" . $msid . "cache_type=" . $cache_type);
-        }
-   } 
-   
-    if ($raw) {
-        $bodyclass = "rawmail";
+                <?php
+                exit;
     } else {
-    	$bodyclass = "decodedmail";
+         $_SESSION['message'] = $message;
+         header("Location: list-cache.php" . $msid . "cache_type=" . $cache_type);
     }
+} 
+   
+if ($raw) {
+    $bodyclass = "rawmail";
+} else {
+    $bodyclass = "decodedmail";
+}
 
     $use_icons = (get_config_value("use_icons") == "Y");
 
-	$smarty->assign("lang", $lang);
-	$smarty->assign("id", $id);
-	$smarty->assign("type", $type);
-	$smarty->assign("raw", $raw);
-	$smarty->assign("cache_type", $cache_type);
-	
-	
+    $smarty->assign("lang", $lang);
+    $smarty->assign("id", $id);
+    $smarty->assign("type", $type);
+    $smarty->assign("raw", $raw);
+    $smarty->assign("cache_type", $cache_type);
+    
+    
    // Open and read the gzipped mail file, and display the
    // contents for basic MIME types:
    //
@@ -191,63 +191,65 @@
    //    7bit
    //
 
-   $sth = $dbh->prepare("SELECT maia_mail.contents, maia_mail.sender_email " .
+$sth = $dbh->prepare(
+    "SELECT maia_mail.contents, maia_mail.sender_email " .
              "FROM maia_mail, maia_mail_recipients " .
              "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
              "AND maia_mail.id = ? " .
-             "AND maia_mail_recipients.recipient_id = ?");
+    "AND maia_mail_recipients.recipient_id = ?"
+);
    $res = $sth->execute(array($id, $euid));
-   if ($row = $res->fetchrow()) {
-       $contents = $row["contents"];
-       $sender_email = $row['sender_email'];
+if ($row = $res->fetchrow()) {
+    $contents = $row["contents"];
+    $sender_email = $row['sender_email'];
 
-       if (extension_loaded('mcrypt')) {
-	   if (text_is_encrypted($contents)) {
-	   	 $key = get_encryption_key();
-	   	 $contents = decrypt_text($key, $contents);
-	   }
-       }
+    if (extension_loaded('mcrypt')) {
+        if (text_is_encrypted($contents)) {
+            $key = get_encryption_key();
+            $contents = decrypt_text($key, $contents);
+        }
+    }
 
-      $smarty->assign("spamreport_rows", display_spam_report($id));
+    $smarty->assign("spamreport_rows", display_spam_report($id));
 
-       if (!$raw) {
+    if (!$raw) {
 
-          // Try to decode the mail and display all of its parts.
-          $mail = new Mail_mimeDecode((get_magic_quotes_gpc() ? stripslashes($contents) : $contents));
-          $args['include_bodies'] = true;
-          $args['decode_bodies'] = true;
-          $args['decode_headers'] = false;  // the inconv decoding will handle the headers
-          $structure = $mail->decode($args);
-          $smarty->assign("message", display_parts($structure));
-          $headers = $structure->headers;
-          foreach ($headers  as  $key => $value) {
-              if (is_array($value)) {
-                  foreach($value as $itemkey => $item) {
-                      $headers["$key"][$itemkey] = htmlspecialchars(last_ditch_mime_decode(iconv_mime_decode($item,2, 'utf-8'), get_charset($structure)), ENT_QUOTES, 'utf-8');
-                  }
-              } else {
-                  $headers["$key"] = htmlspecialchars(last_ditch_mime_decode(iconv_mime_decode($value,2, 'utf-8'), get_charset($structure)), ENT_QUOTES, 'utf-8');
-              }
-          }
-          if (isset($headers['content-type'])) {
-              unset($headers['content-type']);
-          }
-          $smarty->assign('headers', $headers);
-          $smarty->assign('sender_email', $sender_email);
+        // Try to decode the mail and display all of its parts.
+        $mail = new Mail_mimeDecode((get_magic_quotes_gpc() ? stripslashes($contents) : $contents));
+        $args['include_bodies'] = true;
+        $args['decode_bodies'] = true;
+        $args['decode_headers'] = false;  // the inconv decoding will handle the headers
+        $structure = $mail->decode($args);
+        $smarty->assign("message", display_parts($structure));
+        $headers = $structure->headers;
+        foreach ($headers  as  $key => $value) {
+            if (is_array($value)) {
+                foreach($value as $itemkey => $item) {
+                    $headers["$key"][$itemkey] = htmlspecialchars(last_ditch_mime_decode(iconv_mime_decode($item, 2, 'utf-8'), get_charset($structure)), ENT_QUOTES, 'utf-8');
+                }
+            } else {
+                $headers["$key"] = htmlspecialchars(last_ditch_mime_decode(iconv_mime_decode($value, 2, 'utf-8'), get_charset($structure)), ENT_QUOTES, 'utf-8');
+            }
+        }
+        if (isset($headers['content-type'])) {
+            unset($headers['content-type']);
+        }
+        $smarty->assign('headers', $headers);
+        $smarty->assign('sender_email', $sender_email);
 
 
-       } else {
+    } else {
 
-          // Dump the raw contents of the e-mail, making sure to
-          // escape any HTML tags it might contain, so the raw source
-          // gets displayed.
-          $smarty->assign("message", "<pre>" . htmlentities(wordwrap($contents, 70)) . "</pre>");
+        // Dump the raw contents of the e-mail, making sure to
+        // escape any HTML tags it might contain, so the raw source
+        // gets displayed.
+        $smarty->assign("message", "<pre>" . htmlentities(wordwrap($contents, 70)) . "</pre>");
 
-       }
-	   $smarty->assign("error","");
-   } else {
-   	   $smarty->assign("error","error");
-      }
+    }
+    $smarty->assign("error", "");
+} else {
+       $smarty->assign("error", "error");
+}
    $sth->free();
    $smarty->assign("return_route", "view.php"); // depreciated, needed for legacy support in viewmail.tpl.
    $smarty->assign("ajax", $ajax);

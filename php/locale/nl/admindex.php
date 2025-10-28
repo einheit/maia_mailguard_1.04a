@@ -84,7 +84,7 @@
     $lang['menu_domains'] =  "Domeinen";
     $lang['menu_viruses'] =  "Virus Aliasen";
     $lang['menu_languages'] =  "Talen";
-	$lang['menu_themes'] =  "Thema's";
+    $lang['menu_themes'] =  "Thema's";
     $lang['menu_system'] =  "Systeem Configuratie";
     $lang['menu_statistics'] =  "Statistieken";
     $lang['menu_help'] =  "Hulp voor beheerders";

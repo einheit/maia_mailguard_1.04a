@@ -91,7 +91,7 @@
 
     // Introduction
     $lang['help_introduction_1'] =  "Sjekk vår <a href=\"http://mx30.egroup.no/maiaforum/viewforum.php?f=3\">OSS/FAQ</a> !<br> <br> " .
-				"The mail server you're using is a sophisticated system designed " .
+                "The mail server you're using is a sophisticated system designed " .
                                 "not only to deliver and route your e-mail, but to scan it for " .
                                 "viruses and filter out unwanted UBE (Unsolicited Bulk E-mail), " .
                                 "coloquially known as \"spam\".  To get the most out of this system " .
@@ -528,5 +528,5 @@
     // Credits
     $lang['help_credits_1'] =  "<b><i>%s</i></b> er skrevet av %s, som er et webbasert epost filtreringssystem " .
                            "basert på %s og %s.  Virus-scanningen er utført av %s, %s, og %s." .
-		  	   "<br>Systemet er tilpasset og oversatt til norsk av Egroup ASA Ezone ved Erik Weber." ;
-			?>
+                 "<br>Systemet er tilpasset og oversatt til norsk av Egroup ASA Ezone ved Erik Weber." ;
+?>

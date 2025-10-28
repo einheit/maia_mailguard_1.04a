@@ -91,4 +91,4 @@
                "bf"     => "Zablokovane prilohy",
                "os"     => "Prekroceni velikosti"    
                );
-?>
+    ?>

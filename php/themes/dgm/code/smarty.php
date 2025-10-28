@@ -1,5 +1,5 @@
 <?php
-require_once ("./locale/$display_language/welcome.php");
+require_once "./locale/$display_language/welcome.php";
 
 $cache_count = count_cache_items($euid);
 $smarty->assign('hamcount', array_key_exists('H', $cache_count) ? $cache_count['H']['count'] : 0);
@@ -9,4 +9,4 @@ $smarty->assign('headercount', array_key_exists('B', $cache_count) ? $cache_coun
 $smarty->assign('bannedcount', array_key_exists('F', $cache_count) ? $cache_count['F']['count'] : 0);
 
 
- ?>
+?>

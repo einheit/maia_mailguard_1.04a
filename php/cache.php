@@ -73,7 +73,8 @@
      * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      *
      */
-class MessageCache {
+class MessageCache
+{
     
     var $type;
     var $dbh;
@@ -89,7 +90,8 @@ class MessageCache {
     var $rescued = 0;
     var $resent = 0;
     
-    function MessageCache($type, & $dbh, $dbtype, & $smarty) {
+    function MessageCache($type, & $dbh, $dbtype, & $smarty)
+    {
         $this->smarty =& $smarty;
         $this->dbh =& $dbh;
         $this->dbtype = $dbtype;
@@ -98,127 +100,132 @@ class MessageCache {
         $this->sortby= array();
     }
     
-    function get_offset() {
+    function get_offset()
+    {
         global $_GET;
         return isset($_GET["offset"]) ? $_GET["offset"] : 0;
     }
     
-    function get_sort_field() {
+    function get_sort_field()
+    {
         switch ($this->type) {
-                case "ham": $field = "ham_cache_sort";
-                    break;
-                case "spam": $field = "spam_quarantine_sort";
-                    break;
-                case "virus": $field = "virus_quarantine_sort";
-                    break;
-                case "attachment": $field = "attachment_quarantine_sort";
-                    break;
-                case "header": $field = "header_quarantine_sort";
-                    break;
-                default: $field = "ham_cache_sort";
+        case "ham": $field = "ham_cache_sort";
+            break;
+        case "spam": $field = "spam_quarantine_sort";
+            break;
+        case "virus": $field = "virus_quarantine_sort";
+            break;
+        case "attachment": $field = "attachment_quarantine_sort";
+            break;
+        case "header": $field = "header_quarantine_sort";
+            break;
+        default: $field = "ham_cache_sort";
         }
         $this->sort_field = $field;
         return $field;
     
     }
     
-    function get_sort_stmt() {
+    function get_sort_stmt()
+    {
         switch ($this->type) {
-            case "ham": $stmt = "maia_mail_recipients.type = 'H' ";
-                    break;
-            case "spam": $stmt = "maia_mail_recipients.type IN ('S','P') ";
-                break;
-            case "virus": $stmt = "maia_mail_recipients.type = 'V' ";
-                break;
-            case "attachment": $stmt = "maia_mail_recipients.type = 'F' ";
-                break;
-            case "header": $stmt = "maia_mail_recipients.type = 'B' ";
-                break;
-            default: $stmt = "maia_mail_recipients.type = 'H' ";
+        case "ham": $stmt = "maia_mail_recipients.type = 'H' ";
+            break;
+        case "spam": $stmt = "maia_mail_recipients.type IN ('S','P') ";
+            break;
+        case "virus": $stmt = "maia_mail_recipients.type = 'V' ";
+            break;
+        case "attachment": $stmt = "maia_mail_recipients.type = 'F' ";
+            break;
+        case "header": $stmt = "maia_mail_recipients.type = 'B' ";
+            break;
+        default: $stmt = "maia_mail_recipients.type = 'H' ";
         }
         return $stmt;
     }
     
-    function set_sort_order($sort, $euid, $msid) {
+    function set_sort_order($sort, $euid, $msid)
+    {
         global $_GET, $dbh;
          $field = $this->get_sort_field();
 
          $sort = strtoupper(trim($_GET["sort"]));
-         if (strlen($sort) == 2) {
-             switch($sort[0]) {
-                 case "X":
-                 case "D":
-                 case "F":
-                 case "T":
-                 case "S":
-                     if ($sort[1] == "A" || $sort[1] == "D") {
-                         $sth = $dbh->prepare("UPDATE maia_users SET ". $field ." = ? WHERE id = ?");
-                         $sth->execute(array($sort, $euid));
-                         if (PEAR::isError($sth)) {
-                             die($sth->getMessage());
-                         }
-                         header("Location: list-cache.php" . $msid. "cache_type=". $this->type);
-                         exit;
-                     }
-                     break;
-                 default:
-                     break;
-             }
+        if (strlen($sort) == 2) {
+            switch($sort[0]) {
+            case "X":
+            case "D":
+            case "F":
+            case "T":
+            case "S":
+                if ($sort[1] == "A" || $sort[1] == "D") {
+                        $sth = $dbh->prepare("UPDATE maia_users SET ". $field ." = ? WHERE id = ?");
+                        $sth->execute(array($sort, $euid));
+                    if (PEAR::isError($sth)) {
+                        die($sth->getMessage());
+                    }
+                        header("Location: list-cache.php" . $msid. "cache_type=". $this->type);
+                        exit;
+                }
+                break;
+            default:
+                break;
+            }
             
-         }
+        }
     }
     
-    function get_sort_order($euid) {
+    function get_sort_order($euid)
+    {
         global $dbh, $msid, $sid;
         $sort = strtoupper(get_user_value($euid, $this->get_sort_field()));
              switch($sort[0]) {
-                 case "X":
-                     $this->sortby['score'] = ($sort[1] == "A" ? "xd" : "xa"); //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "score";
-                     $this->sortby['date'] = "da";
-                     $this->sortby['from'] = "fa";
-                     $this->sortby['to'] = "ta";
-                     $this->sortby['subject'] = "sa";
-                     break;
-                 case "D":
-                     $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "received_date";
-                     $this->sortby['date'] = ($sort[1] == "A" ? "dd" : "da");
-                     $this->sortby['from'] = "fa";
-                     $this->sortby['to'] = "ta";
-                     $this->sortby['subject'] = "sa";
-                     break;
-                 case "F":
-                     $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "sender_email";
-                     $this->sortby['date'] = "da";
-                     $this->sortby['from'] = ($sort[1] == "A" ? "fd" : "fa");
-                     $this->sortby['to'] = "ta";
-                     $this->sortby['subject'] = "sa";
-                     break;
-                 case "S":
-                     $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "subject";
-                     $this->sortby['date'] = "da";
-                     $this->sortby['from'] = "fa";
-                     $this->sortby['to'] = "ta";
-                     $this->sortby['subject'] = ($sort[1] == "A" ? "sd" : "sa");
-                     break;
-                 case "T":
-                     $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "envelope_to";
-                     $this->sortby['date'] = "da";
-                     $this->sortby['from'] = "fa";
-                     $this->sortby['to'] = ($sort[1] == "A" ? "td" : "ta");
-                     $this->sortby['subject'] = "sa";
-                     break;
-                 default:
-                     $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
-                     $this->sortby['column'] = "score";
-                     $this->sortby['date'] = "da";
-                     $this->sortby['from'] = "fa";
-                     $this->sortby['to'] = "ta";
-                     $this->sortby['subject'] = "sa";
+        case "X":
+            $this->sortby['score'] = ($sort[1] == "A" ? "xd" : "xa"); //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "score";
+            $this->sortby['date'] = "da";
+            $this->sortby['from'] = "fa";
+            $this->sortby['to'] = "ta";
+            $this->sortby['subject'] = "sa";
+            break;
+        case "D":
+            $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "received_date";
+            $this->sortby['date'] = ($sort[1] == "A" ? "dd" : "da");
+            $this->sortby['from'] = "fa";
+            $this->sortby['to'] = "ta";
+            $this->sortby['subject'] = "sa";
+            break;
+        case "F":
+            $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "sender_email";
+            $this->sortby['date'] = "da";
+            $this->sortby['from'] = ($sort[1] == "A" ? "fd" : "fa");
+            $this->sortby['to'] = "ta";
+            $this->sortby['subject'] = "sa";
+            break;
+        case "S":
+            $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "subject";
+            $this->sortby['date'] = "da";
+            $this->sortby['from'] = "fa";
+            $this->sortby['to'] = "ta";
+            $this->sortby['subject'] = ($sort[1] == "A" ? "sd" : "sa");
+            break;
+        case "T":
+            $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "envelope_to";
+            $this->sortby['date'] = "da";
+            $this->sortby['from'] = "fa";
+            $this->sortby['to'] = ($sort[1] == "A" ? "td" : "ta");
+            $this->sortby['subject'] = "sa";
+            break;
+        default:
+            $this->sortby['score'] = "xa"; //FIXME - depends on spam/ham/other
+            $this->sortby['column'] = "score";
+            $this->sortby['date'] = "da";
+            $this->sortby['from'] = "fa";
+            $this->sortby['to'] = "ta";
+            $this->sortby['subject'] = "sa";
              }
              if ($sort[1] == "D") {
                  $this->sort_order = "DESC";
@@ -229,7 +236,8 @@ class MessageCache {
              $this->smarty->assign("sort_order", $this->sort_order);
     }
     
-    function set_select() {
+    function set_select()
+    {
         $this->select_count = "SELECT COUNT(maia_mail.id) as CNT " .
               "FROM maia_mail_recipients " .
               "LEFT JOIN maia_mail " .
@@ -238,13 +246,13 @@ class MessageCache {
               "AND maia_mail_recipients.recipient_id = ? ";
 
         $this->select_stmt = "SELECT maia_mail.id, ";
-        if (substr($this->dbtype,0,5) == "mysql") {
+        if (substr($this->dbtype, 0, 5) == "mysql") {
 
-           $this->select_stmt .= "DATE_ADD(maia_mail.received_date, INTERVAL " . $_SESSION["clock_offset"] . " SECOND) AS received_date, ";
+            $this->select_stmt .= "DATE_ADD(maia_mail.received_date, INTERVAL " . $_SESSION["clock_offset"] . " SECOND) AS received_date, ";
 
         } elseif ($this->dbtype == "pgsql") {
 
-           $this->select_stmt .= "date_trunc('second', maia_mail.received_date + INTERVAL '" . $_SESSION["clock_offset"] . " SECOND') AS received_date, ";
+            $this->select_stmt .= "date_trunc('second', maia_mail.received_date + INTERVAL '" . $_SESSION["clock_offset"] . " SECOND') AS received_date, ";
 
         }
         $this->select_stmt .= "maia_mail.score, maia_mail.sender_email, maia_mail.subject, maia_mail.envelope_to " .
@@ -256,150 +264,157 @@ class MessageCache {
                               " ORDER BY maia_mail." . $this->sortby['column'] . " " . $this->sort_order;
     }
     
-    function confirm_cache($euid) {    
-      $message = "";
+    function confirm_cache($euid)
+    {    
+        $message = "";
 
       
-      $ham_list = array();
-      $spam_list = array();
-      $delete_list = array();
-      $resend_list = array();
+        $ham_list = array();
+        $spam_list = array();
+        $delete_list = array();
+        $resend_list = array();
       
-      global $_POST, $lang, $logger;
-      if(isset($_POST['cache_item'])) {
-          $items = $_POST['cache_item'];
-      } else {
-          $items=array();
-      }
-      foreach ($items as $type => $mail_item) {
-        foreach ($mail_item as $mail_id => $value) {
-          if ($type == "generic") {
-              $newtype = $_POST['submit'];
-          } else {
-              $newtype = $value;
-          }
-          // report item
-          if ($newtype == "spam") {
-            switch ($this->type) {
-              case 'ham':
-                // Mark the item as false negative.   It will also be marked as confirmed.               
-                record_mail_stats($euid, $mail_id, "fn");
-                $this->reported++;
-                break;
-              default:
-                $this->confirmed++;
-            }
-            array_push($spam_list, $mail_id);
-            
-          //send item
-          } elseif ($newtype == "ham") {
-            switch ($this->type) {
-              case 'ham':
-                array_push($ham_list, $mail_id);
-                $this->confirmed++;
-                break;
-              default:
-                $result = rescue_item($euid, $mail_id); // done individually because of mail delivery
-                if (strncmp($result, "2", 1) == 0) {
-                  $this->rescued++;
+        global $_POST, $lang, $logger;
+        if(isset($_POST['cache_item'])) {
+            $items = $_POST['cache_item'];
+        } else {
+            $items=array();
+        }
+        foreach ($items as $type => $mail_item) {
+            foreach ($mail_item as $mail_id => $value) {
+                if ($type == "generic") {
+                    $newtype = $_POST['submit'];
                 } else {
-                $message .= $result . "\n";                    
-                }                      
-            }              
-          //delete item.
-          } elseif ($newtype == "delete") {
-              array_push($delete_list, $mail_id);
-              $this->deleted++;
-          // resend the item and leave it in the cache
-          } elseif ($newtype == "resend") {
-              array_push($resend_list, $mail_id);
-             $this->resent++;
-          }
+                    $newtype = $value;
+                }
+                // report item
+                if ($newtype == "spam") {
+                    switch ($this->type) {
+                    case 'ham':
+                        // Mark the item as false negative.   It will also be marked as confirmed.               
+                        record_mail_stats($euid, $mail_id, "fn");
+                        $this->reported++;
+                        break;
+                    default:
+                        $this->confirmed++;
+                    }
+                    array_push($spam_list, $mail_id);
+            
+                    //send item
+                } elseif ($newtype == "ham") {
+                    switch ($this->type) {
+                    case 'ham':
+                        array_push($ham_list, $mail_id);
+                        $this->confirmed++;
+                        break;
+                    default:
+                        $result = rescue_item($euid, $mail_id); // done individually because of mail delivery
+                        if (strncmp($result, "2", 1) == 0) {
+                            $this->rescued++;
+                        } else {
+                            $message .= $result . "\n";                    
+                        }                      
+                    }              
+                    //delete item.
+                } elseif ($newtype == "delete") {
+                    array_push($delete_list, $mail_id);
+                    $this->deleted++;
+                    // resend the item and leave it in the cache
+                } elseif ($newtype == "resend") {
+                    array_push($resend_list, $mail_id);
+                    $this->resent++;
+                }
+            }
         }
-      }
       
-      if (count($ham_list) > 0)      { confirm_ham($euid, $ham_list );   }
-      if (count($spam_list) > 0)    { confirm_spam($euid, $spam_list);   }
-      if (count($delete_list) > 0 ) { delete_mail_reference($euid, $delete_list); }
-      if (count($resend_list) > 0 ) { resend_message($euid, $resend_list); }
+        if (count($ham_list) > 0) { confirm_ham($euid, $ham_list);   
+        }
+        if (count($spam_list) > 0) { confirm_spam($euid, $spam_list);   
+        }
+        if (count($delete_list) > 0 ) { delete_mail_reference($euid, $delete_list); 
+        }
+        if (count($resend_list) > 0 ) { resend_message($euid, $resend_list); 
+        }
 
-      update_mail_stats($euid, "suspected_ham");
-      if ($this->confirmed > 0) {
-        switch($this->type) {
+        update_mail_stats($euid, "suspected_ham");
+        if ($this->confirmed > 0) {
+            switch($this->type) {
             case "ham":
-              $message .= sprintf($lang['text_ham_confirmed'], $this->confirmed) . ".<br>";
-              break;
+                $message .= sprintf($lang['text_ham_confirmed'], $this->confirmed) . ".<br>";
+                break;
             case "spam":
-              $message .= sprintf($lang['text_spam_confirmed'], $this->confirmed) . ".<br>";
-              break;
+                $message .= sprintf($lang['text_spam_confirmed'], $this->confirmed) . ".<br>";
+                break;
             default:
-              $message .= sprintf($lang['text_messages_confirmed'], $this->confirmed) . ".<br>";
+                $message .= sprintf($lang['text_messages_confirmed'], $this->confirmed) . ".<br>";
+            }
         }
-      }
 
-      if ($this->reported > 0) {
-          $message .= sprintf($lang['text_spam_reported'], $this->reported) . ".<br>";
-      }
-      if ($this->deleted > 0) {
-        switch($this->type) {
-            case 'ham':
-              $message .= sprintf($lang['text_ham_deleted'], $this->deleted) . ".<br>";
-              break;
-            case 'spam':
-              $message .= sprintf($lang['text_spam_deleted'], $this->deleted) . ".<br>";
-              break;
-            case 'virus':
-              $message .= sprintf($lang['text_viruses_deleted'], $this->deleted) . ".<br>";
-              break;
-            case 'attachment':
-              $message .= sprintf($lang['text_attachments_deleted'], $this->deleted) . ".<br>";
-              break;
-            case 'header':
-              $message .= sprintf($lang['text_headers_deleted'], $this->deleted) . ".<br>";
-              break;
+        if ($this->reported > 0) {
+            $message .= sprintf($lang['text_spam_reported'], $this->reported) . ".<br>";
         }
-      }
-      if ($this->rescued > 0) {
-          switch($this->type) {
-              case 'spam':
+        if ($this->deleted > 0) {
+            switch($this->type) {
+            case 'ham':
+                $message .= sprintf($lang['text_ham_deleted'], $this->deleted) . ".<br>";
+                break;
+            case 'spam':
+                $message .= sprintf($lang['text_spam_deleted'], $this->deleted) . ".<br>";
+                break;
+            case 'virus':
+                $message .= sprintf($lang['text_viruses_deleted'], $this->deleted) . ".<br>";
+                break;
+            case 'attachment':
+                $message .= sprintf($lang['text_attachments_deleted'], $this->deleted) . ".<br>";
+                break;
+            case 'header':
+                $message .= sprintf($lang['text_headers_deleted'], $this->deleted) . ".<br>";
+                break;
+            }
+        }
+        if ($this->rescued > 0) {
+            switch($this->type) {
+            case 'spam':
                 $message .= sprintf($lang['text_spam_rescued'], $this->rescued) . ".<br>";
                 break;
-              case 'virus':
+            case 'virus':
                 $message .= sprintf($lang['text_viruses_rescued'], $this->rescued) . ".<br>";
                 break;
-              case 'attachment':
+            case 'attachment':
                 $message .= sprintf($lang['text_attachments_rescued'], $this->rescued) . ".<br>";
                 break;
-              case 'header':
+            case 'header':
                 $message .= sprintf($lang['text_headers_rescued'], $this->rescued) . ".<br>";
                 break;
-          }
-      }
-      if ($this->resent > 0) {
-        $message .= sprintf($lang['text_message_resent'], $this->resent) . ".<br>";
-      }
+            }
+        }
+        if ($this->resent > 0) {
+            $message .= sprintf($lang['text_message_resent'], $this->resent) . ".<br>";
+        }
       
-      return $message;
+        return $message;
     
     }
     
-    function confirmed_actions($action) {
+    function confirmed_actions($action)
+    {
         switch ($action) {
-            case "confirmed":
-                return $this->confirmed;
-            case 'reported':
-                return $this->reported;
-            case 'rescued':
-                return $this->rescued;
-            case 'deleted':
-                return $this->deleted;
-            case 'resent':
-                return $this->resent;
+        case "confirmed":
+            return $this->confirmed;
+        case 'reported':
+            return $this->reported;
+        case 'rescued':
+            return $this->rescued;
+        case 'deleted':
+            return $this->deleted;
+        case 'resent':
+            return $this->resent;
         }
         
     }
     
-    function render($euid) {
+    function render($euid)
+    {
         global $lang, $sid, $msid, $offset, $message;
         $magic_quotes = get_magic_quotes_gpc();
         $nothing_to_show = true;
@@ -408,51 +423,51 @@ class MessageCache {
         $this->smarty->assign("lang", $lang);
         $this->smarty->assign("actionlang", response_text($this->type));
         $user_config = get_maia_user_row($euid);
-		
-		//set the class names for the given cache type, and default box to check.
-		switch ($this->type) {
-			case 'ham':
-                $this->smarty->assign("banner_class", "hambanner");
-				$this->smarty->assign("header_class", "hamheader");
-				$this->smarty->assign("body_class", "hambody");
-				$this->smarty->assign("alt_body_class", "hambody_alt");
-				$this->smarty->assign("header_text", $lang['header_suspected_ham']);
-                $this->smarty->assign("def_rb", "ham");
-				break;
-		    case 'spam': 
-                $this->smarty->assign("banner_class", "suspected_spambanner");
-				$this->smarty->assign("header_class", "suspected_spamheader");
-				$this->smarty->assign("body_class", "suspected_spambody");
-				$this->smarty->assign("alt_body_class", "suspected_spambody_alt");
-				$this->smarty->assign("header_text", $lang['header_spam']);
-                $this->smarty->assign("def_rb", "spam");
-				break;
-			case "virus": 
-                $this->smarty->assign("banner_class", "virusbanner");
-				$this->smarty->assign("header_class", "virusheader");
-				$this->smarty->assign("body_class", "virusbody");
-				$this->smarty->assign("alt_body_class", "virusbody_alt");
-				$this->smarty->assign("header_text", $lang['header_viruses']);
-                $this->smarty->assign("def_rb", "delete");
-				break;
-            case "attachment":  
-                $this->smarty->assign("banner_class", "banned_filebanner");
-				$this->smarty->assign("header_class", "banned_fileheader");
-				$this->smarty->assign("body_class", "banned_filebody");
-				$this->smarty->assign("alt_body_class", "banned_filebody_alt");
-				$this->smarty->assign("header_text", $lang['header_banned_files']);
-                $this->smarty->assign("def_rb", "delete");
-				break;
-            case "header":  
-                $this->smarty->assign("banner_class", "bad_headerbanner");
-				$this->smarty->assign("header_class", "bad_headerheader");
-				$this->smarty->assign("body_class", "bad_headerbody");
-				$this->smarty->assign("alt_body_class", "bad_headerbody_alt");
-				$this->smarty->assign("header_text", $lang['header_bad_headers']);
-                $this->smarty->assign("def_rb", "delete");
-				break;
-			
-		}
+        
+        //set the class names for the given cache type, and default box to check.
+        switch ($this->type) {
+        case 'ham':
+              $this->smarty->assign("banner_class", "hambanner");
+            $this->smarty->assign("header_class", "hamheader");
+            $this->smarty->assign("body_class", "hambody");
+            $this->smarty->assign("alt_body_class", "hambody_alt");
+            $this->smarty->assign("header_text", $lang['header_suspected_ham']);
+              $this->smarty->assign("def_rb", "ham");
+            break;
+        case 'spam': 
+            $this->smarty->assign("banner_class", "suspected_spambanner");
+            $this->smarty->assign("header_class", "suspected_spamheader");
+            $this->smarty->assign("body_class", "suspected_spambody");
+            $this->smarty->assign("alt_body_class", "suspected_spambody_alt");
+            $this->smarty->assign("header_text", $lang['header_spam']);
+            $this->smarty->assign("def_rb", "spam");
+            break;
+        case "virus": 
+               $this->smarty->assign("banner_class", "virusbanner");
+            $this->smarty->assign("header_class", "virusheader");
+            $this->smarty->assign("body_class", "virusbody");
+            $this->smarty->assign("alt_body_class", "virusbody_alt");
+            $this->smarty->assign("header_text", $lang['header_viruses']);
+               $this->smarty->assign("def_rb", "delete");
+            break;
+        case "attachment":  
+            $this->smarty->assign("banner_class", "banned_filebanner");
+            $this->smarty->assign("header_class", "banned_fileheader");
+            $this->smarty->assign("body_class", "banned_filebody");
+            $this->smarty->assign("alt_body_class", "banned_filebody_alt");
+            $this->smarty->assign("header_text", $lang['header_banned_files']);
+            $this->smarty->assign("def_rb", "delete");
+            break;
+        case "header":  
+            $this->smarty->assign("banner_class", "bad_headerbanner");
+            $this->smarty->assign("header_class", "bad_headerheader");
+            $this->smarty->assign("body_class", "bad_headerbody");
+            $this->smarty->assign("alt_body_class", "bad_headerbody_alt");
+            $this->smarty->assign("header_text", $lang['header_bad_headers']);
+            $this->smarty->assign("def_rb", "delete");
+            break;
+            
+        }
 
         $sth3 = $this->dbh->prepare($this->select_count);
         $res3 = $sth3->execute(array($euid));
@@ -462,8 +477,7 @@ class MessageCache {
         $numRows = $res3->fetchRow();
         $sth3->free();
 
-        if ($numRows['cnt'] > 0)
-        {
+        if ($numRows['cnt'] > 0) {
             $sth2 = $this->dbh->prepare("SELECT email FROM users WHERE maia_user_id = ?");
             $res2 = $sth2->execute(array($euid));
             if (PEAR::isError($sth2)) {
@@ -481,8 +495,8 @@ class MessageCache {
             
             $per_page = get_user_value($euid, "items_per_page");
 
-            $this->smarty->assign("truncate_subject", $user_config["truncate_subject"] == 0 ? 10000 : $user_config["truncate_subject"] );
-            $this->smarty->assign("truncate_email", $user_config["truncate_email"] == 0 ? 10000 : $user_config["truncate_email"] );
+            $this->smarty->assign("truncate_subject", $user_config["truncate_subject"] == 0 ? 10000 : $user_config["truncate_subject"]);
+            $this->smarty->assign("truncate_email", $user_config["truncate_email"] == 0 ? 10000 : $user_config["truncate_email"]);
 
             
             $pagerOptions = array(
@@ -518,7 +532,7 @@ class MessageCache {
             $count = 0;
             $rows = array();
         
-              foreach ($paged_data['data'] as $row)
+            foreach ($paged_data['data'] as $row)
               {
                 if ($row["id"] > $maxid) {
                       $maxid = $row["id"];
@@ -528,50 +542,50 @@ class MessageCache {
                 if ($this->type == 'attachment' ) {
                     $bnames = $this->get_banned_names($row['id']);
                     foreach ($bnames as $bname) {
-                       if(!isset($rows[$count]['file'])) {
-                           $rows[$count]['file'] = "";
-                       }
-                       $rows[$count]['file'] .= $bname . "<br>";
+                        if(!isset($rows[$count]['file'])) {
+                            $rows[$count]['file'] = "";
+                        }
+                        $rows[$count]['file'] .= $bname . "<br>";
                     }
                 } elseif ($this->type == 'virus') {
                     $vnames=$this->get_virus_names($row['id']);
                     $rows[$count]['virus_name'] = "";
                     foreach ($vnames as $vname) {
-                       $vurl = get_virus_info_url($vname);
-                       if ($vurl == "") {
-                          $rows[$count]['virus_name'] .= $row["virus_name"];
-                       } else {
-                          $rows[$count]['virus_name'] .= "<a href=\"" . $vurl . "\">" . $vname . "</a>";
-                       }
-                       $rows[$count]['virus_name'] .= "<br>";
-                   }
+                        $vurl = get_virus_info_url($vname);
+                        if ($vurl == "") {
+                            $rows[$count]['virus_name'] .= $row["virus_name"];
+                        } else {
+                            $rows[$count]['virus_name'] .= "<a href=\"" . $vurl . "\">" . $vname . "</a>";
+                        }
+                        $rows[$count]['virus_name'] .= "<br>";
+                    }
                 }
                 $rows[$count]['received_date'] = $row["received_date"];
                 $rows[$count]['sender_email'] = $magic_quotes ? stripslashes($row["sender_email"]) : $row["sender_email"];
                 $rows[$count]['score'] = $row['score'];
  
-                    $to_list = explode(" ", $row["envelope_to"]);
-                    $rectmp = array();
-                    foreach ($to_list as $recipient) {
-                        if (isset($personal_addresses[$recipient]) || $domain_default) {
-                          $rectmp[] = $recipient;
-                        }
+                  $to_list = explode(" ", $row["envelope_to"]);
+                  $rectmp = array();
+                foreach ($to_list as $recipient) {
+                    if (isset($personal_addresses[$recipient]) || $domain_default) {
+                        $rectmp[] = $recipient;
                     }
-                    $rows[$count]['recipient_email'] = $rectmp;
+                }
+                  $rows[$count]['recipient_email'] = $rectmp;
 
-           $subject = $magic_quotes ? stripslashes($row['subject']) : $row['subject'];
-           if ($subject == "") {
-              $subject = "(" . $lang['text_no_subject'] . ")";
-           }else{
-              if (preg_match('/=\?.+\?=/', $subject)) {
-                 $subject = htmlspecialchars(iconv_mime_decode($subject, 2, 'utf-8'), ENT_NOQUOTES, 'UTF-8');
-              } else {
-                 $subject = htmlspecialchars($subject);
-              }
-           }
+                  $subject = $magic_quotes ? stripslashes($row['subject']) : $row['subject'];
+                if ($subject == "") {
+                    $subject = "(" . $lang['text_no_subject'] . ")";
+                }else{
+                    if (preg_match('/=\?.+\?=/', $subject)) {
+                        $subject = htmlspecialchars(iconv_mime_decode($subject, 2, 'utf-8'), ENT_NOQUOTES, 'UTF-8');
+                    } else {
+                        $subject = htmlspecialchars($subject);
+                    }
+                }
                   $rows[$count]['subject'] = $subject;
                   $count++;
-          }
+            }
 
               $this->smarty->assign("row", $rows); 
               $this->smarty->assign("maxid", $maxid);
@@ -586,12 +600,15 @@ class MessageCache {
         $this->smarty->display("list-cache.tpl");
     }
 
-    function get_virus_names($mail_id) {
+    function get_virus_names($mail_id)
+    {
         static $vsth;
         if (!isset($vsth)) {
-            $vsth = $this->dbh->prepare("SELECT virus_name FROM maia_viruses_detected LEFT JOIN maia_viruses " .
+            $vsth = $this->dbh->prepare(
+                "SELECT virus_name FROM maia_viruses_detected LEFT JOIN maia_viruses " .
                                         "ON maia_viruses.id = maia_viruses_detected.virus_id " .
-                                        "WHERE maia_viruses_detected.mail_id=?");
+                "WHERE maia_viruses_detected.mail_id=?"
+            );
         }
 
         $result = $vsth->execute(array($mail_id));
@@ -602,17 +619,20 @@ class MessageCache {
         return $ret;
     }
 
-    function get_banned_names($mail_id) {
+    function get_banned_names($mail_id)
+    {
         static $bsth;
         if (!isset($bsth)) {
-            $bsth = $this->dbh->prepare("SELECT file_name, file_type FROM maia_banned_attachments_found " .
-                                        "WHERE mail_id=?");
+            $bsth = $this->dbh->prepare(
+                "SELECT file_name, file_type FROM maia_banned_attachments_found " .
+                "WHERE mail_id=?"
+            );
         }
 
         $result = $bsth->execute(array($mail_id));
         $ret = array();
         while ($row = $result->fetchrow()) {
-            array_push($ret, $row['file_name'] . " (" . $row['file_type'] . ")" );
+            array_push($ret, $row['file_name'] . " (" . $row['file_type'] . ")");
         }
         return $ret;
     }

@@ -116,7 +116,7 @@
     $lang['text_new_primary_email'] =  "%s er nu din primære email adresse.";
     $lang['text_language'] =  "Vis sprog";
     $lang['text_charset'] =  "Vis karaktersæt";
-    $lang['text_theme']	= "Tema";
+    $lang['text_theme']    = "Tema";
     $lang['text_spamtrap'] =  "Er en spam-trap konto?";
     $lang['text_auto_whitelist'] =  "Tilføj afsendere af reddet emails til dine godkendte afsendere?";
     $lang['text_items_per_page'] =  "Antal emails der skal vises pr side?";

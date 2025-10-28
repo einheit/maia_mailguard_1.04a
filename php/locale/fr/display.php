@@ -280,4 +280,4 @@
                                       "bad_header"     => "en pourcentage du total de courriels re&ccedil;us",
                                       "banned_file"    => "en pourcentage du total de courriels re&ccedil;us",
                                       "oversized"      => "en pourcentage du total de courriels re&ccedil;us");
-?>
+    ?>

@@ -121,4 +121,4 @@
     $lang['action_virus_cache'] = "Verwijder/Herstel";
     $lang['action_banned_cache'] = "Verwijder/Herstel";
     $lang['action_header_cache'] = "Verwijder/Herstel";
-?>
+    ?>

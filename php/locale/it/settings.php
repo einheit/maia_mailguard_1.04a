@@ -116,7 +116,7 @@
     $lang['text_new_primary_email'] =  "%s e' il tuo indirizzo E-Mail principale";
     $lang['text_language'] =  "Lingua visualizzata";
     $lang['text_charset'] =  "Character Set visualizzato";
-    $lang['text_theme']	= "Tema";
+    $lang['text_theme']    = "Tema";
     $lang['text_spamtrap'] =  "E' un account spam-trap?";
     $lang['text_auto_whitelist'] =  "Aggiungi il mittente di mail recuperate nella whitelist?";
     $lang['text_items_per_page'] =  "Numero di mail da mostrare per pagina";

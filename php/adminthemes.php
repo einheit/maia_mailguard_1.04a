@@ -74,77 +74,77 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
 
-    require_once ("display.php");
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminthemes.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminthemes.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
 
-	// Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+    // Only the superadministrator should be here.
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminlanguages.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminlanguages.php" . $sid);
+    exit();
+}
 
     $default_theme=get_default_theme();
-    $smarty->assign("default_theme",$default_theme);
+    $smarty->assign("default_theme", $default_theme);
 
     //get list of possible themes on disk
-	$theme_dir = "themes";
+    $theme_dir = "themes";
     $d = dir($theme_dir);
     $dirlist = array();
 //    $phlist = array();
     $atleastone = false;
-    while (($f = $d->read()) !== false) {
-    	if (is_dir($theme_dir . "/" . $f) && $f != "." && $f != ".." && $f != ".svn") {
-            if(file_exists($theme_dir . "/" . $f . "/name")) {
-                $name = file_get_contents($theme_dir . "/" . $f . "/name");
-            } else {
-                $name = "N/A";
-            }
+while (($f = $d->read()) !== false) {
+    if (is_dir($theme_dir . "/" . $f) && $f != "." && $f != ".." && $f != ".svn") {
+        if(file_exists($theme_dir . "/" . $f . "/name")) {
+            $name = file_get_contents($theme_dir . "/" . $f . "/name");
+        } else {
+            $name = "N/A";
+        }
             $dirlist[$f] = array(
                 'theme_path' => $f,
                 'theme_name' => $name
             );
-//            $phlist[] = '?';
-        }
+            //            $phlist[] = '?';
     }
+}
     $d->close();
-	
+    
 
     $installed_themes=array();
     //get list of themes listed in database
-	$select = "SELECT id,name,path from maia_themes";
+    $select = "SELECT id,name,path from maia_themes";
     $sth = $dbh->prepare($select);
     $res = $sth->execute();
-    if (PEAR::isError($sth)) {
-        die($sth->getMessage());
-    }
-	$smarty->assign('rowcount', $res->numrows());
-	while ($row = $res->fetchrow()) {
-        $installed_themes[] = array('name' => $row['name'], 'path'=>$row['path'], 'id'=>$row['id']);
-        unset ($dirlist[$row['path']]);
-    }
+if (PEAR::isError($sth)) {
+    die($sth->getMessage());
+}
+    $smarty->assign('rowcount', $res->numrows());
+while ($row = $res->fetchrow()) {
+       $installed_themes[] = array('name' => $row['name'], 'path'=>$row['path'], 'id'=>$row['id']);
+       unset($dirlist[$row['path']]);
+}
 
-  	$atleastone = count($dirlist);
-	$smarty->assign("themes_available", $dirlist);
-	$smarty->assign("themes_installed", $installed_themes);
+      $atleastone = count($dirlist);
+    $smarty->assign("themes_available", $dirlist);
+    $smarty->assign("themes_installed", $installed_themes);
     $smarty->assign("atleastone", $atleastone);
 
     $smarty->display('adminthemes.tpl');

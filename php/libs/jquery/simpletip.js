@@ -31,61 +31,73 @@
  */
 
 
-;(function($) {
-$.fn.simpletip = function(selector, options) {
-  var opts = $.extend({}, $.fn.simpletip.defaults, options);
+;(function ($) {
+    $.fn.simpletip = function (selector, options) {
+        var opts = $.extend({}, $.fn.simpletip.defaults, options);
 
-  var $vsTip = $('<div class="simple-tip ui-widget ui-widget-content ui-corner-all ui-state-highlight"></div>')
-    .css('opacity', opts.opacity)
-    .hide()
-    .appendTo('body');
+        var $vsTip = $('<div class="simple-tip ui-widget ui-widget-content ui-corner-all ui-state-highlight"></div>')
+        .css('opacity', opts.opacity)
+        .hide()
+        .appendTo('body');
 
-  var tgt,
-  tip = {
-    link: function(e) {
-      var t = $(e.target).is(selector) && e.target || $(e.target).parents(selector)[0] || false;
-      return t;
-    }
-  };
+        var tgt,
+        tip = {
+            link: function (e) {
+                var t = $(e.target).is(selector) && e.target || $(e.target).parents(selector)[0] || false;
+                return t;
+            }
+        };
 
-  return this.each(function() {
-    var $this = $(this),
-    tipContents = '';
-    var o = $.meta ? $.extend({}, opts, $this.data()) : opts;
+        return this.each(
+            function () {
+                var $this = $(this),
+                tipContents = '';
+                var o = $.meta ? $.extend({}, opts, $this.data()) : opts;
 
-    $this.mouseover(function(event) {
-     if (tgt = tip.link(event)) {
-      o.contents = $('#' + o.idprefix + tgt.id).html();
+                $this.mouseover(
+                    function (event) {
+                        if (tgt = tip.link(event)) {
+                            o.contents = $('#' + o.idprefix + tgt.id).html();
 
-       $vsTip.css({
-         left: event.pageX + o.xOffset,
-         top: event.pageY + o.yOffset
-       }).html(o.contents).show();
-     }
-    }).mouseout(function(event) {
-      if (tgt = tip.link(event)) {
-        $vsTip.hide();
-      }
-    }).mousemove(function(event) {
-      if (tip.link(event)) {
-        $vsTip.css({
-          left: event.pageX + o.xOffset,
-          top: event.pageY + o.yOffset
-        });
-      }        
-    });
+                            $vsTip.css(
+                                {
+                                    left: event.pageX + o.xOffset,
+                                    top: event.pageY + o.yOffset
+                                }
+                            ).html(o.contents).show();
+                        }
+                    }
+                ).mouseout(
+                    function (event) {
+                        if (tgt = tip.link(event)) {
+                            $vsTip.hide();
+                        }
+                    }
+                ).mousemove(
+                    function (event) {
+                        if (tip.link(event)) {
+                            $vsTip.css(
+                                {
+                                    left: event.pageX + o.xOffset,
+                                    top: event.pageY + o.yOffset
+                                }
+                            );
+                        }        
+                    }
+                );
 
-  });
+            }
+        );
 
-};
+    };
 
-// default options
-$.fn.simpletip.defaults = {
-  opacity: 1,
-  xOffset: 10,
-  yOffset: 20,
-  idprefix: 'tip_'
-};
+    // default options
+    $.fn.simpletip.defaults = {
+        opacity: 1,
+        xOffset: 10,
+        yOffset: 20,
+        idprefix: 'tip_'
+    };
 
 })(jQuery);
 

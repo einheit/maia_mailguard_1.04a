@@ -117,7 +117,7 @@
     $lang['text_new_primary_email'] =  "%s - это ваш основной почтовый адрес.";
     $lang['text_language'] =  "Язык интерфейса ";
     $lang['text_charset'] =  "Кодировка интерфейса ";
-    $lang['text_theme']	= "Тема";
+    $lang['text_theme']    = "Тема";
     $lang['text_spamtrap'] =  "Это учетная запись для почтовой ловушки?";
     $lang['text_auto_whitelist'] =  "Добавить отправителя спасенной почты в белый список?";
     $lang['text_items_per_page'] =  "Количество писем на одной странице?";

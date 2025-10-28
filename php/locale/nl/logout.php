@@ -83,5 +83,5 @@
     $lang['link_login'] =  "Aanloggen";
 
     // About
-		$lang['about'] = "Een Virus en Spam Beheeroplossing voor e-mail";
+        $lang['about'] = "Een Virus en Spam Beheeroplossing voor e-mail";
 ?>

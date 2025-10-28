@@ -91,4 +91,4 @@
                "bf"     => "Geweigerde Bijlagen",
                "os"     => "Te groot"    
                );
-?>
+    ?>

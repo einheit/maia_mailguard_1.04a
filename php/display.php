@@ -74,91 +74,93 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("constants.php");
-   require_once ("maia_db.php");
-   require_once ("virus.php");
+   require_once "core.php";
+   require_once "constants.php";
+   require_once "maia_db.php";
+   require_once "virus.php";
 
    /*
     * linkify(): Replaces $label in $text with a hyperlink to $link
     */
-   function linkify($text, $label, $link)
-   {
-       $preg_label = preg_replace("/\//", "\/", $label);
-       return preg_replace("/" . $preg_label . "/s",
-                           "<a href=\"" . $link . "\">" . $label . "</a>",
-                           $text);
-   }
+function linkify($text, $label, $link)
+{
+    $preg_label = preg_replace("/\//", "\/", $label);
+    return preg_replace(
+        "/" . $preg_label . "/s",
+        "<a href=\"" . $link . "\">" . $label . "</a>",
+        $text
+    );
+}
 
 
    /*
     * add_links_to_text(): Looks for certain "hot" words in a text string
     *                      and replaces them with corresponding URLs.
     */
-   function add_links_to_text($text)
-   {
-       // Explicit URLs
-       if (preg_match("/\((http:\/\/.+?)\)/si", $text, $match)) {
-           $text = linkify($text, $match[1], $match[1]);
-       }
+function add_links_to_text($text)
+{
+    // Explicit URLs
+    if (preg_match("/\((http:\/\/.+?)\)/si", $text, $match)) {
+        $text = linkify($text, $match[1], $match[1]);
+    }
 
-       // SORBS: Spam and Open Relay Blocking System
-       $text = linkify($text, "SORBS", "http://www.sorbs.net/");
+    // SORBS: Spam and Open Relay Blocking System
+    $text = linkify($text, "SORBS", "http://www.sorbs.net/");
 
-       // Razor2: Vipul's Razor
-       $text = linkify($text, "Razor2", "http://razor.sourceforge.net/");
+    // Razor2: Vipul's Razor
+    $text = linkify($text, "Razor2", "http://razor.sourceforge.net/");
 
-       // Pyzor
-       $text = linkify($text, "Pyzor", "http://pyzor.sourceforge.net/");
+    // Pyzor
+    $text = linkify($text, "Pyzor", "http://pyzor.sourceforge.net/");
 
-       // DCC: Distributed Checksum Clearinghouse
-       $text = linkify($text, "DCC", "http://rhyolite.com/anti-spam/dcc/");
+    // DCC: Distributed Checksum Clearinghouse
+    $text = linkify($text, "DCC", "http://rhyolite.com/anti-spam/dcc/");
 
-       // NJABL: Not Just Another Bogus List
-       $text = linkify($text, "NJABL", "http://www.njabl.org/");
-       $text = linkify($text, "dnsbl.njabl.org", "http://www.njabl.org/");
+    // NJABL: Not Just Another Bogus List
+    $text = linkify($text, "NJABL", "http://www.njabl.org/");
+    $text = linkify($text, "dnsbl.njabl.org", "http://www.njabl.org/");
 
-       // SpamCop Blocking List
-       $text = linkify($text, "bl.spamcop.net", "http://www.spamcop.net/bl.shtml");
+    // SpamCop Blocking List
+    $text = linkify($text, "bl.spamcop.net", "http://www.spamcop.net/bl.shtml");
 
-       // OPM: Blitzed Open Proxy Monitor
-       $text = linkify($text, "opm.blitzed.org", "http://www.blitzed.org/bopm/");
-       $text = linkify($text, "OPM", "http://www.blitzed.org/bopm/");
+    // OPM: Blitzed Open Proxy Monitor
+    $text = linkify($text, "opm.blitzed.org", "http://www.blitzed.org/bopm/");
+    $text = linkify($text, "OPM", "http://www.blitzed.org/bopm/");
 
-       // DSBL: Distributed Server Boycott List
-       $text = linkify($text, "list.dsbl.org", "http://www.dsbl.org/");
+    // DSBL: Distributed Server Boycott List
+    $text = linkify($text, "list.dsbl.org", "http://www.dsbl.org/");
 
-       // RFCI: RFC-Ignorant
-       $text = linkify($text, "ipwhois.rfc-ignorant.org", "http://www.rfc-ignorant.org/policy-ipwhois.php");
-       $text = linkify($text, "dsn.rfc-ignorant.org", "http://www.rfc-ignorant.org/policy-dsn.php");
+    // RFCI: RFC-Ignorant
+    $text = linkify($text, "ipwhois.rfc-ignorant.org", "http://www.rfc-ignorant.org/policy-ipwhois.php");
+    $text = linkify($text, "dsn.rfc-ignorant.org", "http://www.rfc-ignorant.org/policy-dsn.php");
 
-       // SBL: Spamhaus Block List
-       $text = linkify($text, "Spamhaus Block List", "http://www.spamhaus.org/sbl/");
+    // SBL: Spamhaus Block List
+    $text = linkify($text, "Spamhaus Block List", "http://www.spamhaus.org/sbl/");
 
-       // MAPS: Mail Abuse Prevention System
-       $text = linkify($text, "RBL", "http://www.mail-abuse.org/rbl/");
-       $text = linkify($text, "DUL", "http://www.mail-abuse.org/dul/");
-       $text = linkify($text, "RSS", "http://www.mail-abuse.org/rss/");
-       $text = linkify($text, "NML", "http://www.mail-abuse.org/nml/");
+    // MAPS: Mail Abuse Prevention System
+    $text = linkify($text, "RBL", "http://www.mail-abuse.org/rbl/");
+    $text = linkify($text, "DUL", "http://www.mail-abuse.org/dul/");
+    $text = linkify($text, "RSS", "http://www.mail-abuse.org/rss/");
+    $text = linkify($text, "NML", "http://www.mail-abuse.org/nml/");
 
-       // BSP: Bonded Sender Program
-       $text = linkify($text, "Bonded Sender Program", "http://www.bondedsender.com/");
+    // BSP: Bonded Sender Program
+    $text = linkify($text, "Bonded Sender Program", "http://www.bondedsender.com/");
 
-       // Habeas Sender Warranted E-mail
-       $text = linkify($text, "Habeas", "http://www.habeas.com/");
+    // Habeas Sender Warranted E-mail
+    $text = linkify($text, "Habeas", "http://www.habeas.com/");
 
-       // CBL: Composite Blocking List
-       $text = linkify($text, "cbl.abuseat.org", "http://cbl.abuseat.org/");
+    // CBL: Composite Blocking List
+    $text = linkify($text, "cbl.abuseat.org", "http://cbl.abuseat.org/");
 
-       // Easynet DNSBL
-       $text = linkify($text, "proxies.blackholes.easynet.nl", "http://abuse.easynet.nl/proxies.html");
+    // Easynet DNSBL
+    $text = linkify($text, "proxies.blackholes.easynet.nl", "http://abuse.easynet.nl/proxies.html");
 
-       // AHBL: Abusive Hosts Blocking List
-       $text = linkify($text, "AHBL", "http://www.ahbl.org");
-       $text = linkify($text, "dnsbl.ahbl.org", "http://www.ahbl.org");
+    // AHBL: Abusive Hosts Blocking List
+    $text = linkify($text, "AHBL", "http://www.ahbl.org");
+    $text = linkify($text, "dnsbl.ahbl.org", "http://www.ahbl.org");
 
-       return $text;
-   }
+    return $text;
+}
 
 
    /*
@@ -166,42 +168,44 @@
     *                        rules that were triggered by the specified
     *                        mail item, for use in the Mail Viewer.
     */
-   function display_spam_report($mail_id)
-   {
-       global $dbh;
-       $rows = array();
+function display_spam_report($mail_id)
+{
+    global $dbh;
+    $rows = array();
        
-       if (PEAR::isError($dbh)) { 
-            return $dbh; 
-       }
+    if (PEAR::isError($dbh)) { 
+         return $dbh; 
+    }
 
 
-       $sth = $dbh->prepare("SELECT rule_name, rule_description, maia_sa_rules_triggered.rule_score " .
-                 "FROM maia_sa_rules, maia_sa_rules_triggered " .
-                 "WHERE maia_sa_rules.id = maia_sa_rules_triggered.rule_id " .
-                 "AND maia_sa_rules_triggered.mail_id = ? " .
-                 "ORDER BY maia_sa_rules_triggered.rule_score DESC");
-       if (PEAR::isError($sth)) { 
-            die($sth . "and " . $mail_id); 
-       }
-       $res = $sth->execute(array($mail_id));
-       if (PEAR::isError($res)) { 
-            return $res; 
-       }
+    $sth = $dbh->prepare(
+        "SELECT rule_name, rule_description, maia_sa_rules_triggered.rule_score " .
+              "FROM maia_sa_rules, maia_sa_rules_triggered " .
+              "WHERE maia_sa_rules.id = maia_sa_rules_triggered.rule_id " .
+              "AND maia_sa_rules_triggered.mail_id = ? " .
+              "ORDER BY maia_sa_rules_triggered.rule_score DESC"
+    );
+    if (PEAR::isError($sth)) { 
+         die($sth . "and " . $mail_id); 
+    }
+    $res = $sth->execute(array($mail_id));
+    if (PEAR::isError($res)) { 
+         return $res; 
+    }
 
-       if ($res->numrows() > 0) {
+    if ($res->numrows() > 0) {
 
-           while ($row = $res->fetchrow()) {
-               $rows[] = array ( 'rule_score' => sprintf("%.3f", $row["rule_score"]),
-                                 'rule_name'  => $row["rule_name"],
-                                 'description' => add_links_to_text($row["rule_description"]));
+        while ($row = $res->fetchrow()) {
+            $rows[] = array ( 'rule_score' => sprintf("%.3f", $row["rule_score"]),
+                              'rule_name'  => $row["rule_name"],
+                              'description' => add_links_to_text($row["rule_description"]));
 
-           }
+        }
 
-       }
-       $sth->free();
-       return $rows;
+    }
+    $sth->free();
+    return $rows;
 
-   }
+}
 
 ?>

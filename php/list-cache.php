@@ -74,54 +74,54 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("maia_db.php");
-    require_once ("display.php");
-    require_once ("mime.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "maia_db.php";
+    require_once "display.php";
+    require_once "mime.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/smtp.php");
-    require_once ("./locale/$display_language/mime.php");
-    require_once ("./locale/$display_language/reportspam.php");
-    require_once ("./locale/$display_language/quarantine.php");
-    require_once ("./locale/$display_language/viewmail.php");
-    require_once ("./locale/$display_language/listcache.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/smtp.php";
+    require_once "./locale/$display_language/mime.php";
+    require_once "./locale/$display_language/reportspam.php";
+    require_once "./locale/$display_language/quarantine.php";
+    require_once "./locale/$display_language/viewmail.php";
+    require_once "./locale/$display_language/listcache.php";
     
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
-    require_once ("cache.php");
+    require_once "cache.php";
     
     // Admins (including the superadmin) should not be looking at
     // other people's mail!
-    if (!ok_to_impersonate($euid, $uid)) {
-        header("Location: stats.php" . $sid);
-        exit;
-    }
+if (!ok_to_impersonate($euid, $uid)) {
+    header("Location: stats.php" . $sid);
+    exit;
+}
     
     // Establish which type of cache we are looking at
-    if (isset($_GET["cache_type"])) {
-        $cache_type = $_GET["cache_type"];  //FIXME need to check incoming data
-    } else {
-        header("Location: list-cache.php" . $msid . "cache_type=ham");
-        exit;
-    }
+if (isset($_GET["cache_type"])) {
+    $cache_type = $_GET["cache_type"];  //FIXME need to check incoming data
+} else {
+    header("Location: list-cache.php" . $msid . "cache_type=ham");
+    exit;
+}
     $dbtype = get_database_type($dbh);
     $cache = new MessageCache($cache_type, $dbh, $dbtype, $smarty);
     
-    if (isset($_POST["submit"])) {
-        $message = $cache->confirm_cache($euid);
-        $_SESSION["message"] = $message;
-        header("Location: list-cache.php" . $msid . "cache_type=$cache_type");
-        exit;
-    }
+if (isset($_POST["submit"])) {
+    $message = $cache->confirm_cache($euid);
+    $_SESSION["message"] = $message;
+    header("Location: list-cache.php" . $msid . "cache_type=$cache_type");
+    exit;
+}
     
     //redirect if we are setting new search order
-    if (isset($_GET["sort"])) {
-         $cache->set_sort_order($_GET["sort"], $euid, $msid);
-         // function does not return - page redirects
-    }
+if (isset($_GET["sort"])) {
+     $cache->set_sort_order($_GET["sort"], $euid, $msid);
+     // function does not return - page redirects
+}
 
     $offset = $cache->get_offset();
    
@@ -139,7 +139,7 @@
    
     
     $cache->get_sort_order($euid);
-	
+    
     // Get a list of all the suspected (H)am items with this user's
     // ID in the recipient list, and sort it in ascending
     // order by spam score.

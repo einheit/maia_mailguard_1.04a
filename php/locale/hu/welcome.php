@@ -95,10 +95,10 @@
     $lang['button_change_protection'] = "Szint váltás";
     
     $lang['radio_protection'] = array(  'off' => "Kikapcsolt",
-		 								'low' => "Alacsony",
-     									'medium' => "Közepes",
-										'high' => "Magas",
-										'custom' => "Egyedi");
+                                         'low' => "Alacsony",
+                                         'medium' => "Közepes",
+                                        'high' => "Magas",
+                                        'custom' => "Egyedi");
     
     $lang['banner_subtitle'] = "Üdvözlet";
     

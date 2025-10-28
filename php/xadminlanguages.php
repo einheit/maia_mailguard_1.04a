@@ -74,120 +74,120 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
 
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Find out which button we pushed to get here
-    if (isset($_POST["install"])) {
+if (isset($_POST["install"])) {
 
-    	$lang_abbrev = strtolower(trim($_POST["language"]));
+    $lang_abbrev = strtolower(trim($_POST["language"]));
 
-    	// Make sure the language files are actually installed
-        $lang_dir = getcwd();
-        if (preg_match("/.*\/$/si", $lang_dir)) {
-            $lang_dir .= "locale";
-        } else {
-    	    $lang_dir .= "/locale";
-        }
-        $d = dir($lang_dir);
-
-        // Check if language is already in database
-        $select = "SELECT language_name, abbreviation, id " .
-                  "FROM maia_languages " .
-                  "WHERE abbreviation = ?";
-
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute($lang_abbrev);
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-
-        // Make the language available to users
-        if($res->numrows()) {
-            if (is_dir($lang_dir . "/" . $lang_abbrev)) {
-                $update = "UPDATE maia_languages SET installed = 'Y' WHERE abbreviation = ?";
-                $sth = $dbh->prepare($update);
-                $res = $sth->execute($lang_abbrev);
-                if (PEAR::isError($sth)) {
-                    die($sth->getMessage());
-                }
-            }
-            $d->close();
-        } else {
-            if (is_dir($lang_dir . "/" . $lang_abbrev)) {
-                if(file_exists($lang_dir . "/" . $lang_abbrev . "/name")) {
-                    $lang_name = file_get_contents($lang_dir . "/" . $lang_abbrev . "/name");
-                } else {
-                    $lang_name = "N/A";
-                }
-                $insert = "INSERT INTO maia_languages (language_name, abbreviation, installed) VALUES (?, ?, 'Y')";
-                $sth = $dbh->prepare($insert);
-                $res = $sth->execute(array($lang_name, $lang_abbrev));
-                if (PEAR::isError($sth)) {
-                    die($sth->getMessage());
-                }
-            }
-            $d->close();
-        }
-
-    } elseif (isset($_POST["uninstall"])) {
-
-        // Register the full set of POST variables.
-        foreach($_POST as $varname => $value)
-        {
-            $formVars[$varname] = trim($value);
-        }
-
-        // Don't allow the default language to be removed
-        $select = "SELECT language_name, abbreviation, id " .
-                  "FROM maia_languages " .
-                  "WHERE installed = 'Y' AND abbreviation <> ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array(strtolower($default_display_language)));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-
-        while ($row = $res->fetchrow()) {
-
-            $lang_name = $row["language_name"];
-            $lang_abbrev = strtolower($row["abbreviation"]);
-            $lang_id = $row["id"];
-
-            if (isset($formVars[$lang_abbrev]) && trim($formVars[$lang_abbrev]) == $lang_id) {
-                    // Make this language unavailable to users
-                $update = "UPDATE maia_languages SET installed = 'N' WHERE id = ?";
-
-
-                $sth = $dbh->prepare($update);
-                $res = $sth->execute($lang_id);
-                if (PEAR::isError($sth)) {
-                    die($sth->getMessage());
-                }
-
-                // Reset all users who used this language to the default
-        	    $update = "UPDATE maia_users SET language = ? WHERE language = ?";
-
-
-                $sth = $dbh->prepare($update);
-                $res = $sth->execute(array($default_display_language, $lang_abbrev));
-                if (PEAR::isError($sth)) {
-                    die($sth->getMessage());
-                }
-                $_SESSION["display_language"] = $default_display_language;
-            }
-        }
-
-        $res->free();
-
+    // Make sure the language files are actually installed
+    $lang_dir = getcwd();
+    if (preg_match("/.*\/$/si", $lang_dir)) {
+        $lang_dir .= "locale";
+    } else {
+        $lang_dir .= "/locale";
     }
+    $d = dir($lang_dir);
+
+    // Check if language is already in database
+    $select = "SELECT language_name, abbreviation, id " .
+              "FROM maia_languages " .
+              "WHERE abbreviation = ?";
+
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute($lang_abbrev);
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+
+    // Make the language available to users
+    if($res->numrows()) {
+        if (is_dir($lang_dir . "/" . $lang_abbrev)) {
+            $update = "UPDATE maia_languages SET installed = 'Y' WHERE abbreviation = ?";
+            $sth = $dbh->prepare($update);
+            $res = $sth->execute($lang_abbrev);
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+        }
+        $d->close();
+    } else {
+        if (is_dir($lang_dir . "/" . $lang_abbrev)) {
+            if(file_exists($lang_dir . "/" . $lang_abbrev . "/name")) {
+                $lang_name = file_get_contents($lang_dir . "/" . $lang_abbrev . "/name");
+            } else {
+                $lang_name = "N/A";
+            }
+            $insert = "INSERT INTO maia_languages (language_name, abbreviation, installed) VALUES (?, ?, 'Y')";
+            $sth = $dbh->prepare($insert);
+            $res = $sth->execute(array($lang_name, $lang_abbrev));
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+        }
+        $d->close();
+    }
+
+} elseif (isset($_POST["uninstall"])) {
+
+    // Register the full set of POST variables.
+    foreach($_POST as $varname => $value)
+    {
+        $formVars[$varname] = trim($value);
+    }
+
+    // Don't allow the default language to be removed
+    $select = "SELECT language_name, abbreviation, id " .
+              "FROM maia_languages " .
+              "WHERE installed = 'Y' AND abbreviation <> ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array(strtolower($default_display_language)));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+
+    while ($row = $res->fetchrow()) {
+
+        $lang_name = $row["language_name"];
+        $lang_abbrev = strtolower($row["abbreviation"]);
+        $lang_id = $row["id"];
+
+        if (isset($formVars[$lang_abbrev]) && trim($formVars[$lang_abbrev]) == $lang_id) {
+                // Make this language unavailable to users
+            $update = "UPDATE maia_languages SET installed = 'N' WHERE id = ?";
+
+
+            $sth = $dbh->prepare($update);
+            $res = $sth->execute($lang_id);
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+
+            // Reset all users who used this language to the default
+            $update = "UPDATE maia_users SET language = ? WHERE language = ?";
+
+
+            $sth = $dbh->prepare($update);
+            $res = $sth->execute(array($default_display_language, $lang_abbrev));
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+            $_SESSION["display_language"] = $default_display_language;
+        }
+    }
+
+    $res->free();
+
+}
 
     // Return to the language administration page
     header("Location: adminlanguages.php" . $sid);

@@ -74,12 +74,12 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("maia_db.php");
-   require_once ("Mail/mimeDecode.php");  // PEAR::Mail::mimeDecode.php
+   require_once "core.php";
+   require_once "maia_db.php";
+   require_once "Mail/mimeDecode.php";  // PEAR::Mail::mimeDecode.php
    // edit jjs 2020-03-26
    // require_once 'HTMLPurifier.auto.php';
-   require_once ("/var/htmlpurifier/library/HTMLPurifier.auto.php");
+   require_once "/var/htmlpurifier/library/HTMLPurifier.auto.php";
 
 
    /*
@@ -88,143 +88,157 @@
     */
     
    
-   function display_parts($structure)
-   {
-      global $lang;
-      global $smarty;
+function display_parts($structure)
+{
+    global $lang;
+    global $smarty;
 
-      $primary = strtolower(trim($structure->ctype_primary));
-      $secondary = strtolower(trim($structure->ctype_secondary));
-      $ctype = $primary . "/" . $secondary;
-      $messagepart = "";
+    $primary = strtolower(trim($structure->ctype_primary));
+    $secondary = strtolower(trim($structure->ctype_secondary));
+    $ctype = $primary . "/" . $secondary;
+    $messagepart = "";
 
-      $message_charset = get_charset($structure);
+    $message_charset = get_charset($structure);
 
-      switch ($primary) {
+    switch ($primary) {
 
-         case "multipart":
-            if (!array_key_exists('parts', $structure)) {
+    case "multipart":
+        if (!array_key_exists('parts', $structure)) {
                   $ret = "[" . $lang['text_invalid'] . "]<br>";
                   break;
-            }
-            // Recursively decode each of the sub-parts of this
-            // part in turn.
-            foreach ($structure->parts as $part) {
-               $messagepart .= display_parts($part);
+        }
+             // Recursively decode each of the sub-parts of this
+             // part in turn.
+        foreach ($structure->parts as $part) {
+            $messagepart .= display_parts($part);
 
-            }
+        }
+             $smarty->assign("messagepart", $messagepart);
+             $smarty->assign("contenttype", $ctype);
+
+             $ret = $smarty->fetch("view-message.tpl");
+        break;
+
+    case "text":
+
+        switch ($secondary) {
+
+               // Simple text, just word-wrap it to keep it to
+               // a sane width.
+        case "plain":
+
+            $messagepart = "<pre>" . sanitize_html(wordwrap(iconv($message_charset, 'utf-8',  $structure->body), 70)) . "</pre>";
             $smarty->assign("messagepart", $messagepart);
             $smarty->assign("contenttype", $ctype);
 
             $ret = $smarty->fetch("view-message.tpl");
             break;
 
-         case "text":
-
-            switch ($secondary) {
-
-               // Simple text, just word-wrap it to keep it to
-               // a sane width.
-               case "plain":
-
-                  $messagepart = "<pre>" . sanitize_html(wordwrap(iconv($message_charset, 'utf-8',  $structure->body), 70)) . "</pre>";
-                  $smarty->assign("messagepart", $messagepart);
-                  $smarty->assign("contenttype", $ctype);
-
-                  $ret = $smarty->fetch("view-message.tpl");
-            	  break;
-
                // HTML content, clean it up a bit and display it.
-               case "html":
+        case "html":
 
-                  $messagepart  = sanitize_html(iconv($message_charset, 'utf-8',  $structure->body));
-                  $smarty->assign("messagepart", $messagepart);
-                  $smarty->assign("contenttype", $ctype);
+            $messagepart  = sanitize_html(iconv($message_charset, 'utf-8',  $structure->body));
+            $smarty->assign("messagepart", $messagepart);
+            $smarty->assign("contenttype", $ctype);
 
-                  $ret = $smarty->fetch("view-message.tpl");
-            	  break;
-
-               // Some other odd text format we don't support, ignore it.
-               default:
-
-              $ret = "[" . $lang['text_unsupported'] . ": " . $ctype . "]<br>";
-
-            }
+            $ret = $smarty->fetch("view-message.tpl");
             break;
 
-         default:
+               // Some other odd text format we don't support, ignore it.
+        default:
 
-            // An unsupported content type, ignore it.
             $ret = "[" . $lang['text_unsupported'] . ": " . $ctype . "]<br>";
 
-      }
-	return $ret;
-   }
+        }
+        break;
+
+    default:
+
+        // An unsupported content type, ignore it.
+        $ret = "[" . $lang['text_unsupported'] . ": " . $ctype . "]<br>";
+
+    }
+       return $ret;
+}
 
 
-   class MaiaDisplayLinkURI extends HTMLPurifier_Injector
-   {
+class MaiaDisplayLinkURI extends HTMLPurifier_Injector
+{
 
-       public $name = 'DisplayLinkURI';
-       public $needed = array('a');
+    public $name = 'DisplayLinkURI';
+    public $needed = array('a');
 
-       private $idcount = 1;
+    private $idcount = 1;
 
-       public function handleElement(&$token) {
-       }
+    public function handleElement(&$token)
+    {
+    }
 
-       public function handleEnd(&$token) {
-           if (isset($token->start->attr['href'])){
-               $url =  MaiaDisplayLinkURI::pretty_url($token->start->attr['href']);
-               unset($token->start->attr['href']);
-               $token->start->attr['class'] = 'DisplayLink';
-               $token->start->attr['id'] = 'DisplayLink_' . $this->idcount;
+    public function handleEnd(&$token)
+    {
+        if (isset($token->start->attr['href'])) {
+            $url =  MaiaDisplayLinkURI::pretty_url($token->start->attr['href']);
+            unset($token->start->attr['href']);
+            $token->start->attr['class'] = 'DisplayLink';
+            $token->start->attr['id'] = 'DisplayLink_' . $this->idcount;
 
-               $token = array_merge(array($token,
-                       new HTMLPurifier_Token_Start('span', array('class' => 'DisplayLinkURL', 'id'=>'tip_DisplayLink_' . $this->idcount))),
-                       $url,
-                       array(
-                       new HTMLPurifier_Token_End('span')
-                       ));
-               $this->idcount += 1;
-           } else {
-               // nothing to display
-           }
-       }
+            $token = array_merge(
+                array($token,
+                    new HTMLPurifier_Token_Start('span', array('class' => 'DisplayLinkURL', 'id'=>'tip_DisplayLink_' . $this->idcount))),
+                $url,
+                array(
+                    new HTMLPurifier_Token_End('span')
+                    )
+            );
+            $this->idcount += 1;
+        } else {
+            // nothing to display
+        }
+    }
 
-       private static function color_tokens($part, $class) {
-           $token = array(
-               new HTMLPurifier_Token_Start('font', array('class' => "DisplayLink_" . $class)),
-                  new HTMLPurifier_Token_Text($part),
-                  new HTMLPurifier_Token_End('font')
-               );
-            return $token;
-       }
+    private static function color_tokens($part, $class)
+    {
+        $token = array(
+            new HTMLPurifier_Token_Start('font', array('class' => "DisplayLink_" . $class)),
+               new HTMLPurifier_Token_Text($part),
+               new HTMLPurifier_Token_End('font')
+            );
+         return $token;
+    }
 
-       private static function pretty_url($url) {
-         // Make sure we have a string to work with
-         if(!empty($url)) {
-           // Explode into URL keys
-           $urllist=parse_url($url);
+    private static function pretty_url($url)
+    {
+        // Make sure we have a string to work with
+        if(!empty($url)) {
+             // Explode into URL keys
+             $urllist=parse_url($url);
 
-           // Make sure we have a valid result set and a query field
-           if(is_array($urllist) ) {
-           // Build the the final output URL
-             $newurl=array();
-             if (isset($urllist["scheme"]))   {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(($urllist['scheme'] . "://"),"scheme")); }
-             if (isset($urllist["user"]))     {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["user"] . ":", "user")); }
-             if (isset($urllist["pass"]))     {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["pass"] . "@", "pass")); }
-             if (isset($urllist["host"]))     {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["host"], "host")); }
-             if (isset($urllist["port"]))     {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(":" . $urllist["port"], "port")); }
-             if (isset($urllist["path"]))     {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["path"], "path")); }
-             if (isset($urllist["query"]))    {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(("?" . $urllist["query"]), "query")); }
-             if (isset($urllist["fragment"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens("#" . $urllist["fragment"], "fragment")); }
-             return $newurl;
-           }
-         }
-         return array();
-       }
-   }
+             // Make sure we have a valid result set and a query field
+            if(is_array($urllist) ) {
+                // Build the the final output URL
+                $newurl=array();
+                if (isset($urllist["scheme"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(($urllist['scheme'] . "://"), "scheme")); 
+                }
+                if (isset($urllist["user"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["user"] . ":", "user")); 
+                }
+                if (isset($urllist["pass"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["pass"] . "@", "pass")); 
+                }
+                if (isset($urllist["host"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["host"], "host")); 
+                }
+                if (isset($urllist["port"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(":" . $urllist["port"], "port")); 
+                }
+                if (isset($urllist["path"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens($urllist["path"], "path")); 
+                }
+                if (isset($urllist["query"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens(("?" . $urllist["query"]), "query")); 
+                }
+                if (isset($urllist["fragment"])) {$newurl = array_merge($newurl, MaiaDisplayLinkURI::color_tokens("#" . $urllist["fragment"], "fragment")); 
+                }
+                return $newurl;
+            }
+        }
+           return array();
+    }
+}
 
 
    /*
@@ -232,28 +246,28 @@
     *                  render it suitable for displaying in a table
     *                  cell (rather than as a complete page).
     */
-   function sanitize_html($body)
-   {
-       global $purifier_cache;
-       if (!isset($purifier_cache)) {
-           $purifier_cache = null;
-       }
+function sanitize_html($body)
+{
+    global $purifier_cache;
+    if (!isset($purifier_cache)) {
+        $purifier_cache = null;
+    }
 
-       $config = HTMLPurifier_Config::createDefault();
-       if ($purifier_cache) {
-           $config->set('Cache.SerializerPath', $purifier_cache);
-       } else {
-           $config->set('Cache.DefinitionImpl', null);
-       }
-       $config->set('URI.Disable', true);
-       $config->set('Attr.EnableID', true);
-       $config->set('AutoFormat.Custom', array(new MaiaDisplayLinkURI));
-       $purifier = new HTMLPurifier($config);
+    $config = HTMLPurifier_Config::createDefault();
+    if ($purifier_cache) {
+        $config->set('Cache.SerializerPath', $purifier_cache);
+    } else {
+        $config->set('Cache.DefinitionImpl', null);
+    }
+    $config->set('URI.Disable', true);
+    $config->set('Attr.EnableID', true);
+    $config->set('AutoFormat.Custom', array(new MaiaDisplayLinkURI));
+    $purifier = new HTMLPurifier($config);
 
-       $html =  $purifier->purify($body);
+    $html =  $purifier->purify($body);
 
-       return ($html);
-   }
+    return ($html);
+}
 
     /*
       last_ditch_mime_decode() is a last attempt to decode mime headers that
@@ -262,28 +276,30 @@
       any changes, though, if a mime patern was found, otherwise there are no
       changes needed.
     */
-    function last_ditch_mime_decode($str, $encoding = "ISO-8859-1") {
-      $found_encoding = false;
-      while (preg_match( "/(=\?.*\?([BQ])\?(.+)\?=)/" ,$str, $matches)) {
+function last_ditch_mime_decode($str, $encoding = "ISO-8859-1")
+{
+    $found_encoding = false;
+    while (preg_match("/(=\?.*\?([BQ])\?(.+)\?=)/", $str, $matches)) {
         $found_encoding = true;
         if ($matches[2] == 'B') {
-          $str = str_replace ( $matches[1] , base64_decode($matches[3]) , $str);
+            $str = str_replace($matches[1], base64_decode($matches[3]), $str);
         } elseif($matches[1] == 'Q') {
-          $str = str_replace ( $matches[1] , quoted_printable_decode($matches[3]) , $str);
+            $str = str_replace($matches[1], quoted_printable_decode($matches[3]), $str);
         }
-      }
-      return $found_encoding ? iconv($encoding, 'utf-8', $str) : $str;
     }
+        return $found_encoding ? iconv($encoding, 'utf-8', $str) : $str;
+}
 
 
     /* get_charset($structure)   Given a mime document structure, find the charset encoding,
       or default to iso-8859-1
     */
-    function get_charset($structure) {
-      if ($structure->ctype_parameters && array_key_exists('charset', $structure->ctype_parameters )) {
+function get_charset($structure)
+{
+    if ($structure->ctype_parameters && array_key_exists('charset', $structure->ctype_parameters)) {
         return $structure->ctype_parameters['charset'];
-      } else {
+    } else {
         return "iso-8859-1"; //arbitrary default charset...
-      }
     }
+}
 ?>

@@ -73,9 +73,9 @@
      */
 
     // Headers for statistics
-    $lang['spam_header']	=  "Spam";
-    $lang['ham_header']		=  "Ham";
-    $lang['virus_header'] 	=  "Virus";
-    $lang['banned_header'] 	=  "Banni";
-    $lang['badheader_header'] 	=  "Ent&ecirc;te";
+    $lang['spam_header']    =  "Spam";
+    $lang['ham_header']        =  "Ham";
+    $lang['virus_header']     =  "Virus";
+    $lang['banned_header']     =  "Banni";
+    $lang['badheader_header']     =  "Ent&ecirc;te";
 ?>

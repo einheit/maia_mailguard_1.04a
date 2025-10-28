@@ -74,65 +74,65 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminstats.php"); // shared with adminstats.php
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminstats.php"; // shared with adminstats.php
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // This page only makes sense if stats-tracking is enabled
-    if (get_config_value("enable_stats_tracking") != 'Y') {
-       header("Location: admindex.php" . $sid);
-       exit();
-    }
+if (get_config_value("enable_stats_tracking") != 'Y') {
+    header("Location: admindex.php" . $sid);
+    exit();
+}
 
     // Find out which button we pushed to get here
-    if (isset($_POST["reset_users"])) {
-    	$delete = "DELETE FROM maia_stats";
-    	$dbh->query($delete);
-    	$select = "SELECT id FROM maia_users";
-    	$sth = $dbh->query($select);
-    	while ($row = $sth->fetchrow()) {
-    	    update_mail_stats($row["id"], "suspected_ham");
-    	    update_mail_stats($row["id"], "suspected_spam");
-    	}
-    	$sth->free();
-        $message = $lang['text_all_users_reset'];
-    } elseif (isset($_POST["reset_viruses"])) {
-    	$update = "UPDATE maia_viruses SET count = 0";
-    	$dbh->query($update);
-        $message = $lang['text_all_viruses_reset'];
-    } elseif (isset($_POST["reset_rules"])) {
-    	$update = "UPDATE maia_sa_rules SET rule_count = 0";
-    	$dbh->query($update);
-        $message = $lang['text_all_rules_reset'];
-    } elseif (isset($_POST["reset_all"])) {
-    	$delete = "DELETE FROM maia_stats";
-    	$dbh->query($delete);
-    	$select = "SELECT id FROM maia_users";
-    	$sth = $dbh->query($select);
-    	while ($row = $sth->fetchrow()) {
-    	    update_mail_stats($row["id"], "suspected_ham");
-    	    update_mail_stats($row["id"], "suspected_spam");
-    	}
-    	$sth->free();
-    	$update = "UPDATE maia_viruses SET count = 0";
-    	$dbh->query($update);
-    	$update = "UPDATE maia_sa_rules SET rule_count = 0";
-    	$dbh->query($update);
-        $message = $lang['text_all_stats_reset'];
+if (isset($_POST["reset_users"])) {
+    $delete = "DELETE FROM maia_stats";
+    $dbh->query($delete);
+    $select = "SELECT id FROM maia_users";
+    $sth = $dbh->query($select);
+    while ($row = $sth->fetchrow()) {
+            update_mail_stats($row["id"], "suspected_ham");
+            update_mail_stats($row["id"], "suspected_spam");
     }
+        $sth->free();
+        $message = $lang['text_all_users_reset'];
+} elseif (isset($_POST["reset_viruses"])) {
+    $update = "UPDATE maia_viruses SET count = 0";
+    $dbh->query($update);
+    $message = $lang['text_all_viruses_reset'];
+} elseif (isset($_POST["reset_rules"])) {
+    $update = "UPDATE maia_sa_rules SET rule_count = 0";
+    $dbh->query($update);
+    $message = $lang['text_all_rules_reset'];
+} elseif (isset($_POST["reset_all"])) {
+    $delete = "DELETE FROM maia_stats";
+    $dbh->query($delete);
+    $select = "SELECT id FROM maia_users";
+    $sth = $dbh->query($select);
+    while ($row = $sth->fetchrow()) {
+            update_mail_stats($row["id"], "suspected_ham");
+            update_mail_stats($row["id"], "suspected_spam");
+    }
+        $sth->free();
+        $update = "UPDATE maia_viruses SET count = 0";
+        $dbh->query($update);
+        $update = "UPDATE maia_sa_rules SET rule_count = 0";
+        $dbh->query($update);
+        $message = $lang['text_all_stats_reset'];
+}
 
     $smarty->assign('message', $message);
     

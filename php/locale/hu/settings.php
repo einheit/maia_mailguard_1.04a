@@ -116,7 +116,7 @@
     $lang['text_new_primary_email'] =  "%s mostantól az Ön elsődleges e-mail címe.";
     $lang['text_language'] =  "Megjelenítés nyelve";
     $lang['text_charset'] =  "Megjelenítés karakter táblája";
-    $lang['text_theme']	= "Téma";
+    $lang['text_theme']    = "Téma";
     $lang['text_spamtrap'] =  "Ez egy spam-trap felhasználó?";
     $lang['text_auto_whitelist'] =  "A visszavett levelek feladóinak fehérlistára helyezése?";
     $lang['text_items_per_page'] =  "Az egy oldalon listázott bejegyzések száma?";

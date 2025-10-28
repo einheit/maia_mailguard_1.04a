@@ -83,7 +83,7 @@
     $lang['text_wb_address_changed'] = "Emejladressen finns redan i listan; Den har uppdaterats.";
     $lang['text_wb_address_added'] = "Adressen har lagts till.";
 
-	
+    
     // Radio buttons
     $lang['radio_button_whitelist'] =  "'White'-lista";
     $lang['radio_button_blacklist'] =  "Svartlista";

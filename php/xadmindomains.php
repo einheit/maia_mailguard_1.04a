@@ -74,71 +74,71 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("mailtools.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "mailtools.php";
     
     
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/admindomains.php");
+    require_once "./locale/$display_language/admindomains.php";
 
     // Only the superadmin should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Find out which button we pushed to get here
-    if (isset($_POST["adddomain"])) {
+if (isset($_POST["adddomain"])) {
 
-        // Don't trust the admin to have remembered to
-        // start the domain with '@'.
-        $domain_name = strtolower(trim($_POST["newdomain"]));
-        if (!preg_match("/^@.*$/", $domain_name)) {
-            $domain_name = "@" . $domain_name;
-        }
-
-        // Only add domains that are syntactically valid
-        if (preg_match("/^(@.+\..+)$/", $domain_name)) {
-            if(add_domain($domain_name) == 0) {
-                $_SESSION['message'] =  $lang['text_domain_add_failed'];
-            } else {
-                $_SESSION['message'] =  $lang['text_domain_added'];
-            }
-        }
-
-    } elseif (isset($_POST["delete"]) && isset($_POST['domains'])) {
-
-        // Register the full set of POST variables.
-        foreach($_POST['domains'] as $value)
-        {
-            if (ctype_digit($value)) {
-              $formVars[] = $value;
-            }
-        }
-
-        // Don't allow the system default (@.) to be removed
-        $select = "SELECT domain, id " .
-                  "FROM maia_domains " .
-                  "WHERE domain <> '@.' " .
-                  "AND id IN (" . implode(',',$formVars) . ")";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) {  
-            die($sth->getMessage());  
-        } 
-
-        while ($row = $res->fetchrow()) {
-            delete_domain($row["id"]);
-            if ($_POST['deleteaddresses']) {
-              $result = delete_domain_addresses($row['domain']);
-            }
-        }
-
-        $sth->free();
-
+    // Don't trust the admin to have remembered to
+    // start the domain with '@'.
+    $domain_name = strtolower(trim($_POST["newdomain"]));
+    if (!preg_match("/^@.*$/", $domain_name)) {
+        $domain_name = "@" . $domain_name;
     }
+
+    // Only add domains that are syntactically valid
+    if (preg_match("/^(@.+\..+)$/", $domain_name)) {
+        if(add_domain($domain_name) == 0) {
+            $_SESSION['message'] =  $lang['text_domain_add_failed'];
+        } else {
+            $_SESSION['message'] =  $lang['text_domain_added'];
+        }
+    }
+
+} elseif (isset($_POST["delete"]) && isset($_POST['domains'])) {
+
+    // Register the full set of POST variables.
+    foreach($_POST['domains'] as $value)
+    {
+        if (ctype_digit($value)) {
+            $formVars[] = $value;
+        }
+    }
+
+    // Don't allow the system default (@.) to be removed
+    $select = "SELECT domain, id " .
+              "FROM maia_domains " .
+              "WHERE domain <> '@.' " .
+              "AND id IN (" . implode(',', $formVars) . ")";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {  
+        die($sth->getMessage());  
+    } 
+
+    while ($row = $res->fetchrow()) {
+        delete_domain($row["id"]);
+        if ($_POST['deleteaddresses']) {
+            $result = delete_domain_addresses($row['domain']);
+        }
+    }
+
+    $sth->free();
+
+}
 
     // Return to the language administration page
     header("Location: admindomains.php" . $sid);

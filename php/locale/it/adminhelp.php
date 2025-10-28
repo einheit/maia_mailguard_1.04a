@@ -222,7 +222,7 @@
                                                "gli attacchi che utilizzano i dizionari di parole prima di abilitare " .
                                                "questa opzione. Ad ogni modo se vedi che c'è un grosso quantitativo di nuovi  " .
                                                "utenti creati in breve tempo, significa che uno spammer sta utilizzando " .
-					       "il tuo server per provare un nuovo indirizzo!";
+                           "il tuo server per provare un nuovo indirizzo!";
 
     $lang['adminhelp_internal_auth'] =  "<b>%s</b> dice a Maia di generare una password casuale di 8 caratteriom per un nuovo " .
                                     "utente e mandare via e-mail le credenziali temporanee per l'acesso.  L'utente può " .
@@ -246,7 +246,7 @@
                                             "questa opzione abilitata ma preferiscono prendere le proprie " .
                                             "statistiche dai file log con altri programmi, " .
                                             "puoi quindi disabilitare questa funzione qui e " . 
-					    "salvagurdare le risorse utilizzate dal tuo sistema.";
+                        "salvagurdare le risorse utilizzate dal tuo sistema.";
 
     $lang['adminhelp_enable_virus_scanning'] =  "<b>%s</b> puoi abilitare o disabilitare globalmente " .
                                             "il controllo antivirus e altre forme di malware sulle email.";
@@ -513,7 +513,7 @@
 
     $lang['adminhelp_enable_charts'] =  "<b>%s</b> puoi abilitare o disabilitare i grafici in Maia " .
                                     "Per utilizzare i grafici ovviamente devi abilitare l'opzione <b>%s</b>. " .
-				    "Puoi scegliere di avere i grafici dinamicamente ogni volta lo richiedi o " .
+                    "Puoi scegliere di avere i grafici dinamicamente ogni volta lo richiedi o " .
                                     "che vengano generati in base a dei tempi stabiliti e vengano spediti all'utente " .
                                     "come pagina statica.  Guarda <b>%s</b> per maggiori informazioni.";
 

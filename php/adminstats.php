@@ -74,38 +74,38 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminstats.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminstats.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // This page only makes sense if stats-tracking is enabled
-    if (get_config_value("enable_stats_tracking") != 'Y') {
-       header("Location: admindex.php" . $sid);
-       exit();
-    }
+if (get_config_value("enable_stats_tracking") != 'Y') {
+    header("Location: admindex.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminstats.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminstats.php" . $sid);
+    exit();
+}
     
     $smarty->display("adminstats.tpl");
 

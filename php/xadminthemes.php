@@ -74,64 +74,64 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
 
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/adminthemes.php");
+    require_once "./locale/$display_language/adminthemes.php";
 
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Find out which button we pushed to get here
-    if (isset($_POST["install"])) {
-	  $theme_path = trim($_POST['theme']);
-	  if(file_exists("themes/". $theme_path)) {
-     	  if(file_exists("themes/" . $theme_path . "/name")) {
-              $name = file_get_contents("themes/" . $theme_path . "/name");
-          } else {
-              $name = $theme_path;
-          }
-      } else {
-	      $_SESSION['message'] = $lang['error_not_found'];
-	      header("Location: adminthemes.php" . $sid);
-	      exit;
-	  }
+if (isset($_POST["install"])) {
+    $theme_path = trim($_POST['theme']);
+    if(file_exists("themes/". $theme_path)) {
+        if(file_exists("themes/" . $theme_path . "/name")) {
+            $name = file_get_contents("themes/" . $theme_path . "/name");
+        } else {
+            $name = $theme_path;
+        }
+    } else {
+        $_SESSION['message'] = $lang['error_not_found'];
+        header("Location: adminthemes.php" . $sid);
+        exit;
+    }
 
-	  $insert = "INSERT INTO maia_themes (name, path) VALUES (?, ?)";
-	  $dbh->query($insert, array($name, $theme_path));
-	header("Location: adminthemes.php" . $sid);
+    $insert = "INSERT INTO maia_themes (name, path) VALUES (?, ?)";
+    $dbh->query($insert, array($name, $theme_path));
+    header("Location: adminthemes.php" . $sid);
 
-    } elseif (isset($_POST["uninstall"])) {
-	    $theme_ids = $_POST['themes'];
-	
+} elseif (isset($_POST["uninstall"])) {
+    $theme_ids = $_POST['themes'];
+    
 
-	    $default_theme_id = get_default_theme();
-	    if ($default_theme_id == false) {
-		  #ack! no default?
-		  $_SESSION['message'] = $lang['error_database'];
-		  header("Location: adminthemes.php" . $sid);
-	      exit;
-	    }
-	
-	    if (! in_array($default_theme_id, $theme_ids)) {
-		    $update = "UPDATE maia_users SET theme_id=? WHERE theme_id=?";
-  	        $delete = "DELETE FROM maia_themes WHERE id=?";
-            foreach( $theme_ids as $id )  {
-	        	$dbh->query($update, array($default_theme_id, $id));            	
-	            $dbh->query($delete, array($id));            	
-		    }
-	        header("Location: adminthemes.php" . $sid);
-	    } else {
-		   	 $_SESSION['message'] = $lang['error_default'];
-			 header("Location: adminthemes.php" . $sid);
-		     exit;
-		}
-	
-	}
-	
+    $default_theme_id = get_default_theme();
+    if ($default_theme_id == false) {
+          // ack! no default?
+          $_SESSION['message'] = $lang['error_database'];
+          header("Location: adminthemes.php" . $sid);
+          exit;
+    }
+    
+    if (! in_array($default_theme_id, $theme_ids)) {
+        $update = "UPDATE maia_users SET theme_id=? WHERE theme_id=?";
+          $delete = "DELETE FROM maia_themes WHERE id=?";
+        foreach( $theme_ids as $id )  {
+            $dbh->query($update, array($default_theme_id, $id));                
+            $dbh->query($delete, array($id));                
+        }
+        header("Location: adminthemes.php" . $sid);
+    } else {
+        $_SESSION['message'] = $lang['error_default'];
+        header("Location: adminthemes.php" . $sid);
+        exit;
+    }
+    
+}
+    
 ?>

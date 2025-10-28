@@ -73,7 +73,7 @@
      * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      *
      */
-    require_once ("core.php");
+    require_once "core.php";
     session_start();
 
     // This script is called to confirm all items before a given timestamp, as
@@ -82,150 +82,152 @@
     // Set up and authenticate session based on token.  If the values are 
     // provided, force session to be the owner of the token, regardless of 
     // previous session information.
-    if (array_key_exists('token', $_GET) && 
-        array_key_exists('id', $_GET)    && 
-        array_key_exists('ts', $_GET)) {
-      if (!isset($_SESSION['uid'])  ||
-          !isset($_SESSION['euid']) ||
-          $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] ||
-          time() > $_SESSION["timeout"]) {//if session is timed out, re-authenticate the session.
-        header("Location: xlogin.php?action=confirm.php&" . $_SERVER["QUERY_STRING"]);
-        exit();
-      } 
-      $token = trim($_GET["token"]);
-      $timestamp = $_GET["ts"];
-    } else {
-       header("Location: login.php");
-       exit;
-    }
+if (array_key_exists('token', $_GET)  
+    && array_key_exists('id', $_GET)     
+    && array_key_exists('ts', $_GET)
+) {
+    if (!isset($_SESSION['uid'])  
+        || !isset($_SESSION['euid']) 
+        || $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] 
+        || time() > $_SESSION["timeout"]
+    ) {//if session is timed out, re-authenticate the session.
+          header("Location: xlogin.php?action=confirm.php&" . $_SERVER["QUERY_STRING"]);
+          exit();
+    } 
+        $token = trim($_GET["token"]);
+        $timestamp = $_GET["ts"];
+} else {
+    header("Location: login.php");
+    exit;
+}
 
-    require_once ("maia_db.php");
-    require_once ("display.php");
-    require_once ("authcheck.php");
+    require_once "maia_db.php";
+    require_once "display.php";
+    require_once "authcheck.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/quarantine.php");
-    require_once ("./locale/$display_language/reportspam.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/quarantine.php";
+    require_once "./locale/$display_language/reportspam.php";
 
-    if ($_GET['manage'] == 'true') {
-        header("Location: welcome.php");
-        exit;
-    }
+if ($_GET['manage'] == 'true') {
+    header("Location: welcome.php");
+    exit;
+}
 
     $cutoff_date = $timestamp;
 
-    	$message = "";
+        $message = "";
 
-        # Ham
-    if ($_GET["report_ham"]) {
-    	$confirmed = 0;
-        $select = "SELECT maia_mail.id " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail.received_date <= ? " .
-                  "AND maia_mail_recipients.type = 'H' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($cutoff_date, $euid));
-        while ($row = $res->fetchRow())
-        {
+        // Ham
+if ($_GET["report_ham"]) {
+    $confirmed = 0;
+    $select = "SELECT maia_mail.id " .
+              "FROM maia_mail, maia_mail_recipients " .
+              "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+              "AND maia_mail.received_date <= ? " .
+              "AND maia_mail_recipients.type = 'H' " .
+              "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($cutoff_date, $euid));
+    while ($row = $res->fetchRow())
+    {
 
-            $mail_id = $row["id"];
-            confirm_ham($euid, $mail_id);
-            $confirmed++;
-        }
-        update_mail_stats($euid, "suspected_ham");
-        if ($confirmed > 0) {
-            $message .= sprintf($lang['text_ham_confirmed'], $confirmed) . ".<br>";
-        }
+        $mail_id = $row["id"];
+        confirm_ham($euid, $mail_id);
+        $confirmed++;
     }
-    if ($_GET["report_spam"]) {
-        # Spam
-    	$confirmed = 0;
-        $select = "SELECT maia_mail.id " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail.received_date <= ? " .
-                  "AND maia_mail_recipients.type IN ('S','P') " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($cutoff_date, $euid));
-        while ($row = $res->fetchRow())
-        {
+    update_mail_stats($euid, "suspected_ham");
+    if ($confirmed > 0) {
+        $message .= sprintf($lang['text_ham_confirmed'], $confirmed) . ".<br>";
+    }
+}
+if ($_GET["report_spam"]) {
+    // Spam
+    $confirmed = 0;
+    $select = "SELECT maia_mail.id " .
+              "FROM maia_mail, maia_mail_recipients " .
+              "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+              "AND maia_mail.received_date <= ? " .
+              "AND maia_mail_recipients.type IN ('S','P') " .
+              "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($cutoff_date, $euid));
+    while ($row = $res->fetchRow())
+    {
 
-            $mail_id = $row["id"];
-            confirm_spam($euid, $mail_id);
-            $confirmed++;
-        }
-        update_mail_stats($euid, "suspected_spam");
-        if ($confirmed > 0) {
-            $message .= sprintf($lang['text_spam_confirmed'], $confirmed) . ".<br>";
-        }
-      }
-      if ($_GET["report_virus"]) {
-        # Viruses
-    	$deleted = 0;
-        $select = "SELECT maia_mail.id " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail.received_date <= ? " .
-                  "AND maia_mail_recipients.type = 'V' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($cutoff_date, $euid));
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            delete_mail_reference($euid, $mail_id);
-            $deleted++;
-        }
-        if ($deleted > 0) {
-            $message .= sprintf($lang['text_viruses_deleted'], $deleted) . ".<br>";
-        }
-      }
-      if ($_GET["report_attachment"]) {
-        # Banned Attachments
-    	$deleted = 0;
-        $select = "SELECT maia_mail.id " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail.received_date <= ? " .
-                  "AND maia_mail_recipients.type = 'F' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($cutoff_date, $euid));
-        while ($row = $res->fetchRow())
-        {
+        $mail_id = $row["id"];
+        confirm_spam($euid, $mail_id);
+        $confirmed++;
+    }
+    update_mail_stats($euid, "suspected_spam");
+    if ($confirmed > 0) {
+        $message .= sprintf($lang['text_spam_confirmed'], $confirmed) . ".<br>";
+    }
+}
+if ($_GET["report_virus"]) {
+    // Viruses
+    $deleted = 0;
+    $select = "SELECT maia_mail.id " .
+            "FROM maia_mail, maia_mail_recipients " .
+            "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+            "AND maia_mail.received_date <= ? " .
+            "AND maia_mail_recipients.type = 'V' " .
+            "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($cutoff_date, $euid));
+    while ($row = $res->fetchRow())
+    {
             $mail_id = $row["id"];
             delete_mail_reference($euid, $mail_id);
             $deleted++;
-        }
-        if ($deleted > 0) {
-            $message .= sprintf($lang['text_attachments_deleted'], $deleted) . ".<br>";
-        }
-      }
-      if ($_GET["report_header"]) {
-        # Invalid Headers
-    	$deleted = 0;
-        $select = "SELECT maia_mail.id " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail.received_date <= ? " .
-                  "AND maia_mail_recipients.type = 'B' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($cutoff_date, $euid));
-        while ($row = $res->fetchRow())
-        {
+    }
+    if ($deleted > 0) {
+        $message .= sprintf($lang['text_viruses_deleted'], $deleted) . ".<br>";
+    }
+}
+if ($_GET["report_attachment"]) {
+    // Banned Attachments
+    $deleted = 0;
+    $select = "SELECT maia_mail.id " .
+            "FROM maia_mail, maia_mail_recipients " .
+            "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+            "AND maia_mail.received_date <= ? " .
+            "AND maia_mail_recipients.type = 'F' " .
+            "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($cutoff_date, $euid));
+    while ($row = $res->fetchRow())
+    {
             $mail_id = $row["id"];
             delete_mail_reference($euid, $mail_id);
             $deleted++;
-        }
-        if ($deleted > 0) {
-            $message .= sprintf($lang['text_headers_deleted'], $deleted) . ".<br>";
-        }
-      }
+    }
+    if ($deleted > 0) {
+        $message .= sprintf($lang['text_attachments_deleted'], $deleted) . ".<br>";
+    }
+}
+if ($_GET["report_header"]) {
+    // Invalid Headers
+    $deleted = 0;
+    $select = "SELECT maia_mail.id " .
+            "FROM maia_mail, maia_mail_recipients " .
+            "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+            "AND maia_mail.received_date <= ? " .
+            "AND maia_mail_recipients.type = 'B' " .
+            "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($cutoff_date, $euid));
+    while ($row = $res->fetchRow())
+    {
+            $mail_id = $row["id"];
+            delete_mail_reference($euid, $mail_id);
+            $deleted++;
+    }
+    if ($deleted > 0) {
+        $message .= sprintf($lang['text_headers_deleted'], $deleted) . ".<br>";
+    }
+}
         $update = "DELETE from maia_tokens " .
                   "WHERE token=? " .
                   "AND data=? " .

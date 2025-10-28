@@ -84,9 +84,9 @@
     $lang['text_auto_passwords'] =  "La cr&eacute;ation automatique de mot de passe pour les nouveaux utilisateurs est ACTIVE";
     $lang['text_instructions'] =  "Un nouveau compte a &eacute;t&eacute; cr&eacute;&eacute; pour vous. Un courriel avec un " .
                                   "nom d'utilisateur et un mot de passe temporaire a &eacute;t&eacute; envoy&eacute; " .
-                    			  "&agrave; l'adresse que vous avez donn&eacute;e. Connectez-vous avec ces informations " .
-                    			  "et vous aurez ensuite la possibilit&eacute; de changer vos informations " .
-                				  "personnelles.";
+                                  "&agrave; l'adresse que vous avez donn&eacute;e. Connectez-vous avec ces informations " .
+                                  "et vous aurez ensuite la possibilit&eacute; de changer vos informations " .
+                                  "personnelles.";
     $lang['text_newuser_template_file'] =  "Fichier mod&egrave;le (avec chemin) &agrave; utiliser pour les courriels envoy&eacute;s " .
                                            "aux nouveaux utilisateurs";
     $lang['text_reminder_login_url'] =  "URL de connexion pour les nouveaux utilisateurs";

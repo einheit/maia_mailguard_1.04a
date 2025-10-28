@@ -80,7 +80,7 @@
     $lang['heading_introduction']           = "Einführung";
     $lang['heading_statistics']             = "Statistiken";
     $lang['heading_settings']               = "E-Mail-Filtereinstellungen";
-    $lang['heading_welcome']		    = "Willkommen-Seite";
+    $lang['heading_welcome']            = "Willkommen-Seite";
     $lang['heading_wblist']                 = "Whitelist und Blacklist";
     $lang['heading_quarantine']             = "Falsche Positive";
     $lang['heading_report']                 = "Falsche Negative";

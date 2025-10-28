@@ -74,45 +74,45 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/xadminusers.php"); // pick up headers for cache listings
-    require_once ("./locale/$display_language/admindomains.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/xadminusers.php"; // pick up headers for cache listings
+    require_once "./locale/$display_language/admindomains.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: admindomains.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: admindomains.php" . $sid);
+    exit();
+}
 
     // Is this administrator the superadmin, or just a
     // domain admin?
     $super = is_superadmin($uid);
-    if ($super) {
-        $domaincols = 7;
-    } else {
-        $domaincols = 6;
-    }
+if ($super) {
+    $domaincols = 7;
+} else {
+    $domaincols = 6;
+}
     $smarty->assign('cols', $domaincols);
 
-    if ($super) {
-        $select = <<<ENDSELECT
+if ($super) {
+    $select = <<<ENDSELECT
         SELECT maia_domains.domain, maia_domains.id as domain_id, maia_users.id as maia_user_id,
                count(maia_mail_recipients.mail_id) as items,
                maia_mail_recipients.type
@@ -121,13 +121,13 @@
         GROUP BY maia_domains.domain, maia_mail_recipients.type, maia_domains.id, maia_users.id
         ORDER BY domain ASC
 ENDSELECT;
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) { 
-            die($sth->getMessage()); 
-        }
-    } else {
-        $select = <<<ENDSELECT
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) { 
+        die($sth->getMessage()); 
+    }
+} else {
+    $select = <<<ENDSELECT
         SELECT maia_domains.domain, maia_domains.id as domain_id, maia_users.id as maia_user_id,
                 count(maia_mail_recipients.mail_id) as items,
                 maia_mail_recipients.type
@@ -138,45 +138,45 @@ ENDSELECT;
         GROUP BY maia_domains.domain, maia_mail_recipients.type, maia_domains.id, maia_users.id
         ORDER BY domain ASC
 ENDSELECT;
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute(array($uid));
-        if (PEAR::isError($sth)) { 
-            die($sth->getMessage()); 
-        }
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute(array($uid));
+    if (PEAR::isError($sth)) { 
+        die($sth->getMessage()); 
     }
+}
 
     $atleastone = false;
     $domains = array();
-    if ($res->numrows() > 0) {
-        while ($row = $res->fetchrow()) {
-            $name = strtolower($row["domain"]);
-            if (!isset($domains[$name])) {
-              $domains[$name] = array (
-                  'maia_user_id' => $row["maia_user_id"],
-                  'domain_id' => $row["domain_id"],
-                  'ham' => 0,
-                  'spam' => 0,
-                  'virus' => 0,
-                  'file' => 0,
-                  'header' => 0
-                  );
-            }
-            if ($row['type'] == "H") {
-                $domains[$name]['ham'] = $row['items'];
-            } elseif ($row['type'] == "S" || $row['type'] == "P") {
-              $domains[$name]['spam'] += $row['items'];
-            } elseif ($row['type'] == "F") {
-                $domains[$name]['file'] = $row['items'];
-            } elseif ($row['type'] == "V") {
-                $domains[$name]['virus'] = $row['items'];
-            } elseif ($row['type'] == "B") {
-                $domains[$name]['header'] = $row['items'];
-            }
-            if ($name != "@.") {
-                $atleastone = true;
-            }
+if ($res->numrows() > 0) {
+    while ($row = $res->fetchrow()) {
+        $name = strtolower($row["domain"]);
+        if (!isset($domains[$name])) {
+            $domains[$name] = array (
+              'maia_user_id' => $row["maia_user_id"],
+              'domain_id' => $row["domain_id"],
+              'ham' => 0,
+              'spam' => 0,
+              'virus' => 0,
+              'file' => 0,
+              'header' => 0
+              );
+        }
+        if ($row['type'] == "H") {
+            $domains[$name]['ham'] = $row['items'];
+        } elseif ($row['type'] == "S" || $row['type'] == "P") {
+            $domains[$name]['spam'] += $row['items'];
+        } elseif ($row['type'] == "F") {
+            $domains[$name]['file'] = $row['items'];
+        } elseif ($row['type'] == "V") {
+            $domains[$name]['virus'] = $row['items'];
+        } elseif ($row['type'] == "B") {
+            $domains[$name]['header'] = $row['items'];
+        }
+        if ($name != "@.") {
+            $atleastone = true;
         }
     }
+}
     $smarty->assign("domains", $domains);
     $smarty->assign("atleastone", $atleastone);
 

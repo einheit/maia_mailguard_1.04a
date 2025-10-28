@@ -73,7 +73,7 @@
      * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      *
      */
-    require_once ("core.php");
+    require_once "core.php";
     session_start();
 
     // This script is called to confirm all items before a given timestamp, as
@@ -82,207 +82,209 @@
     // Set up and authenticate session based on token.  If the values are 
     // provided, force session to be the owner of the token, regardless of 
     // previous session information.
-    if (array_key_exists('token', $_GET) && 
-        array_key_exists('id', $_GET)    && 
-        array_key_exists('type', $_GET)) {
-      if (!isset($_SESSION['uid'])  ||
-          !isset($_SESSION['euid']) ||
-          $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] ||
-          time() > $_SESSION["timeout"]) {//if session is timed out, re-authenticate the session.
-        header("Location: xlogin.php?action=rescue.php&" . $_SERVER["QUERY_STRING"]);
-        exit();
-      } 
-      $token = trim($_GET["token"]);
-      $type = trim($_GET["type"]);
-    } else {
-       header("Location: login.php");
-       exit;
-    }
+if (array_key_exists('token', $_GET)  
+    && array_key_exists('id', $_GET)     
+    && array_key_exists('type', $_GET)
+) {
+    if (!isset($_SESSION['uid'])  
+        || !isset($_SESSION['euid']) 
+        || $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] 
+        || time() > $_SESSION["timeout"]
+    ) {//if session is timed out, re-authenticate the session.
+          header("Location: xlogin.php?action=rescue.php&" . $_SERVER["QUERY_STRING"]);
+          exit();
+    } 
+        $token = trim($_GET["token"]);
+        $type = trim($_GET["type"]);
+} else {
+    header("Location: login.php");
+    exit;
+}
 
-    require_once ("maia_db.php");
-    require_once ("display.php");
-    require_once ("authcheck.php");
-    require_once ("smtp.php");
-    require_once ("mailtools.php");
-    require_once ("encrypt.php");
+    require_once "maia_db.php";
+    require_once "display.php";
+    require_once "authcheck.php";
+    require_once "smtp.php";
+    require_once "mailtools.php";
+    require_once "encrypt.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/smtp.php");
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/quarantine.php");
-    require_once ("./locale/$display_language/reportspam.php");
-    require_once ("./locale/$display_language/wblist.php");
+    require_once "./locale/$display_language/smtp.php";
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/quarantine.php";
+    require_once "./locale/$display_language/reportspam.php";
+    require_once "./locale/$display_language/wblist.php";
 
-    	$message = "";
+        $message = "";
     switch($type) {
-      case "ham":  //Ok, this isn't really "releasing", but the logic is the same.
-        $reported = 0;
-        $select = "SELECT maia_mail.id, maia_mail.sender_email " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail_recipients.type = 'H' " .
-                  "AND maia_mail_recipients.token = ? " .
-                  "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        if (PEAR::isError($sth)) {
+case "ham":  //Ok, this isn't really "releasing", but the logic is the same.
+    $reported = 0;
+    $select = "SELECT maia_mail.id, maia_mail.sender_email " .
+            "FROM maia_mail, maia_mail_recipients " .
+            "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+            "AND maia_mail_recipients.type = 'H' " .
+            "AND maia_mail_recipients.token = ? " .
+            "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
+            "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    if (PEAR::isError($sth)) {
             die($sth->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+          $res = $sth->execute(array($token, $euid));
+    if (PEAR::isError($res)) {
+        die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+    while ($row = $res->fetchRow())
+          {
+        $mail_id = $row["id"];
+        $sender  = $row["sender_email"];
+        if (array_key_exists('wblist', $_GET)) {
+            $message .= $lang[add_address_to_wb_list($euid, $sender, "B")];
+            $message .= "<br>";
         }
-	$res = $sth->execute(array($token, $euid));
-        if (PEAR::isError($res)) {
-            die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
-        }
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            $sender  = $row["sender_email"];
-            if (array_key_exists('wblist', $_GET)) {
-              $message .= $lang[add_address_to_wb_list($euid, $sender, "B")];
-              $message .= "<br>";
-            }
-            report_spam($euid, $mail_id);
-            $reported++;
-        }
-        $sth->free();
-        update_mail_stats($euid, "suspected_ham");
-        if ($reported > 0) {
-            $message .= sprintf($lang['text_spam_reported'], $reported) . ".<br>";
-        }
-        break;
-      case "spam":
-    	$rescued = 0;
-        $select = "SELECT maia_mail.id, maia_mail.sender_email " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail_recipients.type IN ('S','P') " .
-                  "AND maia_mail_recipients.token = ? " .
-                  "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        if (PEAR::isError($sth)) {
+        report_spam($euid, $mail_id);
+        $reported++;
+    }
+          $sth->free();
+          update_mail_stats($euid, "suspected_ham");
+    if ($reported > 0) {
+        $message .= sprintf($lang['text_spam_reported'], $reported) . ".<br>";
+    }
+    break;
+case "spam":
+    $rescued = 0;
+    $select = "SELECT maia_mail.id, maia_mail.sender_email " .
+            "FROM maia_mail, maia_mail_recipients " .
+            "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+            "AND maia_mail_recipients.type IN ('S','P') " .
+            "AND maia_mail_recipients.token = ? " .
+            "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
+            "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    if (PEAR::isError($sth)) {
             die($sth->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+          $res = $sth->execute(array($token, $euid));
+    if (PEAR::isError($res)) {
+        die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+    while ($row = $res->fetchRow())
+          {
+              $mail_id = $row["id"];
+              $sender  = $row["sender_email"];
+        if (array_key_exists('wblist', $_GET)) {
+            $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
+            $message .= "<br>";
         }
-	$res = $sth->execute(array($token, $euid));
-        if (PEAR::isError($res)) {
-            die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
-        }
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            $sender  = $row["sender_email"];
-            if (array_key_exists('wblist', $_GET)) {
-              $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
-              $message .= "<br>";
-            }
-            rescue_item($euid, $mail_id);
-            $rescued++;
-        }
-        $sth->free();
-        update_mail_stats($euid, "suspected_spam");
-        if ($rescued > 0) {
-            $message .= sprintf($lang['text_spam_rescued'], $rescued) . ".<br>";
-        }
-        break;
-     case "virus":
-    	$rescued = 0;
-        $select = "SELECT maia_mail.id, maia_mail.sender_email " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail_recipients.type = 'V' " .
-                  "AND maia_mail_recipients.token = ? " .
-                  "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        if (PEAR::isError($sth)) {
+              rescue_item($euid, $mail_id);
+              $rescued++;
+    }
+          $sth->free();
+          update_mail_stats($euid, "suspected_spam");
+    if ($rescued > 0) {
+        $message .= sprintf($lang['text_spam_rescued'], $rescued) . ".<br>";
+    }
+    break;
+case "virus":
+    $rescued = 0;
+    $select = "SELECT maia_mail.id, maia_mail.sender_email " .
+             "FROM maia_mail, maia_mail_recipients " .
+             "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+             "AND maia_mail_recipients.type = 'V' " .
+             "AND maia_mail_recipients.token = ? " .
+             "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
+             "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    if (PEAR::isError($sth)) {
             die($sth->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+         $res = $sth->execute(array($token, $euid));
+    if (PEAR::isError($res)) {
+        die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+    while ($row = $res->fetchRow())
+         {
+        $mail_id = $row["id"];
+        $sender  = $row["sender_email"];
+        if (array_key_exists('wblist', $_GET)) {
+            $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
+            $message .= "<br>";
         }
-	$res = $sth->execute(array($token, $euid));
-        if (PEAR::isError($res)) {
-            die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
-        }
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            $sender  = $row["sender_email"];
-            if (array_key_exists('wblist', $_GET)) {
-              $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
-              $message .= "<br>";
-            }
-            rescue_item($euid, $mail_id);
-            $rescued++;
-        }
-        $sth->free();
-        if ($rescued > 0) {
-            $message .= sprintf($lang['text_viruses_rescued'], $rescued) . ".<br>";
-        }
-        break;
+        rescue_item($euid, $mail_id);
+        $rescued++;
+    }
+         $sth->free();
+    if ($rescued > 0) {
+        $message .= sprintf($lang['text_viruses_rescued'], $rescued) . ".<br>";
+    }
+    break;
 
-     case "attachment":
-    	$rescued = 0;
-        $select = "SELECT maia_mail.id, maia_mail.sender_email " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail_recipients.type = 'F' " .
-                  "AND maia_mail_recipients.token = ? " .
-                  "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        if (PEAR::isError($sth)) {
+case "attachment":
+    $rescued = 0;
+    $select = "SELECT maia_mail.id, maia_mail.sender_email " .
+             "FROM maia_mail, maia_mail_recipients " .
+             "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+             "AND maia_mail_recipients.type = 'F' " .
+             "AND maia_mail_recipients.token = ? " .
+             "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
+             "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    if (PEAR::isError($sth)) {
             die($sth->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+         $res = $sth->execute(array($token, $euid));
+    if (PEAR::isError($res)) {
+        die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+    while ($row = $res->fetchRow())
+         {
+        $mail_id = $row["id"];
+        $sender  = $row["sender_email"];
+        if (array_key_exists('wblist', $_GET)) {
+            $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
+            $message .= "<br>";
         }
-	$res = $sth->execute(array($token, $euid));
-        if (PEAR::isError($res)) {
-            die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
-        }
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            $sender  = $row["sender_email"];
-            if (array_key_exists('wblist', $_GET)) {
-              $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
-              $message .= "<br>";
-            }
-            rescue_item($euid, $mail_id);
-            $rescued++;
-        }
-        $sth->free();
-        if ($rescued > 0) {
-            $message .= sprintf($lang['text_attachments_rescued'], $rescued) . ".<br>";
-        }
-        break;
-     case "header":
-    	$rescued = 0;
-        $select = "SELECT maia_mail.id, maia_mail.sender_email " .
-                  "FROM maia_mail, maia_mail_recipients " .
-                  "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
-                  "AND maia_mail_recipients.type = 'B' " .
-                  "AND maia_mail_recipients.token = ? " .
-                  "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
-                  "AND maia_mail_recipients.recipient_id = ?";
-        $sth = $dbh->prepare($select);
-        if (PEAR::isError($sth)) {
+        rescue_item($euid, $mail_id);
+        $rescued++;
+    }
+         $sth->free();
+    if ($rescued > 0) {
+        $message .= sprintf($lang['text_attachments_rescued'], $rescued) . ".<br>";
+    }
+    break;
+case "header":
+    $rescued = 0;
+    $select = "SELECT maia_mail.id, maia_mail.sender_email " .
+             "FROM maia_mail, maia_mail_recipients " .
+             "WHERE maia_mail.id = maia_mail_recipients.mail_id " .
+             "AND maia_mail_recipients.type = 'B' " .
+             "AND maia_mail_recipients.token = ? " .
+             "AND  SUBSTRING(maia_mail_recipients.token FROM 1 FOR 7) <> 'expired' " .
+             "AND maia_mail_recipients.recipient_id = ?";
+    $sth = $dbh->prepare($select);
+    if (PEAR::isError($sth)) {
             die($sth->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+         $res = $sth->execute(array($token, $euid));
+    if (PEAR::isError($res)) {
+        die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
+    }
+    while ($row = $res->fetchRow())
+         {
+        $mail_id = $row["id"];
+        $sender  = $row["sender_email"];
+        if (array_key_exists('wblist', $_GET)) {
+            $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
+            $message .= "<br>";
         }
-	$res = $sth->execute(array($token, $euid));
-        if (PEAR::isError($res)) {
-            die($res->getMessage() . ": " . $dbh->last_query . " [" . $token . "] [" . $euid . "]");
-        }
-        while ($row = $res->fetchRow())
-        {
-            $mail_id = $row["id"];
-            $sender  = $row["sender_email"];
-            if (array_key_exists('wblist', $_GET)) {
-              $message .= $lang[add_address_to_wb_list($euid, $sender, "W")];
-              $message .= "<br>";
-            }
-            rescue_item($euid, $mail_id);
-            $rescued++;
-        }
-        $sth->free();
-        if ($rescued > 0) {
-            $message .= sprintf($lang['text_headers_rescued'], $rescued) . ".<br>";
-        }
+        rescue_item($euid, $mail_id);
+        $rescued++;
+    }
+         $sth->free();
+    if ($rescued > 0) {
+        $message .= sprintf($lang['text_headers_rescued'], $rescued) . ".<br>";
+    }
     }
     $_SESSION["message"] = $message;
     header("Location: welcome.php");
-?>
+    ?>

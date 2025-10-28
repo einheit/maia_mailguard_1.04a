@@ -112,10 +112,10 @@
     $lang['button_change_protection'] = "Changer le niveau";
     
     $lang['radio_protection'] = array(  'off'       => "D&eacute;sactiv&eacute;",
-		 								'low'       => "Faible",
-     									'medium'    => "Moyen",
-										'high'      => "&Eacute;lev&eacute;",
-										'custom'    => "Personnalis&eacute;");
+                                         'low'       => "Faible",
+                                         'medium'    => "Moyen",
+                                        'high'      => "&Eacute;lev&eacute;",
+                                        'custom'    => "Personnalis&eacute;");
     
     $lang['banner_subtitle'] = "Bienvenue";
     
@@ -135,4 +135,4 @@
     $lang['action_banned_cache'] = "Supprimer/R&eacute;cup&eacute;rer";
     $lang['action_header_cache'] = "Supprimer/R&eacute;cup&eacute;rer";
     
-?>
+    ?>

@@ -90,10 +90,10 @@
     $lang['button_change_protection'] = "Skift niveau";
     
     $lang['radio_protection'] = array(  'off' => "Slukket",
-		 								'low' => "Lav",
-     									'medium' => "Mellem",
-										'high' => "Høj",
-										'custom' => "Skræddersyet");
+                                         'low' => "Lav",
+                                         'medium' => "Mellem",
+                                        'high' => "Høj",
+                                        'custom' => "Skræddersyet");
     
     $lang['banner_subtitle'] = "Velkommen";
     

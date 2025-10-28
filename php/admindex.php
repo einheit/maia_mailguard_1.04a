@@ -74,32 +74,32 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/admindex.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/admindex.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: admindex.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: admindex.php" . $sid);
+    exit();
+}
 
     $smarty->assign('enable_stats_tracking', get_config_value("enable_stats_tracking")=='Y');
     

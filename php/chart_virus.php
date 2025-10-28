@@ -75,12 +75,12 @@
      */
 
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("constants.php");
-    require_once ("maia_db.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "constants.php";
+    require_once "maia_db.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/virusstats.php");
+    require_once "./locale/$display_language/virusstats.php";
 
     require 'Image/Graph.php';
     
@@ -185,7 +185,7 @@
     $FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
     $Plot->setFillStyle($FillArray);
     for ($i = 0 ; $i < count($keys); $i++) {
-      $FillArray->addColor($chart_colors[$i]);
+        $FillArray->addColor($chart_colors[$i]);
     }
     
 
@@ -195,5 +195,5 @@
 
     // output the Graph
     $Graph->done();
-?>
+    ?>
 

@@ -125,7 +125,7 @@
     $lang['text_new_primary_email'] =  "%s を代表メールアドレスに設定しました";
     $lang['text_language'] =  "画面表示に使う言語";
     $lang['text_charset'] =  "画面表示に使う文字セット";
-    $lang['text_theme']	= "テーマ";
+    $lang['text_theme']    = "テーマ";
     $lang['text_truncate_subject'] = "メール一覧での件名の表示桁数（0: 全て表示）";
     $lang['text_truncate_email'] = "メール一覧での差出人の表示桁数（0: 全て表示）";
     $lang['text_spamtrap'] =  "スパムトラップ用のアカウントですか?";

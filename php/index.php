@@ -74,30 +74,30 @@
      *
      */
      
-   require_once ("core.php");
-   require_once ("authcheck.php");
-   require_once ("maia_db.php");
+   require_once "core.php";
+   require_once "authcheck.php";
+   require_once "maia_db.php";
 
    // Test to see whether the user's browser accepts cookies or not,
    // based on whether the session cookie can be read.  If not,
    // we'll use the session id provided from the GET header.
-   if (isset($_COOKIE[session_name()])) {
-      $_SESSION["cookies"] = 1;
-      $sid = "";
-      $msid = "?";
-   } else {
-      $_SESSION["cookies"] = 0;
-      $sid = '?' . session_name() . '=' . session_id();
-      $msid = $sid . '&';
-   }
-   if (isset($_GET["action"])) {
-      parse_str($_SERVER["QUERY_STRING"],$url_params);
-      unset($url_params[session_name()]);
-      unset($url_params['action']);
+if (isset($_COOKIE[session_name()])) {
+    $_SESSION["cookies"] = 1;
+    $sid = "";
+    $msid = "?";
+} else {
+    $_SESSION["cookies"] = 0;
+    $sid = '?' . session_name() . '=' . session_id();
+    $msid = $sid . '&';
+}
+if (isset($_GET["action"])) {
+    parse_str($_SERVER["QUERY_STRING"], $url_params);
+    unset($url_params[session_name()]);
+    unset($url_params['action']);
 
-      header("Location: " . $_GET["action"] . $msid . http_build_query($url_params));
-   } else {
-      header("Location: welcome.php" . $sid);
-   }
+    header("Location: " . $_GET["action"] . $msid . http_build_query($url_params));
+} else {
+    header("Location: welcome.php" . $sid);
+}
    exit();
 ?>

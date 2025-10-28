@@ -74,35 +74,35 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("maia_db.php");
+   require_once "core.php";
+   require_once "maia_db.php";
 
    // Get any special variables from the GET array
-   if (isset($_GET["super"])) {
-      $super = trim($_GET["super"]);
-      if($super != "register" && $super != "unregister") {
+if (isset($_GET["super"])) {
+    $super = trim($_GET["super"]);
+    if($super != "register" && $super != "unregister") {
         $logger->err("invalid super parameter");
         $super = "";
-      }
-   } else {
-      $super = "";
-   }
+    }
+} else {
+    $super = "";
+}
 
    // Determine the initial language preference,
    // either from default or from manually selected link
-   if (isset($_GET["lang"]) && strlen($_GET["lang"]) == 2 ) {
-      $display_language = trim($_GET["lang"]);
-      $display_language_is_default = false;
-   } elseif (isset($_GET["prevlang"]) && strlen($_GET["prevlang"]) == 2) {
-      $display_language = trim($_GET["prevlang"]);
-      $display_language_is_default = true;
-   } else {
-      $display_language = $default_display_language;
-      $display_language_is_default = true;
-   }
-   require_once ("./locale/$display_language/db.php");
-   require_once ("./locale/$display_language/display.php");
-   require_once ("./locale/$display_language/login.php");
+if (isset($_GET["lang"]) && strlen($_GET["lang"]) == 2 ) {
+    $display_language = trim($_GET["lang"]);
+    $display_language_is_default = false;
+} elseif (isset($_GET["prevlang"]) && strlen($_GET["prevlang"]) == 2) {
+    $display_language = trim($_GET["prevlang"]);
+    $display_language_is_default = true;
+} else {
+    $display_language = $default_display_language;
+    $display_language_is_default = true;
+}
+   require_once "./locale/$display_language/db.php";
+   require_once "./locale/$display_language/display.php";
+   require_once "./locale/$display_language/login.php";
 
    // some default values so that smarty initialization doesn't complain about undefined variables
    $uid = 0;
@@ -119,38 +119,40 @@
    $server_timestamp = getdate();
    $server_timestamp = $server_timestamp[0] - date('Z'); // Convert to UTC
    
-   require_once ("smarty.php");
+   require_once "smarty.php";
    $smarty->assign("super", $super);
    $smarty->assign("server_timestamp", $server_timestamp);
    
    // Check for an NTDOMAIN cookie
-   if ($auth_method == "exchange") {
-       if ($auth_exchange_only_one_domain) {
-           $nt_domain = $auth_exchange_nt_domain;
-       } else {
-       	   if (isset($_COOKIE["NTDOMAIN"])) {
-       	       $nt_domain = trim($_COOKIE["NTDOMAIN"]);
-       	   } else {
-       	       $nt_domain = $auth_exchange_nt_domain;
-       	   }
-       }
-       $smarty->assign('nt_domain', $nt_domain);
-   }
+if ($auth_method == "exchange") {
+    if ($auth_exchange_only_one_domain) {
+        $nt_domain = $auth_exchange_nt_domain;
+    } else {
+        if (isset($_COOKIE["NTDOMAIN"])) {
+            $nt_domain = trim($_COOKIE["NTDOMAIN"]);
+        } else {
+            $nt_domain = $auth_exchange_nt_domain;
+        }
+    }
+    $smarty->assign('nt_domain', $nt_domain);
+}
    
    $smarty->assign('auth_method', $auth_method);
    $smarty->assign('routing_domain', $routing_domain);
 
-   $sth = $dbh->prepare("SELECT abbreviation, language_name FROM maia_languages " .
-              "WHERE abbreviation <> ? AND installed = 'Y' ORDER BY language_name ASC");
+$sth = $dbh->prepare(
+    "SELECT abbreviation, language_name FROM maia_languages " .
+    "WHERE abbreviation <> ? AND installed = 'Y' ORDER BY language_name ASC"
+);
    $res = $sth->execute(array($display_language));
    
    $languages = array(); 
    
-   if ($res->numrows() > 0) {
-      while ($row = $res->fetchrow()) {
-         $languages[$row["abbreviation"]] = $row["language_name"];
-      }
-   } 
+if ($res->numrows() > 0) {
+    while ($row = $res->fetchrow()) {
+        $languages[$row["abbreviation"]] = $row["language_name"];
+    }
+} 
    
    $sth->free();
    $smarty->assign("languages", $languages);

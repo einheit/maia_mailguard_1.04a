@@ -74,96 +74,96 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
 
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Find out which button we pushed to get here
-    if (isset($_POST["add"])) {
+if (isset($_POST["add"])) {
 
-    	$virus = trim($_POST["virus"]);
-    	$alias = trim($_POST["alias"]);
+    $virus = trim($_POST["virus"]);
+    $alias = trim($_POST["alias"]);
 
-    	// Make sure we're not aliasing the virus to itself
-    	if ($virus <> $alias) {
+    // Make sure we're not aliasing the virus to itself
+    if ($virus <> $alias) {
 
             // Get the name of the alias
-    	    $select = "SELECT virus_name, count FROM maia_viruses WHERE id = ?";
-    	    $sth = $dbh->query($select, array($alias));
-    	    if ($row = $sth->fetchrow()) {
-    	        $alias_name = $row["virus_name"];
-    	        $alias_count = $row["count"];
-    	    }
-    	    $sth->free();
-
-    	    // Make sure the alias doesn't already exist
-    	    $select = "SELECT virus_id FROM maia_virus_aliases WHERE virus_alias = ?";
-    	    $sth = $dbh->query($select, array($alias_name));
-    	    if (!$sth->fetchrow()) {
-
-    	    	// Create the new alias
-    	    	$insert = "INSERT INTO maia_virus_aliases (virus_id, virus_alias) VALUES (?, ?)";
-    	    	$dbh->query($insert, array($virus, $alias_name));
-
-    	    	// Get the received count of the actual virus
-    	    	$select = "SELECT count FROM maia_viruses WHERE id = ?";
-    	    	$sth2 = $dbh->query($select, array($virus));
-    	    	if ($row2 = $sth2->fetchrow()) {
-    	    	    $virus_count = $row2["count"];
-    	    	}
-    	    	$sth2->free();
-
-    	    	// Add the received count from the alias to the actual virus
-    	    	$update = "UPDATE maia_viruses SET count = ? WHERE id = ?";
-    	    	$dbh->query($update, array($virus_count + $alias_count, $virus));
-
-    	    	// Replace any references to the alias with virus references
-    	    	$update = "UPDATE maia_viruses_detected SET virus_id = ? WHERE virus_id = ?";
-    	    	$dbh->query($update, array($virus, $alias));
-
-    	    	// Delete the 'alias' from the viruses table
-    	    	$delete = "DELETE FROM maia_viruses WHERE id = ?";
-    	    	$dbh->query($delete, array($alias));
-
-    	    }
-    	    $sth->free();
+            $select = "SELECT virus_name, count FROM maia_viruses WHERE id = ?";
+            $sth = $dbh->query($select, array($alias));
+        if ($row = $sth->fetchrow()) {
+            $alias_name = $row["virus_name"];
+            $alias_count = $row["count"];
         }
+            $sth->free();
 
-    } elseif (isset($_POST["delete"])) {
+            // Make sure the alias doesn't already exist
+            $select = "SELECT virus_id FROM maia_virus_aliases WHERE virus_alias = ?";
+            $sth = $dbh->query($select, array($alias_name));
+        if (!$sth->fetchrow()) {
 
-        // Register the full set of POST variables.
-        foreach($_POST as $varname => $value)
-        {
-            $formVars[$varname] = trim($value);
-        }
+            // Create the new alias
+            $insert = "INSERT INTO maia_virus_aliases (virus_id, virus_alias) VALUES (?, ?)";
+            $dbh->query($insert, array($virus, $alias_name));
 
-        $select = "SELECT virus_alias, virus_id FROM maia_virus_aliases";
-        $sth = $dbh->query($select);
-        while ($row = $sth->fetchrow()) {
-
-            $alias_name = $row["virus_alias"];
-            $virus_id = $row["virus_id"];
-
-            // Replace '.' with '_' to match form submission variable names
-            $alias_var_name = str_replace(".", "_", $alias_name);
-
-            if (isset($formVars[$alias_var_name]) && trim($formVars[$alias_var_name]) == $virus_id) {
-
-            	// Delete the alias
-            	$delete = "DELETE FROM maia_virus_aliases WHERE virus_alias = ? AND virus_id = ?";
-            	$dbh->query($delete, array($alias_name, $virus_id));
-
+            // Get the received count of the actual virus
+            $select = "SELECT count FROM maia_viruses WHERE id = ?";
+            $sth2 = $dbh->query($select, array($virus));
+            if ($row2 = $sth2->fetchrow()) {
+                $virus_count = $row2["count"];
             }
-        }
-        $sth->free();
+            $sth2->free();
 
+            // Add the received count from the alias to the actual virus
+            $update = "UPDATE maia_viruses SET count = ? WHERE id = ?";
+            $dbh->query($update, array($virus_count + $alias_count, $virus));
+
+            // Replace any references to the alias with virus references
+            $update = "UPDATE maia_viruses_detected SET virus_id = ? WHERE virus_id = ?";
+            $dbh->query($update, array($virus, $alias));
+
+            // Delete the 'alias' from the viruses table
+            $delete = "DELETE FROM maia_viruses WHERE id = ?";
+            $dbh->query($delete, array($alias));
+
+        }
+            $sth->free();
     }
+
+} elseif (isset($_POST["delete"])) {
+
+    // Register the full set of POST variables.
+    foreach($_POST as $varname => $value)
+    {
+        $formVars[$varname] = trim($value);
+    }
+
+    $select = "SELECT virus_alias, virus_id FROM maia_virus_aliases";
+    $sth = $dbh->query($select);
+    while ($row = $sth->fetchrow()) {
+
+        $alias_name = $row["virus_alias"];
+        $virus_id = $row["virus_id"];
+
+        // Replace '.' with '_' to match form submission variable names
+        $alias_var_name = str_replace(".", "_", $alias_name);
+
+        if (isset($formVars[$alias_var_name]) && trim($formVars[$alias_var_name]) == $virus_id) {
+
+            // Delete the alias
+            $delete = "DELETE FROM maia_virus_aliases WHERE virus_alias = ? AND virus_id = ?";
+            $dbh->query($delete, array($alias_name, $virus_id));
+
+        }
+    }
+    $sth->free();
+
+}
 
     // Return to the virus administration page
     header("Location: adminviruses.php" . $sid);

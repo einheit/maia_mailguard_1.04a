@@ -5,49 +5,49 @@
 
 {literal}
 <SCRIPT type="text/javascript" Language="JavaScript">
-	
-	function AllSpam()
-	{
-		for(var i=0;i<document.cache.elements.length;i++)
-		{
-		if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('spam') > -1)
-		{
-			document.cache.elements[i].checked = true;
-		}
-		}
-		document.cache.CheckAllHam.checked = false
-		document.cache.CheckAllDelete.checked = false
-	
-	}
-	
-	function AllHam()
-	{
-		for(var i=0;i<document.cache.elements.length;i++)
-		{
-		if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('ham') > -1)
-		{
-			document.cache.elements[i].checked = true;
-		}
-		}
-		document.cache.CheckAllSpam.checked = false
-		document.cache.CheckAllDelete.checked = false
-	
-	}
-	
-	function AllDelete()
-	{
-		for(var i=0;i<document.cache.elements.length;i++)
-		{
-		if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('delete') > -1)
-		{
-			document.cache.elements[i].checked = true;
-		}
-		}
-		document.cache.CheckAllSpam.checked = false
-		document.cache.CheckAllHam.checked = false
-	
-	}
-	
+
+        function AllSpam()
+        {
+                for(var i=0;i<document.cache.elements.length;i++)
+                {
+                if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('spam') > -1)
+                {
+                        document.cache.elements[i].checked = true;
+                }
+                }
+                document.cache.CheckAllHam.checked = false
+                document.cache.CheckAllDelete.checked = false
+
+        }
+
+        function AllHam()
+        {
+                for(var i=0;i<document.cache.elements.length;i++)
+                {
+                if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('ham') > -1)
+                {
+                        document.cache.elements[i].checked = true;
+                }
+                }
+                document.cache.CheckAllSpam.checked = false
+                document.cache.CheckAllDelete.checked = false
+
+        }
+
+        function AllDelete()
+        {
+                for(var i=0;i<document.cache.elements.length;i++)
+                {
+                if(document.cache.elements[i].type == "radio" && document.cache.elements[i].id.search('delete') > -1)
+                {
+                        document.cache.elements[i].checked = true;
+                }
+                }
+                document.cache.CheckAllSpam.checked = false
+                document.cache.CheckAllHam.checked = false
+
+        }
+
 </SCRIPT>
 {/literal}
 <div align="center">
@@ -111,27 +111,26 @@
 {/if}
 </b></td>
 <td align="center">
-<span id="received_date{$row[hamloop].id}" class="HelpTipAnchor">{$row[hamloop].received_date|truncate:$truncate_subject:"...":true|escape:'UTF-8'}</span>
-<span id="tip_received_date{$row[hamloop].id}" class="HelpTip">  {$row[hamloop].received_date|escape:"javascript"|escape:'UTF-8'}</span>
+<span id="received_date{$row[hamloop].id}" class="HelpTipAnchor">{$row[hamloop].received_date|truncate:$truncate_subject:"...":true}</span>
+<span id="tip_received_date{$row[hamloop].id}" class="HelpTip">  {$row[hamloop].received_date|escape:"javascript"}</span>
 </td>
 
 <td align="center">
-<span id="sender{$row[hamloop].id}" class="HelpTipAnchor">{$row[hamloop].sender_email|mb_truncate:$truncate_email:"...":'UTF-8':true|escape:'UTF-8'}</span>
-<span id="tip_sender{$row[hamloop].id}" class="HelpTip">{$row[hamloop].sender_email|escape:"javascript"|escape:'UTF-8'}</span>
+<span id="sender{$row[hamloop].id}" class="HelpTipAnchor">{$row[hamloop].sender_email|mb_truncate:$truncate_email:"...":'UTF-8':true}</span>
+<span id="tip_sender{$row[hamloop].id}" class="HelpTip">{$row[hamloop].sender_email|escape:"javascript"}</span>
 </td>
 {if $need_to}
 <td align="center">
 <span id="recipient{$row[hamloop].id}" class="HelpTipAnchor">{foreach from=$row[hamloop].recipient_email item=recip_to}
-		{$recip_to|mb_truncate:$truncate_email:"...":'UTF-8':true|escape:'UTF-8'}<br>
-		{/foreach}</span>
+                {$recip_to|mb_truncate:$truncate_email:"...":'UTF-8':true}<br>
+                {/foreach}</span>
 <span id="tip_recipient{$row[hamloop].id}" class="HelpTip">{foreach from=$row[hamloop].recipient_email item=recip_to}{$recip_to|escape:'UTF-8'}<br>{/foreach}</span>
 </td>
 {/if}
 <td align="left">
 <a id="link_{$row[hamloop].id}" class="thickbox HelpTipAnchor" href="view.php{$msid}id={$row[hamloop].id}&amp;cache_type={$cache_type}&amp;height=350&amp;width=700">
-{$row[hamloop].subject|mb_truncate:$truncate_subject:"...":'UTF-8':true|escape:'UTF-8'}
-</a><span id="tip_link_{$row[hamloop].id}" class="HelpTip">{$row[hamloop].subject|escape:'UTF-8'}</span></td>
-
+{$row[hamloop].subject|mb_truncate:$truncate_subject:"...":'UTF-8':true}
+</a><span id="tip_link_{$row[hamloop].id}" class="HelpTip">{$row[hamloop].subject}</span></td>
 
 <td align="center">
 <input type="radio" id="spam_{$row[hamloop].id}" name="cache_item[multiple][{$row[hamloop].id}]" value="spam" {if $def_rb == 'spam'}checked{/if}>

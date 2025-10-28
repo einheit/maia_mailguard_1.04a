@@ -95,10 +95,10 @@
     $lang['button_change_protection'] = "Mudar nível";
     
     $lang['radio_protection'] = array(  'off' => "Desligado",
-		 								'low' => "Baixo",
-     									'medium' => "Médio",
-										'high' => "Alto",
-										'custom' => "Personalizado");
+                                         'low' => "Baixo",
+                                         'medium' => "Médio",
+                                        'high' => "Alto",
+                                        'custom' => "Personalizado");
     
     $lang['banner_subtitle'] = "Bem-vindo";
     

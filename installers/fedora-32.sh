@@ -227,7 +227,7 @@ echo
 pear channel-update pear.php.net
 
 pear install Auth_SASL
-pear install Log
+pear install Log-1.13.3-1.13.3
 pear install MDB2-2.5.0b5
 pear install MDB2_Driver_mysqli-1.5.0b4
 pear install Mail_Mime
@@ -252,7 +252,7 @@ pear list
 # Archive_Tar        1.4.9   stable
 # Auth_SASL          1.1.0   stable
 # Console_Getopt     1.4.3   stable
-# Log                1.13.1  stable
+# Log-1.13.3-1.13.3                1.13.1  stable
 # MDB2               2.5.0b5 beta
 # MDB2_Driver_mysqli 1.5.0b4 beta
 # Mail_Mime          1.10.7  stable
@@ -319,7 +319,7 @@ echo	"if everything passes, and you are creating a database for the"
 echo	"first time, (no existing database) create the initial maia user" 
 echo	"by visiting http://$host/maia/internal-init.php"
 echo
-echo	"maia will send your login credentials to the email addess you"
+echo	"maia will send your login credentials to the email address you"
 echo	"supplied in the internal-init form. Use those credentials to"
 echo	"log into the url below (note the "super=register" arg)"
 echo	" http://${host}/maia/login.php?super=register"

@@ -74,32 +74,32 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminusers.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminusers.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminusers.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminusers.php" . $sid);
+    exit();
+}
 
     // Is this administrator the superadmin, or just a
     // domain admin?
@@ -108,115 +108,115 @@
     $domain_name = array();
     $address = array();
     $user = array();
-    if (!$super) {
+if (!$super) {
 
-    	// Make a list of the domains this administrator can access.
-        $select = "SELECT domain " .
-                  "FROM maia_domains, maia_domain_admins " .
-                  "WHERE maia_domains.id = maia_domain_admins.domain_id " .
-                  "AND maia_domain_admins.admin_id = ? " .
-                  "ORDER BY domain ASC";
-        //$sth = $dbh->query($select, array($uid));
+    // Make a list of the domains this administrator can access.
+    $select = "SELECT domain " .
+              "FROM maia_domains, maia_domain_admins " .
+              "WHERE maia_domains.id = maia_domain_admins.domain_id " .
+              "AND maia_domain_admins.admin_id = ? " .
+              "ORDER BY domain ASC";
+    //$sth = $dbh->query($select, array($uid));
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute($uid);
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    while ($row = $res->fetchrow()) {
+        $domain_name[] =  strtolower($row["domain"]);
+    }
+    $smarty->assign('domain_name', $domain_name);
+    $sth->free();
+
+    foreach ($domain_name as $dname) {
+
+        // List only the e-mail addresses within the
+        // domains administered by this admin.
+        $select = "SELECT users.email, users.id " .
+                  "FROM users, maia_users " .
+                  "WHERE users.email LIKE '%_" . $dname . "' " .
+                  "AND users.maia_user_id = maia_users.id " .
+                  "AND (maia_users.user_level = 'U' " .
+                  "OR maia_users.id = ?) " .
+                  "ORDER BY users.email ASC";
+        $sth = $dbh->prepare($select);
+        $res = $sth->execute($uid);
+        if (PEAR::isError($sth)) {
+            die($sth->getMessage());
+        }
+
+           
+        while ($row = $res->fetchrow()) {
+            $address[$row["email"]] = $row["id"];
+        }
+        $res->free();
+    }
+
+        
+
+        
+    foreach ($domain_name as $dname) {
+
+        // List only the users with e-mail addresses within the
+        // domains administered by this admin.
+        $select = "SELECT DISTINCT maia_users.user_name, maia_users.id " .
+                  "FROM maia_users, users " .
+                  "WHERE maia_users.id = users.maia_user_id " .
+                  "AND users.email LIKE '%" . $dname . "' " .
+                  "AND (maia_users.user_level = 'U' " .
+                  "OR maia_users.id = ?) " .
+                  "ORDER BY user_name ASC";
         $sth = $dbh->prepare($select);
         $res = $sth->execute($uid);
         if (PEAR::isError($sth)) {
             die($sth->getMessage());
         }
         while ($row = $res->fetchrow()) {
-            $domain_name[] =  strtolower($row["domain"]);
-        }
-        $smarty->assign('domain_name', $domain_name);
-        $sth->free();
-
-        foreach ($domain_name as $dname) {
-
-            // List only the e-mail addresses within the
-            // domains administered by this admin.
-            $select = "SELECT users.email, users.id " .
-                      "FROM users, maia_users " .
-                      "WHERE users.email LIKE '%_" . $dname . "' " .
-                      "AND users.maia_user_id = maia_users.id " .
-                      "AND (maia_users.user_level = 'U' " .
-                      "OR maia_users.id = ?) " .
-                      "ORDER BY users.email ASC";
-            $sth = $dbh->prepare($select);
-            $res = $sth->execute($uid);
-            if (PEAR::isError($sth)) {
-                die($sth->getMessage());
-            }
-
-           
-            while ($row = $res->fetchrow()) {
-                $address[$row["email"]] = $row["id"];
-            }
-            $res->free();
-        }
-
-        
-
-        
-        foreach ($domain_name as $dname) {
-
-            // List only the users with e-mail addresses within the
-            // domains administered by this admin.
-            $select = "SELECT DISTINCT maia_users.user_name, maia_users.id " .
-                      "FROM maia_users, users " .
-                      "WHERE maia_users.id = users.maia_user_id " .
-                      "AND users.email LIKE '%" . $dname . "' " .
-                      "AND (maia_users.user_level = 'U' " .
-                      "OR maia_users.id = ?) " .
-                      "ORDER BY user_name ASC";
-            $sth = $dbh->prepare($select);
-            $res = $sth->execute($uid);
-            if (PEAR::isError($sth)) {
-                die($sth->getMessage());
-            }
-            while ($row = $res->fetchrow()) {
             if (is_a_domain_default_user($row["id"])) {
-              continue;
-            }
-                $user[$row["user_name"]] = $row["id"];
-            }
-            $sth->free();
-        }
-    } else {
-
-    	// The superadmin can list all e-mail addresses in all domains.
-        $select = "SELECT email, id " .
-                  "FROM users " .
-                  "WHERE email NOT LIKE '@%' " .
-                  "ORDER BY email ASC";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-
-        $address = array();
-        while ($row = $res->fetchrow()) {
-            $address[$row["email"]] = $row["id"];
-        }
-        $res->free();
-
-    	// The superadmin can list all users in all domains.
-        $select = "SELECT user_name, id " .
-                  "FROM maia_users " .
-                  "ORDER BY user_name ASC";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        $user = array();
-        while ($row = $res->fetchrow()) {
-            if (is_a_domain_default_user($row["id"])) {
-              continue;
+                continue;
             }
             $user[$row["user_name"]] = $row["id"];
         }
-        $res->free();
-
+        $sth->free();
     }
+} else {
+
+    // The superadmin can list all e-mail addresses in all domains.
+    $select = "SELECT email, id " .
+              "FROM users " .
+              "WHERE email NOT LIKE '@%' " .
+              "ORDER BY email ASC";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+
+    $address = array();
+    while ($row = $res->fetchrow()) {
+        $address[$row["email"]] = $row["id"];
+    }
+    $res->free();
+
+    // The superadmin can list all users in all domains.
+    $select = "SELECT user_name, id " .
+              "FROM maia_users " .
+              "ORDER BY user_name ASC";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $user = array();
+    while ($row = $res->fetchrow()) {
+        if (is_a_domain_default_user($row["id"])) {
+            continue;
+        }
+        $user[$row["user_name"]] = $row["id"];
+    }
+    $res->free();
+
+}
     ksort($address);
     $smarty->assign('address', $address);
     ksort($user);
@@ -226,96 +226,96 @@
     $smarty->assign('users', count($user));
 
     $delete_address = array();
-    if (!$super) {
+if (!$super) {
 
-        foreach ($domain_name as $dname) {
+    foreach ($domain_name as $dname) {
 
-            // List only the e-mail addresses within the
-            // domains administered by this admin.
-            $select = "SELECT users.email, users.id " .
-                      "FROM users, maia_users " .
-                      "WHERE users.email LIKE '%_" . $dname . "' " .
-                      "AND users.maia_user_id = maia_users.id " .
-                      "AND maia_users.user_level = 'U' " .
-                      "ORDER BY users.email ASC";
-            $sth = $dbh->prepare($select);
-            $res = $sth->execute();
-            if (PEAR::isError($sth)) {
-                die($sth->getMessage());
-            }
-            while ($row = $res->fetchrow()) {
-                $delete_address[$row["email"]] = $row["id"];
-            }
-            $res->free();
-        }
-
-    } else {
-
-    	// The superadmin can list all e-mail addresses in all domains.
-        $select = "SELECT email, id " .
-                  "FROM users " .
-                  "WHERE email NOT LIKE '@%' " .
-                  "ORDER BY email ASC";
+        // List only the e-mail addresses within the
+        // domains administered by this admin.
+        $select = "SELECT users.email, users.id " .
+                  "FROM users, maia_users " .
+                  "WHERE users.email LIKE '%_" . $dname . "' " .
+                  "AND users.maia_user_id = maia_users.id " .
+                  "AND maia_users.user_level = 'U' " .
+                  "ORDER BY users.email ASC";
         $sth = $dbh->prepare($select);
         $res = $sth->execute();
         if (PEAR::isError($sth)) {
             die($sth->getMessage());
         }
-        $delete_address = array();
         while ($row = $res->fetchrow()) {
             $delete_address[$row["email"]] = $row["id"];
         }
         $res->free();
     }
+
+} else {
+
+    // The superadmin can list all e-mail addresses in all domains.
+    $select = "SELECT email, id " .
+              "FROM users " .
+              "WHERE email NOT LIKE '@%' " .
+              "ORDER BY email ASC";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $delete_address = array();
+    while ($row = $res->fetchrow()) {
+        $delete_address[$row["email"]] = $row["id"];
+    }
+    $res->free();
+}
     ksort($delete_address);
     $smarty->assign('delete_address', $delete_address);
     $smarty->assign('delete_addresses', count($delete_address));
     
 
     $del_user = array();
-    if (!$super) {
+if (!$super) {
 
-        foreach ($domain_name as $dname) {
+    foreach ($domain_name as $dname) {
 
-            // List only the users with e-mail addresses within the
-            // domains administered by this admin.
-            $select = "SELECT DISTINCT maia_users.user_name, maia_users.id " .
-                      "FROM maia_users, users " .
-                      "WHERE maia_users.id = users.maia_user_id " .
-                      "AND users.email LIKE '%_" . $dname . "' " .
-                      "AND maia_users.user_level = 'U' " .
-                      "ORDER BY user_name ASC";
-            $sth = $dbh->prepare($select);
-            $res = $sth->execute();
-            if (PEAR::isError($sth)) {
-                die($sth->getMessage());
-            }
-            while ($row = $res->fetchrow()) {
-                $del_user[$row["user_name"]] = $row["id"];
-            }
-            $res->free();
-        }
-
-    } else {
-
-    	// The superadmin can list all users in all domains.
-        $select = "SELECT user_name, id " .
-                  "FROM maia_users " .
-                  "WHERE user_level <> 'S' " .
-                  "AND user_name NOT LIKE '@%' " .
+        // List only the users with e-mail addresses within the
+        // domains administered by this admin.
+        $select = "SELECT DISTINCT maia_users.user_name, maia_users.id " .
+                  "FROM maia_users, users " .
+                  "WHERE maia_users.id = users.maia_user_id " .
+                  "AND users.email LIKE '%_" . $dname . "' " .
+                  "AND maia_users.user_level = 'U' " .
                   "ORDER BY user_name ASC";
         $sth = $dbh->prepare($select);
         $res = $sth->execute();
         if (PEAR::isError($sth)) {
             die($sth->getMessage());
         }
-        $del_user = array();
         while ($row = $res->fetchrow()) {
             $del_user[$row["user_name"]] = $row["id"];
         }
         $res->free();
-
     }
+
+} else {
+
+    // The superadmin can list all users in all domains.
+    $select = "SELECT user_name, id " .
+              "FROM maia_users " .
+              "WHERE user_level <> 'S' " .
+              "AND user_name NOT LIKE '@%' " .
+              "ORDER BY user_name ASC";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $del_user = array();
+    while ($row = $res->fetchrow()) {
+        $del_user[$row["user_name"]] = $row["id"];
+    }
+    $res->free();
+
+}
     ksort($del_user);
     $smarty->assign('del_user', $del_user);
     $smarty->assign('del_users', count($del_user));

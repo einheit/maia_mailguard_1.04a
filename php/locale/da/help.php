@@ -230,7 +230,7 @@
                              "som værende spam mail. Hvis du vælger <b>%s</b>, vil alle mails der overskrider " .
                              "karantæne max score blive placeret i dit karantæne område, " .
                              "hvor du kan gennemse dem når det passer dig, og redde fejlplacerede emails. " .
-			     "Ved at vælge <b>%s</b> istedet for, bliver emailen leveret til dig, dog med en speciel header " .
+                 "Ved at vælge <b>%s</b> istedet for, bliver emailen leveret til dig, dog med en speciel header " .
                              "så du kan checke på denne, og derved sortere disse emails fra.";
 
     $lang['help_settings_13'] =  "<b>%s</b> vil markere \"Emne:\" linien i enhver mail " .
@@ -393,7 +393,7 @@
     $lang['help_quarantine_7'] =  "Du bør cheche dit karantæne område periodisk, for at være sikker på at du ikke har misset " .
                               "vigtige emails, og selvfølgelig også for at rapportere spam, som er blevet opsamlet siden sidste besøg. " .
                               "<b><i>Emails der bliver liggende ubekræftet i %d dage bliver automatisk slettet, og kan ikke tilføjes til lærings computeren.</i></b>, " .
-			      " så forsøg venligst at holde dit karantæne område opdateret.";
+                  " så forsøg venligst at holde dit karantæne område opdateret.";
 
     $lang['help_quarantine_8'] =  "Hvis du ikke har tid til at bekræfte emails i dit karantæne område, eller " .
                               "at der måske er for mange til at du gider (f.eks at du lige er kommet hjem fra ferie " .

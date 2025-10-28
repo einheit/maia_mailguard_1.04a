@@ -74,37 +74,40 @@
      *
      */
  
-    if (isset($smarty_path)) {
-      ini_set('include_path', $smarty_path . ":" . ini_get('include_path'));
-      require_once ("Smarty.class.php");
-    } else {
-      require_once ("Smarty/Smarty.class.php");
-    }
-    require_once (dirname(__FILE__)."/locale/$display_language/db.php");
+if (isset($smarty_path)) {
+    ini_set('include_path', $smarty_path . ":" . ini_get('include_path'));
+    include_once "Smarty.class.php";
+} else {
+    include_once "Smarty/Smarty.class.php";
+}
+    require_once dirname(__FILE__)."/locale/$display_language/db.php";
     // define local smarty-class
-    class ThemeSmarty extends Smarty {
-        var $_basedir = '';
+class ThemeSmarty extends Smarty
+{
+    var $_basedir = '';
         
-        function ThemeSmarty($theme = 'default', $spath = '') {
-            parent::__construct();
-            $this->_basedir = dirname(__FILE__).'/themes/'.$theme.'/';
-            $this->template_dir = $this->_basedir.'templates/';
-            $this->compile_dir = $this->_basedir.'compiled/';
-            $this->config_dir = $this->_basedir.'config';
-            $this->cache_dir = $this->_basedir.'cached/';
-            $this->caching = false;
-            if (!empty($spath)) {
-                $this->addPluginsDir(array($spath . '/plugins', $this->_basedir.'code/'));
-            } else {
-                $this->addPluginsDir(array($this->_basedir.'code/'));
-            }
-            $this->assign('template_dir', 'themes/'.$theme.'/');
+    function ThemeSmarty($theme = 'default', $spath = '')
+    {
+        parent::__construct();
+        $this->_basedir = dirname(__FILE__).'/themes/'.$theme.'/';
+        $this->template_dir = $this->_basedir.'templates/';
+        $this->compile_dir = $this->_basedir.'compiled/';
+        $this->config_dir = $this->_basedir.'config';
+        $this->cache_dir = $this->_basedir.'cached/';
+        $this->caching = false;
+        if (!empty($spath)) {
+            $this->addPluginsDir(array($spath . '/plugins', $this->_basedir.'code/'));
+        } else {
+            $this->addPluginsDir(array($this->_basedir.'code/'));
         }
-        
-        function getBaseDir() {
-           return $this->_basedir;
-        }
+        $this->assign('template_dir', 'themes/'.$theme.'/');
     }
+        
+    function getBaseDir()
+    {
+        return $this->_basedir;
+    }
+}
     
     $select = "SELECT banner_title, use_logo, use_icons, logo_file, logo_url, logo_alt_text, " .
               "enable_false_negative_management, enable_stats_tracking, enable_user_autocreation " .
@@ -112,56 +115,58 @@
 
     $sth = $dbh->prepare($select);
     $res = $sth->execute();
-    if (PEAR::isError($sth)) {
-        die($sth->getMessage());
-    }
-    if ($row = $res->fetchrow()) {
-        $banner_title = $row["banner_title"];
-        $use_logo = ($row["use_logo"] == 'Y');
-        $use_icons = ($row["use_icons"] == 'Y');
-        $logo_file = $row["logo_file"];
-        $logo_url = $row["logo_url"];
-        $logo_alt_text = $row["logo_alt_text"];
-        $enable_false_negative_management = ($row["enable_false_negative_management"] == 'Y');
-        $enable_stats_tracking = ($row["enable_stats_tracking"] == 'Y');
-        $enable_user_autocreation = ($row['enable_user_autocreation'] == 'Y');
-    }
+if (PEAR::isError($sth)) {
+    die($sth->getMessage());
+}
+if ($row = $res->fetchrow()) {
+    $banner_title = $row["banner_title"];
+    $use_logo = ($row["use_logo"] == 'Y');
+    $use_icons = ($row["use_icons"] == 'Y');
+    $logo_file = $row["logo_file"];
+    $logo_url = $row["logo_url"];
+    $logo_alt_text = $row["logo_alt_text"];
+    $enable_false_negative_management = ($row["enable_false_negative_management"] == 'Y');
+    $enable_stats_tracking = ($row["enable_stats_tracking"] == 'Y');
+    $enable_user_autocreation = ($row['enable_user_autocreation'] == 'Y');
+}
       
     $showmenu = true;
-    if (!$uid && !$euid) {
-        $username = "";
-        $is_a_visitor = true;
-    } else {
+if (!$uid && !$euid) {
+    $username = "";
+    $is_a_visitor = true;
+} else {
 
-        $username = who_am_i($uid, $euid);
-        $is_a_visitor = false;
-    }
+    $username = who_am_i($uid, $euid);
+    $is_a_visitor = false;
+}
     $showmail = ok_to_impersonate($euid, $uid);
-    if ($showmenu) {
-        $admin = is_an_administrator($uid);
-        $cols = 5;
-        if ($enable_stats_tracking) {
-            $cols++;
-        }
-        if ($enable_false_negative_management) {
-            $cols++;
-        }
-        if ($admin) {
-            $cols++;
-        }
-//         if (!$showmail) {
-//             $cols -= 2;
-//         }
-    } else {
-        $cols = 1;
-        $admin = false;
+if ($showmenu) {
+    $admin = is_an_administrator($uid);
+    $cols = 5;
+    if ($enable_stats_tracking) {
+        $cols++;
     }
+    if ($enable_false_negative_management) {
+        $cols++;
+    }
+    if ($admin) {
+        $cols++;
+    }
+    //         if (!$showmail) {
+    //             $cols -= 2;
+    //         }
+} else {
+    $cols = 1;
+    $admin = false;
+}
     
-    $sth = $dbh->prepare("SELECT maia_users.id, user_name, maia_themes.path ".
+    $sth = $dbh->prepare(
+        "SELECT maia_users.id, user_name, maia_themes.path ".
               "FROM maia_users ".
               "LEFT JOIN maia_themes ON maia_users.theme_id = maia_themes.id ".
               "WHERE maia_users.id = ? OR maia_users.user_name = '@.' ".
-              "ORDER BY maia_users.id DESC");
+        "ORDER BY maia_users.id DESC"
+    );
     $res = $sth->execute(array($uid));
     if (PEAR::isError($sth)) {
         die($sth->getMessage());
@@ -178,7 +183,7 @@
     }
 
     if(! is_writable(dirname(__FILE__)."/themes/$path/compiled")) {
-      exit($lang["error_permissions"]);
+        exit($lang["error_permissions"]);
     }
 
     // create new smarty-instance
@@ -191,23 +196,23 @@
     
     $include = $smarty->getBaseDir()."code/smarty.php";
     if(file_exists($include) && is_readable($include)) {
-       require_once ($include);
+        include_once $include;
     }
     
     $include = dirname(__FILE__)."/locale/$display_language/local.php";
     if (file_exists($include) && is_readable($include)) {
-       require_once ($include);
+        include_once $include;
     }
     
     $include = $smarty->getBaseDir(). "locale/$display_language/local.php";
     if (file_exists($include) && is_readable($include)) {
-       require_once ($include);
+        include_once $include;
     }
     
     list($logo_width, $logo_height, $logo_type, $logo_attr) = getimagesize($smarty->getBaseDir() . $logo_file);
 
     if (!isset($html_charset)) {
-      $html_charset="UTF-8";
+        $html_charset="UTF-8";
     }
     
     $smarty->assign('session_timeout', $default_session_timeout * 60);
@@ -234,7 +239,7 @@
     $smarty->assign('showmenu', $showmenu);
     $smarty->assign('super', is_superadmin($uid));
     $smarty->assign("lang", $lang);
-    $smarty->assign("is_a_visitor", $is_a_visitor);  // added by JacobLeaver, response to ticket 	
+    $smarty->assign("is_a_visitor", $is_a_visitor);  // added by JacobLeaver, response to ticket     
     $smarty->assign("php_errors", isset($php_errors) ? $php_errors : "");
     // some default values, which can be overridden
     $smarty->assign("page_css", "");
@@ -242,6 +247,6 @@
     $message = isset($message) ? $message : "";
     $message .= isset($_SESSION["message"]) ? $_SESSION["message"] : "";
     $_SESSION["message"] = ""; // unset message, we don't want to display more than once.
-	                              // if page is to be redirected again, reassign it.
+                                  // if page is to be redirected again, reassign it.
     $smarty->assign("message", $message);
-?>
+    ?>

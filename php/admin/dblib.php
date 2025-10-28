@@ -75,328 +75,329 @@
      */
     
     
-    function get_database_type($dbh)
-    {
-        return $dbh->phptype;
+function get_database_type($dbh)
+{
+    return $dbh->phptype;
+}
+
+
+function table_exists($dbh, $table_name)
+{
+    $select = "SELECT * FROM " . $table_name . " LIMIT 1";
+    $sth = $dbh->query($select);
+    if (DB::isError($sth)) {
+        return false;
+    } else {
+        $sth->free();
+        return true;
     }
+}
 
 
-    function table_exists($dbh, $table_name)
-    {
-        $select = "SELECT * FROM " . $table_name . " LIMIT 1";
+function column_exists($table_columns, $column_name)
+{
+    return isset($table_columns[$column_name]);
+}
+
+
+function add_column($dbh, $table_name, $column_name, $type, $size, $default, $nulls)
+{
+    $db_type = get_database_type($dbh);
+    $alter = "ALTER TABLE " . $table_name . " ADD " . $column_name;
+    switch($db_type) {
+    case "mysql":
+    case "mysqli":
+        switch($type) {
+        case "int":
+            $alter .= " INT";
+            break;
+        case "bigint":
+            $alter .= " BIGINT";
+            break;
+        case "uint":
+            $alter .= " INT UNSIGNED";
+            break;
+        case "ubigint":
+            $alter .= " BIGINT UNSIGNED";
+            break;
+        case "char":
+            $alter .= " CHAR(" . $size . ")";
+            break;
+        case "varchar":
+            $alter .= " VARCHAR(" . $size . ")";
+            break;
+        case "float":
+            $alter .= " FLOAT";
+            break;
+        case "timestamp":
+            $alter .= " DATETIME";
+            break;
+        case "text":
+            $alter .= " TEXT";
+            break;
+        case "ltext":
+            $alter .= " LONGTEXT";
+            break;
+        case "mtext":
+            $alter .= " MEDIUMTEXT";
+            break;
+        }
+        break;
+    case "pgsql":
+        switch($type) {
+        case "int":
+        case "uint":
+            $alter .= " INTEGER";
+            break;
+        case "bigint":
+        case "ubigint":
+            $alter .= " BIGINT";
+            break;
+        case "char":
+            $alter .= " CHAR(" . $size . ")";
+            break;
+        case "varchar":
+            $alter .= " VARCHAR(" . $size . ")";
+            break;
+        case "float":
+            $alter .= " NUMERIC(" . $size . ")";
+            break;
+        case "timestamp":
+            $alter .= " TIMESTAMP";
+            break;
+        case "text":
+        case "ltext":
+        case "mtext":
+            $alter .= " TEXT";
+            break;
+        }
+        break;
+    }
+    if (!empty($default)) {
+        $alter .= " DEFAULT '" . $default . "'";
+    }
+    if (!$nulls) {
+        $alter .= " NOT NULL";
+    }
+    return $dbh->query($alter);
+}
+
+
+function drop_column($dbh, $table_name, $column_name)
+{
+    $alter = "ALTER TABLE " . $table_name . " DROP " . $column_name;
+    return $dbh->query($alter);
+}
+
+
+function index_exists($dbh, $table_name, $index_name)
+{
+    $db_type = get_database_type($dbh);
+    if (subtr(get_database_type($db_type), 0, 5)== "mysql") {
+
+        $select = "SHOW INDEX FROM " . $table_name;
         $sth = $dbh->query($select);
         if (DB::isError($sth)) {
             return false;
         } else {
-            $sth->free();
-            return true;
-        }
-    }
-
-
-    function column_exists($table_columns, $column_name)
-    {
-        return isset($table_columns[$column_name]);
-    }
-
-
-    function add_column($dbh, $table_name, $column_name, $type, $size, $default, $nulls)
-    {
-        $db_type = get_database_type($dbh);
-        $alter = "ALTER TABLE " . $table_name . " ADD " . $column_name;
-        switch($db_type) {
-            case "mysql":
-            case "mysqli":
-                switch($type) {
-                    case "int":
-                        $alter .= " INT";
-                       break;
-                    case "bigint":
-                        $alter .= " BIGINT";
-                       break;
-                    case "uint":
-                        $alter .= " INT UNSIGNED";
-                        break;
-                    case "ubigint":
-                        $alter .= " BIGINT UNSIGNED";
-                        break;
-                    case "char":
-                        $alter .= " CHAR(" . $size . ")";
-                        break;
-                    case "varchar":
-                        $alter .= " VARCHAR(" . $size . ")";
-                        break;
-                    case "float":
-                        $alter .= " FLOAT";
-                        break;
-                    case "timestamp":
-                        $alter .= " DATETIME";
-                        break;
-                    case "text":
-                        $alter .= " TEXT";
-                        break;
-                    case "ltext":
-                        $alter .= " LONGTEXT";
-                        break;
-                    case "mtext":
-                        $alter .= " MEDIUMTEXT";
-                        break;
-                }
-                break;
-            case "pgsql":
-                switch($type) {
-                    case "int":
-                    case "uint":
-                        $alter .= " INTEGER";
-                        break;
-                    case "bigint":
-                    case "ubigint":
-                        $alter .= " BIGINT";
-                        break;
-                    case "char":
-                        $alter .= " CHAR(" . $size . ")";
-                        break;
-                    case "varchar":
-                        $alter .= " VARCHAR(" . $size . ")";
-                        break;
-                    case "float":
-                        $alter .= " NUMERIC(" . $size . ")";
-                        break;
-                    case "timestamp":
-                        $alter .= " TIMESTAMP";
-                        break;
-                    case "text":
-                    case "ltext":
-                    case "mtext":
-                        $alter .= " TEXT";
-                        break;
-                }
-                break;
-        }
-        if (!empty($default)) {
-            $alter .= " DEFAULT '" . $default . "'";
-        }
-        if (!$nulls) {
-            $alter .= " NOT NULL";
-        }
-        return $dbh->query($alter);
-    }
-
-
-    function drop_column($dbh, $table_name, $column_name)
-    {
-        $alter = "ALTER TABLE " . $table_name . " DROP " . $column_name;
-        return $dbh->query($alter);
-    }
-
-
-    function index_exists($dbh, $table_name, $index_name)
-    {
-        $db_type = get_database_type($dbh);
-        if (subtr(get_database_type($db_type),0,5)== "mysql") {
-
-            $select = "SHOW INDEX FROM " . $table_name;
-            $sth = $dbh->query($select);
-            if (DB::isError($sth)) {
-                return false;
-            } else {
-                $found = false;
-                while ($row = $sth->fetchRow()) {
-                    if ($row[2] == $index_name) {
-                        $found = true;
-                    }
-                }
-                $sth->free();
-                return $found;
-            }
-
-        } else if ($db_type == "pgsql") {
-
-            $select = "SELECT i.relname AS indexname " .
-                      "FROM pg_class c, pg_class i " .
-                      "WHERE ((c.relkind = 'r'::\"char\") " .
-                      "AND (i.relkind = 'i'::\"char\") " .
-                      "AND (i.relname = ?) " .
-                      "AND (c.relname = ?))";
-            $sth = $dbh->query($select, array($index_name, $table_name));
-            if (DB::isError($sth)) {
-                return false;
-            } else {
-                $found = false;
-                if ($row = $sth->fetchRow()) {
+            $found = false;
+            while ($row = $sth->fetchRow()) {
+                if ($row[2] == $index_name) {
                     $found = true;
                 }
-                $sth->free();
-                return $found;
             }
-
+            $sth->free();
+            return $found;
         }
-    }
 
+    } else if ($db_type == "pgsql") {
 
-    function create_index($dbh, $table_name, $index_columns, $type)
-    {
-        $create = "ALTER TABLE $table_name ADD ";
-        switch ($type) {
-            case 'primary': $create .= "PRIMARY KEY ";
-                break;
-            case 'unique': $create .= "UNIQUE ";
-                break;
-            case 'index': $create .= "INDEX ";
-                break;
+        $select = "SELECT i.relname AS indexname " .
+                  "FROM pg_class c, pg_class i " .
+                  "WHERE ((c.relkind = 'r'::\"char\") " .
+                  "AND (i.relkind = 'i'::\"char\") " .
+                  "AND (i.relname = ?) " .
+                  "AND (c.relname = ?))";
+        $sth = $dbh->query($select, array($index_name, $table_name));
+        if (DB::isError($sth)) {
+            return false;
+        } else {
+            $found = false;
+            if ($row = $sth->fetchRow()) {
+                $found = true;
+            }
+            $sth->free();
+            return $found;
         }
-        $index_name = ($type == "primary" ? "" : implode('_', $index_columns) );
-        $create .= $index_name . " ";
-        
-        $create .= "(" . implode(', ', $index_columns) . ")";
-        //echo $create . "<br>";
-        return $dbh->query($create); 
+
     }
+}
 
 
-    function create_table($dbh, $table_name, $table_schema)
-    {
-        $db_type = get_database_type($dbh);
-        // FIXME ned to traverse schema.php to generate table.
-        $create = "CREATE TABLE $table_name (";
-        foreach ($table_schema['tabledef'] as $name => $def) {
-          $row = $name . " ";
-          switch($db_type) {
-            case "mysql":
-            case "mysqli":
-                switch($def['type']) {
-                    case "int":
-                        $row .= " INT";
-                       break;
-                    case "bigint":
-                        $row .= " BIGINT";
-                        break;
-                    case "uint":
-                        $row .= " INT UNSIGNED";
-                        break;
-                    case "ubigint":
-                        $row .= " BIGINT UNSIGNED";
-                        break;
-                    case "char":
-                        $row .= " CHAR(" . $def['size'] . ")";
-                        break;
-                    case "varchar":
-                        $row .= " VARCHAR(" . $def['size'] . ")";
-                        break;
-                    case "float":
-                        $row .= " FLOAT";
-                        break;
-                    case "timestamp":
-                        $row .= " DATETIME";
-                        break;
-                    case "text":
-                        $row .= " TEXT";
-                        break;
-                    case "ltext":
-                        $row .= " LONGTEXT";
-                        break;
-                    case "mtext":
-                        $row .= " MEDIUMTEXT";
-                        break;
-                }
+function create_index($dbh, $table_name, $index_columns, $type)
+{
+    $create = "ALTER TABLE $table_name ADD ";
+    switch ($type) {
+    case 'primary': $create .= "PRIMARY KEY ";
+        break;
+    case 'unique': $create .= "UNIQUE ";
+        break;
+    case 'index': $create .= "INDEX ";
+        break;
+    }
+    $index_name = ($type == "primary" ? "" : implode('_', $index_columns) );
+    $create .= $index_name . " ";
+        
+    $create .= "(" . implode(', ', $index_columns) . ")";
+    //echo $create . "<br>";
+    return $dbh->query($create); 
+}
+
+
+function create_table($dbh, $table_name, $table_schema)
+{
+    $db_type = get_database_type($dbh);
+    // FIXME ned to traverse schema.php to generate table.
+    $create = "CREATE TABLE $table_name (";
+    foreach ($table_schema['tabledef'] as $name => $def) {
+        $row = $name . " ";
+        switch($db_type) {
+        case "mysql":
+        case "mysqli":
+            switch($def['type']) {
+            case "int":
+                $row .= " INT";
                 break;
-            case "pgsql":
-                switch($def['type']) {
-                    case "int":
-                    case "uint":
-                        $row .= " INTEGER";
-                        break;
-                    case "bigint":
-                    case "ubigint":
-                        $row .= " BIGINT";
-                        break;
-                    case "char":
-                        $row .= " CHAR(" . $def['size'] . ")";
-                        break;
-                    case "varchar":
-                        $row .= " VARCHAR(" . $def['size'] . ")";
-                        break;
-                    case "float":
-                        $row .= " NUMERIC(" . $def['size'] . ")";
-                        break;
-                    case "timestamp":
-                        $row .= " TIMESTAMP";
-                        break;
-                    case "text":
-                    case "ltext":
-                    case "mtext":
-                        $row .= " TEXT";
-                        break;
-                }
+            case "bigint":
+                $row .= " BIGINT";
                 break;
-           }
+            case "uint":
+                $row .= " INT UNSIGNED";
+                break;
+            case "ubigint":
+                $row .= " BIGINT UNSIGNED";
+                break;
+            case "char":
+                $row .= " CHAR(" . $def['size'] . ")";
+                break;
+            case "varchar":
+                $row .= " VARCHAR(" . $def['size'] . ")";
+                break;
+            case "float":
+                $row .= " FLOAT";
+                break;
+            case "timestamp":
+                $row .= " DATETIME";
+                break;
+            case "text":
+                $row .= " TEXT";
+                break;
+            case "ltext":
+                $row .= " LONGTEXT";
+                break;
+            case "mtext":
+                $row .= " MEDIUMTEXT";
+                break;
+            }
+            break;
+        case "pgsql":
+            switch($def['type']) {
+            case "int":
+            case "uint":
+                $row .= " INTEGER";
+                break;
+            case "bigint":
+            case "ubigint":
+                $row .= " BIGINT";
+                break;
+            case "char":
+                $row .= " CHAR(" . $def['size'] . ")";
+                break;
+            case "varchar":
+                $row .= " VARCHAR(" . $def['size'] . ")";
+                break;
+            case "float":
+                $row .= " NUMERIC(" . $def['size'] . ")";
+                break;
+            case "timestamp":
+                $row .= " TIMESTAMP";
+                break;
+            case "text":
+            case "ltext":
+            case "mtext":
+                $row .= " TEXT";
+                break;
+            }
+            break;
+        }
         
         
-         if (!empty($def['default'])) {
-            $row .= " DEFAULT '" . $def['default'] . "'";
-         }
-         if (! $def['null']) {
+        if (!empty($def['default'])) {
+               $row .= " DEFAULT '" . $def['default'] . "'";
+        }
+        if (! $def['null']) {
             $row .= " NOT NULL";
-         }
-         $select_cols[] = $row;
         }
+            $select_cols[] = $row;
+    }
         
-        $create .= join(', ', $select_cols);
+    $create .= join(', ', $select_cols);
         
-        $create .= ") TYPE=INNODB";
+    $create .= ") TYPE=INNODB";
         
         
-        //print $create;    
-        $db_result = $dbh->query($create);
+    //print $create;    
+    $db_result = $dbh->query($create);
+    if (DB::isError($db_result)) {
+         $msg .= "error on create: $table_name " . $db_result->getMessage() . "<br>";
+    } else {
+          $msg .= "Added table: $table_name<br>";
+    }
+    foreach ($table_schema['indexes'] as $index => $def) {
+        $db_result = create_index($dbh, $table_name, $def['rows'], $def['type']);
         if (DB::isError($db_result)) {
-             $msg .= "error on create: $table_name " . $db_result->getMessage() . "<br>";
-          } else {
-              $msg .= "Added table: $table_name<br>";
-          }
-        foreach ($table_schema['indexes'] as $index => $def) {
-            $db_result = create_index($dbh, $table_name, $def['rows'], $def['type']);
-                      if (DB::isError($db_result)) {
-                          $msg .= "error on index: $index " . $db_result->getMessage() . "<br>";
-                      } else {
-                          $msg .= "Added index: $index<br>";
-                      }
+            $msg .= "error on index: $index " . $db_result->getMessage() . "<br>";
+        } else {
+            $msg .= "Added index: $index<br>";
         }
+    }
         
         // add initial data
-        foreach ($table_schema['alterations'] as $index => $actions) {
-            foreach ($actions as $action) {
-                //print_r($action);
-                if ($action['action'] == "add_data") {
-                    $insert = "INSERT INTO " . $action['params']['table'] . " SET ";
-                    $cols = array();
-                    foreach ($action['params']['params'] as $col => $value) {
-                        $cols[] = $col . "='" . $value . "'";
-                    }
-                    $insert .= join (", ", $cols);
-                    
-                    $db_result = $dbh->query($insert);
-                     if (DB::isError($db_result)) {
-                          $msg .= "error on insert: $index " . $db_result->getMessage() . "<br>";
-                      } else {
-                          $msg .= "inserted default data: $insert<br>";
-                      }
+    foreach ($table_schema['alterations'] as $index => $actions) {
+        foreach ($actions as $action) {
+            //print_r($action);
+            if ($action['action'] == "add_data") {
+                $insert = "INSERT INTO " . $action['params']['table'] . " SET ";
+                $cols = array();
+                foreach ($action['params']['params'] as $col => $value) {
+                    $cols[] = $col . "='" . $value . "'";
                 }
-               
+                $insert .= join(", ", $cols);
+                    
+                $db_result = $dbh->query($insert);
+                if (DB::isError($db_result)) {
+                     $msg .= "error on insert: $index " . $db_result->getMessage() . "<br>";
+                } else {
+                    $msg .= "inserted default data: $insert<br>";
+                }
             }
+               
+        }
             
         
-        }
+    }
         return $msg;
-    }
+}
     
-    function insert_data($dbh, $table, $fields) {
-        $insert = "INSERT INTO $table SET ";
-        $sets = array();
-        foreach ($fields as $field => $value) {
-           $sets[] = $field ."='" . $value . "'";
-        }
-        $insert .= implode(", ", $sets);
-        print $select;
-        return $dbh->query($insert);
+function insert_data($dbh, $table, $fields)
+{
+    $insert = "INSERT INTO $table SET ";
+    $sets = array();
+    foreach ($fields as $field => $value) {
+        $sets[] = $field ."='" . $value . "'";
     }
+    $insert .= implode(", ", $sets);
+    print $select;
+    return $dbh->query($insert);
+}
 ?>

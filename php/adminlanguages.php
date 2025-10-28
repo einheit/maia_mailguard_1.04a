@@ -74,37 +74,39 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminlanguages.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminlanguages.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminlanguages.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminlanguages.php" . $sid);
+    exit();
+}
 
-    $sth = $dbh->prepare("SELECT language_name, abbreviation, id " .
+    $sth = $dbh->prepare(
+        "SELECT language_name, abbreviation, id " .
               "FROM maia_languages " .
               "WHERE installed = 'Y' " .
-              "ORDER BY language_name ASC");
+        "ORDER BY language_name ASC"
+    );
     $res = $sth->execute();
     if (PEAR::isError($sth)) { 
         die($sth->getMessage()); 
@@ -127,8 +129,8 @@
     $phlist = array();
     $atleastone = false;
     while (($f = $d->read()) !== false) {
-    	$atleastone = true;
-    	if (is_dir($lang_dir . "/" . $f) && $f != "." && $f != ".." && $f != ".svn") {
+        $atleastone = true;
+        if (is_dir($lang_dir . "/" . $f) && $f != "." && $f != ".." && $f != ".svn") {
             if(file_exists($lang_dir . "/" . $f . "/name")) {
                 $name = file_get_contents($lang_dir . "/" . $f . "/name");
             } else {
@@ -145,10 +147,12 @@
 
     if ($atleastone) {
 
-        $sth = $dbh->prepare("SELECT language_name, abbreviation, id " .
+        $sth = $dbh->prepare(
+            "SELECT language_name, abbreviation, id " .
                   "FROM maia_languages " .
                   "WHERE installed = 'N' AND abbreviation IN (" . implode(',', $phlist) . ") " .
-                  "ORDER BY language_name ASC");
+            "ORDER BY language_name ASC"
+        );
         $res = $sth->execute(array_keys($dirlist));
         if (PEAR::isError($sth)) { 
             die($sth->getMessage()); 
@@ -161,10 +165,12 @@
         }
         $sth->free();
         // Don't offer languages that aren't physically installed yet
-        $sth = $dbh->prepare("SELECT language_name, abbreviation, id " .
+        $sth = $dbh->prepare(
+            "SELECT language_name, abbreviation, id " .
                   "FROM maia_languages " .
                   "WHERE installed = 'Y' AND abbreviation IN (" . implode(',', $phlist) . ") " .
-                  "ORDER BY language_name ASC");
+            "ORDER BY language_name ASC"
+        );
         $res = $sth->execute(array_keys($dirlist));
         if (PEAR::isError($sth)) { 
             die($sth->getMessage()); 
@@ -181,4 +187,4 @@
     $smarty->assign('atleastone', sizeof($dirlist));
 
     $smarty->display('adminlanguages.tpl');
-?>
+    ?>

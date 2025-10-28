@@ -55,22 +55,22 @@
 {if $enable_spam_filtering}
 <tr>
     <td class="menuheader2" colspan="12" align="center">
-           {if $enable_false_negative_management}
-               {$lang.text_efficiency}  {$eff_pct*100|string_format:"%.2f"}%                
-               {$lang.text_false_positive} {$fp_pct*100|string_format:"%.2f"}% 
-               {$lang.text_false_negative} {$fn_pct*100|string_format:"%.2f"}%  
+               {if $enable_false_negative_management}
+               {$lang.text_efficiency}  {round($eff_pct*10000)/100}%
+               {$lang.text_false_positive} {round($fp_pct*10000)/100}%
+               {$lang.text_false_negative} {round($fn_pct*10000)/100}%
                <br>
-               {$lang.text_sensitivity} {$sensitivity_pct*100|string_format:"%.2f"}%
-               {$lang.text_ppv} {$ppv_pct*100|string_format:"%.2f"}% 
-               {$lang.text_specificity} {$specificity_pct*100|string_format:"%.2f"}% 
-               {$lang.text_npv} {$npv_pct*100|string_format:"%.2f"}% 
-               
+               {$lang.text_sensitivity} {round($sensitivity_pct*10000)/100}%
+               {$lang.text_ppv} {round($ppv_pct*10000)/100}%
+               {$lang.text_specificity} {round($specificity_pct*10000)/100}%
+               {$lang.text_npv} {round($npv_pct*10000)/100}%
+
            {else}
-       	       {$lang.text_efficiency} {$eff_pct*100|string_format:"%.2f"}% 
-               {$lang.text_false_positive} {$fp_pct*100|string_format:"%.2f"}% 
+               {$lang.text_efficiency} {round($eff_pct*10000)/100}%
+               {$lang.text_false_positive} {round($fp_pct*10000)/100}%
                <br>
-               {$lang.text_sensitivity} {$sensitivity_pct*100|string_format:"%.2f"}%
-               {$lang.text_ppv}{$ppv_pct*100|string_format:"%.2f"}% 
+               {$lang.text_sensitivity} {round($sensitivity_pct*10000)/100}%
+               {$lang.text_ppv}{round($ppv_pct*10000)/1000}%
            {/if}
     </td>
 </tr>

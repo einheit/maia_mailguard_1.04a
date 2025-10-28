@@ -136,7 +136,7 @@
     $lang['text_reminder_template_file']           = "Erinnerungs-E-Mail Vorlage:";
     $lang['text_reminder_login_url']               = "Maia Anmelde URL für E-Mail-Erinnerung:";
     $lang['text_banner_title']                     = "Top-Banner Titel:";
-    $lang['text_use_icons']		           = "Symbole in der Toolbar zeigen?";
+    $lang['text_use_icons']                   = "Symbole in der Toolbar zeigen?";
     $lang['text_use_logo']                         = "Soll das Logo im Top-Banner gezeigt werden?";
     $lang['text_logo_file']                        = "Bilddatei für das Banner:";
     $lang['text_logo_alt_text']                    = "Text für das Top-Banner Logo:";

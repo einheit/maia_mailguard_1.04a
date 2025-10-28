@@ -73,67 +73,68 @@
      * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      *
      */
-if(session_id() == "")
-{
-   session_start();
+if(session_id() == "") {
+    session_start();
 }
 
 
    // If we don't have a current login session, jump to the login page
-   if (!isset($_SESSION["uid"]) || !isset($_SESSION["euid"])) {
-      header("Location: login.php");
-      exit();
-   }
+if (!isset($_SESSION["uid"]) || !isset($_SESSION["euid"])) {
+    header("Location: login.php");
+    exit();
+}
    
-   if (time() > $_SESSION["timeout"]) {
+if (time() > $_SESSION["timeout"]) {
      
-      session_unset();
-      if (isset($_COOKIE[session_name()])) {
+    session_unset();
+    if (isset($_COOKIE[session_name()])) {
         setcookie(session_name(), '', time()-42000, '/');
-      }
-      session_destroy();
+    }
+       session_destroy();
       
-      header("Location: login.php");
-      exit();
+       header("Location: login.php");
+       exit();
    
-   } else {
-      $_SESSION["timeout"] = time() + $default_session_timeout * 60;
-      setcookie(session_name(), session_id(), 0,
-                dirname($_SERVER['PHP_SELF']),
-                strpos($_SERVER['SERVER_NAME'], '.') ? $_SERVER['SERVER_NAME'] : false,
-                !empty($_SERVER['HTTPS']));
-   }
+} else {
+    $_SESSION["timeout"] = time() + $default_session_timeout * 60;
+    setcookie(
+        session_name(), session_id(), 0,
+        dirname($_SERVER['PHP_SELF']),
+        strpos($_SERVER['SERVER_NAME'], '.') ? $_SERVER['SERVER_NAME'] : false,
+        !empty($_SERVER['HTTPS'])
+    );
+}
    
    // Check all incoming POST requests for the ufid token to preven CSRF attack
    // Only exception would be the login form, but it doesn't use this file.
-   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-       if(!isset($_SESSION['ufid']) or !isset($_POST['ufid']) or $_SESSION['ufid'] != $_POST['ufid']) {
-           session_unset();
-           if (isset($_COOKIE[session_name()])) {
-             setcookie(session_name(), '', time()-42000, '/');
-           }
-           session_destroy();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if(!isset($_SESSION['ufid']) or !isset($_POST['ufid']) or $_SESSION['ufid'] != $_POST['ufid']) {
+        session_unset();
+        if (isset($_COOKIE[session_name()])) {
+            setcookie(session_name(), '', time()-42000, '/');
+        }
+        session_destroy();
 
-           header("Location: login.php");
-           exit();
-       }
-   }
+        header("Location: login.php");
+        exit();
+    }
+}
 
    // Register our session variables
    $uid = $_SESSION["uid"];
    $euid = $_SESSION["euid"];
-   if (isset($_SESSION["cookies"])) {
-      $cookies = $_SESSION["cookies"];
-   } else {
-      $cookies = 0;
-   }
+if (isset($_SESSION["cookies"])) {
+    $cookies = $_SESSION["cookies"];
+} else {
+    $cookies = 0;
+}
 
    // Handle both cookie-based sessions and cookieless sessions
-   if ($cookies == 1) {
-      $sid = "";
-      $msid = "?";
-   } else {
-      $sid = "?" . session_name() . "=" . session_id();
-      $msid = $sid . "&";
-   }
+if ($cookies == 1) {
+    $sid = "";
+    $msid = "?";
+} else {
+    $sid = "?" . session_name() . "=" . session_id();
+    $msid = $sid . "&";
+}
 ?>

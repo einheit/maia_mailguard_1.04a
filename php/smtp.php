@@ -74,8 +74,8 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("maia_db.php");
+   require_once "core.php";
+   require_once "maia_db.php";
    require 'Net/SMTP.php';
 
    /*
@@ -83,14 +83,14 @@
     *                      output buffer is flushed after every
     *                      fwrite() call.
     */
-   function unbuffered_fwrite($handle, $output)
-   {
-      $rvalue = fwrite($handle, $output);
-      if (phpversion() < "4.3.0") {
+function unbuffered_fwrite($handle, $output)
+{
+    $rvalue = fwrite($handle, $output);
+    if (phpversion() < "4.3.0") {
          fflush($handle);
-      }
-      return ($rvalue);
-   }
+    }
+       return ($rvalue);
+}
 
 
    /*
@@ -100,61 +100,61 @@
     *              response code.  Normal exit codes are 2xx or 3xx,
     *              while 5xx signals an error.
     */
-   function smtp_send($from, $recips, $body, $ehlo="maia")
-   {
-		global $dbh;
-		global $lang;
-		
-		$sth = $dbh->prepare("SELECT smtp_server, smtp_port FROM maia_config WHERE id = 0");
-		$res = $sth->execute();
-                if (PEAR::isError($sth)) {
-                    die($sth->getMessage());
-                }
-		if ($row = $res->fetchrow()) {
-		  $host = $row["smtp_server"];
-		  $port = $row["smtp_port"];
-		}
-		$sth->free();
-		
-		$rcpt = explode(" ", $recips);
+function smtp_send($from, $recips, $body, $ehlo="maia")
+{
+    global $dbh;
+    global $lang;
+        
+    $sth = $dbh->prepare("SELECT smtp_server, smtp_port FROM maia_config WHERE id = 0");
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    if ($row = $res->fetchrow()) {
+        $host = $row["smtp_server"];
+        $port = $row["smtp_port"];
+    }
+       $sth->free();
+        
+       $rcpt = explode(" ", $recips);
 
-		
-		/* Create a new Net_SMTP object. */
-		if (! ($smtp = new Net_SMTP($host, $port, $ehlo))) {
-			$smtp->disconnect();
-			return ("550 " . $lang['error_connect'] . ": " . "Unable to instantiate Net_SMTP object\n");
-		}
-		
-		/* Connect to the SMTP server. */
-		if (PEAR::isError($e = $smtp->connect())) {
-			$smtp->disconnect();
-			 return ("550 " . $lang['error_connect'] . ": " . $e->getMessage() . "\n");
-		}
-		
-		/* Send the 'MAIL FROM:' SMTP command. */
-		if (PEAR::isError($smtp->mailFrom($from))) {
-			return ("550 " . $lang['error_mail']);
-		}
-		
-		/* Address the message to each of the recipients. */
-		foreach ($rcpt as $to) {
-			if (PEAR::isError($res = $smtp->rcptTo($to))) {
-				$smtp->disconnect();
-				return ("550 " . $lang['error_rcpt'] .": " . $res->getMessage() . "\n");
-			}
-		}
-		
-		/* Set the body of the message. */
-		if (PEAR::isError($smtp->data($body))) {
-			$smtp->disconnect();
-			return ("550 " . $lang['error_body']);
-		}
-		
-		$response = $smtp->getResponse();
-		
-		/* Disconnect from the SMTP server. */
-		$smtp->disconnect();
-	  
-	  return join (" ", $response);  
-   }
+        
+       /* Create a new Net_SMTP object. */
+    if (! ($smtp = new Net_SMTP($host, $port, $ehlo))) {
+        $smtp->disconnect();
+        return ("550 " . $lang['error_connect'] . ": " . "Unable to instantiate Net_SMTP object\n");
+    }
+        
+       /* Connect to the SMTP server. */
+    if (PEAR::isError($e = $smtp->connect())) {
+        $smtp->disconnect();
+        return ("550 " . $lang['error_connect'] . ": " . $e->getMessage() . "\n");
+    }
+        
+       /* Send the 'MAIL FROM:' SMTP command. */
+    if (PEAR::isError($smtp->mailFrom($from))) {
+        return ("550 " . $lang['error_mail']);
+    }
+        
+       /* Address the message to each of the recipients. */
+    foreach ($rcpt as $to) {
+        if (PEAR::isError($res = $smtp->rcptTo($to))) {
+            $smtp->disconnect();
+            return ("550 " . $lang['error_rcpt'] .": " . $res->getMessage() . "\n");
+        }
+    }
+        
+       /* Set the body of the message. */
+    if (PEAR::isError($smtp->data($body))) {
+        $smtp->disconnect();
+        return ("550 " . $lang['error_body']);
+    }
+        
+       $response = $smtp->getResponse();
+        
+       /* Disconnect from the SMTP server. */
+       $smtp->disconnect();
+      
+       return join(" ", $response);  
+}
 ?>

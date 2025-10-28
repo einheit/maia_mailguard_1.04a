@@ -77,21 +77,22 @@
     // Set up and authenticate session based on token.  If the values are 
     // provided, force session to be the owner of the token, regardless of 
     // previous session information.
-    require_once ("core.php");
+    require_once "core.php";
     session_start();
-    if (isset($_GET["token"]) && isset($_GET["user_token"]) && isset($_GET["id"]) && isset($_GET["euid"])) {
-      if (!isset($_SESSION['uid'])  ||
-          !isset($_SESSION['euid']) ||
-          $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] ||
-          time() > $_SESSION["timeout"]) {  //if session is timed out, re-authenticate the session.
-        header("Location: xlogin.php?action=view.php&" . $_SERVER["QUERY_STRING"]);
-        exit();
-      } else {
-	 	header("Location: view.php?" . $_SERVER["QUERY_STRING"]);
-        exit();
-      }
+if (isset($_GET["token"]) && isset($_GET["user_token"]) && isset($_GET["id"]) && isset($_GET["euid"])) {
+    if (!isset($_SESSION['uid'])  
+        || !isset($_SESSION['euid']) 
+        || $_GET["id"] != $_SESSION['uid'] || $_GET["euid"] != $_SESSION['euid'] 
+        || time() > $_SESSION["timeout"]
+    ) {  //if session is timed out, re-authenticate the session.
+          header("Location: xlogin.php?action=view.php&" . $_SERVER["QUERY_STRING"]);
+          exit();
     } else {
-       header("Location: login.php");
-       exit;
+        header("Location: view.php?" . $_SERVER["QUERY_STRING"]);
+        exit();
     }
+} else {
+    header("Location: login.php");
+    exit;
+}
 ?>

@@ -73,27 +73,27 @@
  *
  */
  
- function toggleCheckAll() {
+function toggleCheckAll()
+{
  
-  for(var i=0;i<document.cache.elements.length;i++)
-  {
-      if(document.cache.elements[i].type == "checkbox" && document.cache.elements[i].className == "cachecheck")
-      {
-          if (document.getElementById('checkcontrol').text == 'Select'){
-            document.cache.elements[i].checked = true;
+    for(var i=0;i<document.cache.elements.length;i++)
+    {
+        if(document.cache.elements[i].type == "checkbox" && document.cache.elements[i].className == "cachecheck") {
+            if (document.getElementById('checkcontrol').text == 'Select') {
+                document.cache.elements[i].checked = true;
            
-          } else {
-            document.cache.elements[i].checked = false;
+            } else {
+                document.cache.elements[i].checked = false;
         
           
-          }
-      }
-   }
-   if (document.getElementById('checkcontrol').text == 'Select'){
-       document.getElementById('checkcontrol').innerHTML = "Unselect";
-   } else {
-       document.getElementById('checkcontrol').innerHTML = "Select";
-   }
+            }
+        }
+    }
+    if (document.getElementById('checkcontrol').text == 'Select') {
+        document.getElementById('checkcontrol').innerHTML = "Unselect";
+    } else {
+        document.getElementById('checkcontrol').innerHTML = "Select";
+    }
  
- }
+}
 

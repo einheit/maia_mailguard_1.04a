@@ -74,22 +74,23 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
 
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
-    foreach($_POST as $varname => $value)
-    {
-        $formVars[$varname] = trim($value);
-    }
+foreach($_POST as $varname => $value)
+{
+    $formVars[$varname] = trim($value);
+}
 
-    $sthu = $dbh->prepare("UPDATE maia_config SET enable_user_autocreation = ?, " .
+    $sthu = $dbh->prepare(
+        "UPDATE maia_config SET enable_user_autocreation = ?, " .
                                      "enable_false_negative_management = ?, " .
                                      "enable_stats_tracking = ?, " .
                                      "enable_virus_scanning = ?, " .
@@ -98,7 +99,7 @@
                                      "enable_bad_header_checking = ?, " .
                                      "enable_charts = ?, " .
                                      "enable_spamtraps = ?, " .
-//                                     "enable_stats_reporting = ?, " .
+        //                                     "enable_stats_reporting = ?, " .
                                      "enable_address_linking = ?, " .
                                      "enable_privacy_invasion = ?, " .
                                      "enable_username_changes = ?, " .
@@ -132,7 +133,7 @@
                                      "chart_bl_colour = ?, " .
                                      "chart_background_colour = ?, " .
                                      "chart_font_colour = ?, " .
-//                                   "chart_autogeneration_interval = ?, " .
+        //                                   "chart_autogeneration_interval = ?, " .
                                      "banner_title = ?, " .
                                      "use_icons = ?, " .
                                      "use_logo = ?, " .
@@ -148,8 +149,10 @@
                                      // "reporter_sitename = ?, " .
                                      // "reporter_username = ?, " .
                                      // "reporter_password = ? " .
-              "WHERE id = 0");
-    $sthu->execute(array($formVars["enable_user_autocreation"],
+        "WHERE id = 0"
+    );
+    $sthu->execute(
+        array($formVars["enable_user_autocreation"],
                                $formVars["enable_false_negative_management"],
                                $formVars["enable_stats_tracking"],
                                $formVars["enable_virus_scanning"],
@@ -158,7 +161,7 @@
                                $formVars["enable_bad_header_checking"],
                                $formVars["enable_charts"],
                                $formVars["enable_spamtraps"],
-//                               $formVars["enable_stats_reporting"],
+        //                               $formVars["enable_stats_reporting"],
                                $formVars["enable_address_linking"],
                                $formVars["enable_privacy_invasion"],
                                $formVars["enable_username_changes"],
@@ -192,7 +195,7 @@
                                $formVars["chart_bl_colour"],
                                $formVars["chart_background_colour"],
                                $formVars["chart_font_colour"],
-//                               $formVars["chart_autogeneration_interval"],
+        //                               $formVars["chart_autogeneration_interval"],
                                $formVars["banner_title"],
                                $formVars["use_icons"],
                                $formVars["use_logo"],
@@ -208,18 +211,23 @@
                                // $formVars["reporter_sitename"],
                                // strtolower($formVars["reporter_username"]),
                                // $formVars["reporter_password"]
-                               ));
+        )
+    );
     if (PEAR::isError($sthu)) {  
         die($sthu->getMessage());  
     } 
     $sthu->free();
 
     if ($auth_method == "internal") {
-        $sthu = $dbh->prepare("UPDATE maia_config SET internal_auth = ?, " .
+        $sthu = $dbh->prepare(
+            "UPDATE maia_config SET internal_auth = ?, " .
                                          "newuser_template_file = ? " .
-                  "WHERE id = 0");
-        $sthu->execute(array($formVars["internal_auth"],
-                                   $formVars["newuser_template_file"]));
+            "WHERE id = 0"
+        );
+        $sthu->execute(
+            array($formVars["internal_auth"],
+            $formVars["newuser_template_file"])
+        );
         if (PEAR::isError($sthu)) {  
             die($sthu->getMessage());  
         }
@@ -230,4 +238,4 @@
     header("Location: adminsystem.php" . $sid);
     exit();
 
-?>
+    ?>

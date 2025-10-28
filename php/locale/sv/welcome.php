@@ -96,10 +96,10 @@
     $lang['button_change_protection'] = "Byt nivå";
     
     $lang['radio_protection'] = array(  'off' => "Av",
-		 								'low' => "Låg",
-     									'medium' => "Medel",
-										'high' => "Hög",
-										'custom' => "Egen");
+                                         'low' => "Låg",
+                                         'medium' => "Medel",
+                                        'high' => "Hög",
+                                        'custom' => "Egen");
     
     $lang['banner_subtitle'] = "Välkommen";
     

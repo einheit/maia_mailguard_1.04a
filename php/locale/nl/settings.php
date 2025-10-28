@@ -116,7 +116,7 @@
     $lang['text_new_primary_email'] =  "%s is nu uw primaire e-mail adres.";
     $lang['text_language'] =  "Gebruikte taal";
     $lang['text_charset'] =  "Gebruikte Karakterset";
-    $lang['text_theme']	= "Thema";
+    $lang['text_theme']    = "Thema";
     $lang['text_spamtrap'] =  "Is dit een spam-trap account?";
     $lang['text_auto_whitelist'] =  "Voeg zenders van herstelde mail toe aan uw whitelist?";
     $lang['text_items_per_page'] =  "Aantal berichten per pagina?";

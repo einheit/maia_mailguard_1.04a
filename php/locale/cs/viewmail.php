@@ -80,7 +80,7 @@
     $lang['link_report'] =  "Nahlásit jako SPAM";
     $lang['link_delete'] =  "Smazat tento email";
     $lang['link_rescue'] =  "Zachránit tento email";
-		$lang['link_resend'] =  "Znovu doručit/poslat tento email";
+        $lang['link_resend'] =  "Znovu doručit/poslat tento email";
     $lang['link_confirm_ham'] =  "Potvrdit jako Non-spam";
     $lang['link_view_raw'] =  "Zobrazit Raw";
     $lang['link_view_decoded'] =  "Zobrazit Decoded";

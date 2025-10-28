@@ -177,44 +177,44 @@
 */
 /** Banners */
 .spambanner, .suspected_spambanner, .virusbanner, .wlbanner, .blbanner, .fpbanner, .fnbanner, .hambanner, .suspected_hambanner, .bad_headerbanner, .banned_filebanner, .oversizedbanner, .userbanner {
-	font-size: 20px;
-	font-weight: bold;
-	color: #000000;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000000;
 }
 /** Header */
 .spamheader, .suspected_spamheader, .virusheader, .wlheader, .blheader, .fpheader, .fnheader, .hamheader, .suspected_hamheader, .bad_headerheader, .banned_fileheader, .oversizedheader, .userheader, .mailheader, .spamreportheader {
-	font-size: 14px;
-	color: #000000
+    font-size: 14px;
+    color: #000000
 }
 /** Header2 */
 .menuheader2, .spamheader2, .suspected_spamheader2, .virusheader2, .wlheader2, .blheader2, .fpheader2, .fnheader2, .hamheader2, .suspected_hamheader2, .bad_headerheader2, .banned_fileheader2, .oversizedheader2 {
-	font-size: 14px;
-	font-weight: bold;
-	color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
 }
 /** Body */
 .spambody, .suspected_spambody, .virusbody, .wlbody, .blbody, .fpbody, .fnbody, .hambody, .suspected_hambody, .bad_headerbody, .banned_filebody, .oversizedbody, .userbody {
-	font-weight: normal;
-	font-size: 14px;
-	color: #000000;
+    font-weight: normal;
+    font-size: 14px;
+    color: #000000;
 }
 /** Body_alt */
 .suspected_spambody_alt, .virusbody_alt, .hambody_alt, .bad_headerbody_alt, .banned_filebody_alt {
-	font-size: 14px;
-	font-weight: normal;
-	color: #000000;
+    font-size: 14px;
+    font-weight: normal;
+    color: #000000;
 }
 /** Body2 */
 .spambody2, .suspected_spambody2, .virusbody2, .wlbody2, .blbody2, .fpbody2, .fnbody2, .hambody2, .suspected_hambody2, .bad_headerbody2, .banned_filebody2, .oversizedbody2 {
-	font-size: 12px;
-	font-weight: normal;
-	color: #000000;
+    font-size: 12px;
+    font-weight: normal;
+    color: #000000;
 }
 /** Body3 */
 .spambody3, .suspected_spambody3, .virusbody3, .wlbody3, .blbody3, .fpbody3, .fnbody3, .hambody3, .suspected_hambody3, .bad_headerbody3, .banned_filebody3, .oversizedbody3 {
-	font-size: 14px;
-	font-weight: bold;
-	color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+    color: #000000;
 }
 /** Colors
 */

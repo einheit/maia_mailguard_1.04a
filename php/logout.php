@@ -74,23 +74,23 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/logout.php");
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/logout.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Remove the session file from the server.
-    if (isset($_SESSION['uid'])) {
-        session_unset();
-        if (isset($_COOKIE[session_name()])) {
-            setcookie(session_name(), '', time()-42000, '/');
-        }
-        session_destroy();
+if (isset($_SESSION['uid'])) {
+    session_unset();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time()-42000, '/');
     }
+    session_destroy();
+}
 
     $smarty->display('logout.tpl');
     

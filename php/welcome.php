@@ -74,206 +74,211 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/welcome.php");
-    require_once ("./locale/$display_language/quickstats.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/welcome.php";
+    require_once "./locale/$display_language/quickstats.php";
     
-    require_once ("smarty.php");
+    require_once "smarty.php";
 
-    if (isset($_GET["id"])) {
-        $id = trim($_GET["id"]);
-        if (($id != 0) && (!is_an_administrator($uid))) {
-            $id = $euid;
-        }
-    } else {
+if (isset($_GET["id"])) {
+    $id = trim($_GET["id"]);
+    if (($id != 0) && (!is_an_administrator($uid))) {
         $id = $euid;
     }
+} else {
+    $id = $euid;
+}
     
-   if (isset($_POST["maxitemid"])) {
-      $maxitemid = $_POST["maxitemid"];
-   } else {
-      $maxitemid = 0;
-   }
+if (isset($_POST["maxitemid"])) {
+    $maxitemid = $_POST["maxitemid"];
+} else {
+    $maxitemid = 0;
+}
    
-   if (isset($_POST['delete_all_items']))
-   {  
-      $del_list = array();
-      $sth = $dbh->prepare("SELECT mail_id FROM maia_mail_recipients " .
-                "WHERE type IN ('S','P','V','F','B','H') " .
-                "AND recipient_id = ? " .
-                "AND mail_id <= ?");
+if (isset($_POST['delete_all_items'])) {  
+    $del_list = array();
+    $sth = $dbh->prepare(
+        "SELECT mail_id FROM maia_mail_recipients " .
+             "WHERE type IN ('S','P','V','F','B','H') " .
+             "AND recipient_id = ? " .
+             "AND mail_id <= ?"
+    );
 
-      $res = $sth->execute(array($euid, $maxitemid));
-      if (PEAR::isError($sth)) {
-          die($sth->getMessage());
-      }
-      while ($row = $res->fetchRow())
-      {
+    $res = $sth->execute(array($euid, $maxitemid));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    while ($row = $res->fetchRow())
+    {
          array_push($del_list, $row["mail_id"]);
-      }
-      $sth->free();
-      delete_mail_reference($euid, $del_list);
-   }
+    }
+       $sth->free();
+       delete_mail_reference($euid, $del_list);
+}
    
    
-   if (isset($_POST['change_protection']) && isset($_POST['protection_level'])) {
+if (isset($_POST['change_protection']) && isset($_POST['protection_level'])) {
     $sth = $dbh->prepare("SELECT policy_id FROM users WHERE maia_user_id = ?"); 
     $res = $sth->execute($euid);
     if (PEAR::isError($sth)) {
         die($sth->getMessage());
     }
  
-    $sth2 = $dbh->prepare("UPDATE policy SET virus_lover = ?, " .
-                                    "spam_lover = ?, " .
-                                    "banned_files_lover = ?, " .
-                                    "bad_header_lover = ?, " .
-                                    "bypass_virus_checks = ?, " .
-                                    "bypass_spam_checks = ?, " .
-                                    "bypass_banned_checks = ?, " .
-                                    "bypass_header_checks = ?, " .
-                                    "discard_viruses = ?, " .
- 									"discard_spam = ?, " .
-                 					"discard_banned_files = ?, " .
-             						"discard_bad_headers = ?, " .
-									"spam_modifies_subj = ?, " .
-                                    "spam_tag_level = ?, " .
-                                    "spam_tag2_level = ?, " .
-                                    "spam_kill_level = ? " .
-                  "WHERE id = ?");
+    $sth2 = $dbh->prepare(
+        "UPDATE policy SET virus_lover = ?, " .
+                                 "spam_lover = ?, " .
+                                 "banned_files_lover = ?, " .
+                                 "bad_header_lover = ?, " .
+                                 "bypass_virus_checks = ?, " .
+                                 "bypass_spam_checks = ?, " .
+                                 "bypass_banned_checks = ?, " .
+                                 "bypass_header_checks = ?, " .
+                                 "discard_viruses = ?, " .
+        "discard_spam = ?, " .
+                   "discard_banned_files = ?, " .
+                "discard_bad_headers = ?, " .
+        "spam_modifies_subj = ?, " .
+                                 "spam_tag_level = ?, " .
+                                 "spam_tag2_level = ?, " .
+                                 "spam_kill_level = ? " .
+               "WHERE id = ?"
+    );
     $protection_level = $_POST["protection_level"];
                   
     while ($row = $res->fetchrow()) {
-      	$sth2->execute(array_merge($protection[$protection_level], array($row['policy_id'])));
+        $sth2->execute(array_merge($protection[$protection_level], array($row['policy_id'])));
         if (PEAR::isError($sth2)) {
             die($sth2->getMessage());
         }
-    	
+        
     }
     $sth->free();
     $sth2->free();
     
     
-   }
+}
     
     update_mail_stats($id, "suspected_ham");
     update_mail_stats($id, "suspected_spam");
     
     $cache_count = count_cache_items($euid);
     
-    if (array_key_exists('S', $cache_count)) { // includes 'P' labeled suspected spam
-        $spamcount = $cache_count['S']["count"];
-        $maxspamid = $cache_count['S']["max"];
-    } else {
-        $spamcount = 0;
-        $maxspamid = 0;
-    }
+if (array_key_exists('S', $cache_count)) { // includes 'P' labeled suspected spam
+    $spamcount = $cache_count['S']["count"];
+    $maxspamid = $cache_count['S']["max"];
+} else {
+    $spamcount = 0;
+    $maxspamid = 0;
+}
    
 
-    if (array_key_exists('V', $cache_count)) {
-        $viruscount = $cache_count['V']["count"];
-        $maxvirusid = $cache_count['V']["max"];
-    } else {
-        $viruscount = 0;
-        $maxvirusid = 0;
-    }
+if (array_key_exists('V', $cache_count)) {
+    $viruscount = $cache_count['V']["count"];
+    $maxvirusid = $cache_count['V']["max"];
+} else {
+    $viruscount = 0;
+    $maxvirusid = 0;
+}
 
-    if (array_key_exists('F', $cache_count)) {
-        $bannedcount = $cache_count['F']["count"];
-        $maxbannedid = $cache_count['F']["max"];
-    } else {
-        $bannedcount = 0;
-        $maxbannedid = 0;
-    }
+if (array_key_exists('F', $cache_count)) {
+    $bannedcount = $cache_count['F']["count"];
+    $maxbannedid = $cache_count['F']["max"];
+} else {
+    $bannedcount = 0;
+    $maxbannedid = 0;
+}
 
-    if (array_key_exists('B', $cache_count)) {
-        $headercount = $cache_count['B']["count"];
-        $maxheaderid = $cache_count['B']["max"];
-    } else {
-        $headercount = 0;
-        $maxheaderid = 0;
-    }
+if (array_key_exists('B', $cache_count)) {
+    $headercount = $cache_count['B']["count"];
+    $maxheaderid = $cache_count['B']["max"];
+} else {
+    $headercount = 0;
+    $maxheaderid = 0;
+}
     
-    if (array_key_exists('H', $cache_count)) {
-        $hamcount = $cache_count['H']["count"];
-        $maxhamid = $cache_count['H']["max"];
-    } else {
-        $hamcount = 0;
-        $maxhamid = 0;
-    }
+if (array_key_exists('H', $cache_count)) {
+    $hamcount = $cache_count['H']["count"];
+    $maxhamid = $cache_count['H']["max"];
+} else {
+    $hamcount = 0;
+    $maxhamid = 0;
+}
     
     $maxitemid = max($maxspamid, $maxvirusid, $maxbannedid, $maxheaderid, $maxhamid);
     
     // find current protection level
-   $sth = $dbh->prepare("SELECT DISTINCT virus_lover, spam_lover, banned_files_lover, " . 
+$sth = $dbh->prepare(
+    "SELECT DISTINCT virus_lover, spam_lover, banned_files_lover, " . 
                "bad_header_lover, bypass_virus_checks, bypass_spam_checks, bypass_banned_checks, ".
                "bypass_header_checks, discard_viruses, discard_spam, discard_banned_files, ".
-			   "discard_bad_headers, spam_modifies_subj, spam_tag_level, ".
+               "discard_bad_headers, spam_modifies_subj, spam_tag_level, ".
                "spam_tag2_level, spam_kill_level " .
              "FROM users LEFT JOIN policy ON users.policy_id=policy.id ".
-             "WHERE users.maia_user_id = ?"); 
+    "WHERE users.maia_user_id = ?"
+); 
     $res = $sth->execute(array($euid));
-    if (PEAR::isError($sth)) {
-        die($sth->getMessage());
+if (PEAR::isError($sth)) {
+    die($sth->getMessage());
+}
+    
+    
+    
+    
+if ($res->numRows() > 1) { 
+    $protection_mode = "custom";
+} elseif ($res->numrows() ==1) {
+    $result = $res->fetchrow();    
+    if (implode(',', $result) == implode(',', $protection['off'])) {
+        $protection_mode = 'off';        
+    } elseif (implode(',', $result) == implode(',', $protection['low'])) {
+        $protection_mode = 'low';        
+    } elseif(implode(',', $result) == implode(',', $protection['medium'])) {
+        $protection_mode = 'medium';        
+    } elseif(implode(',', $result) == implode(',', $protection['high'])) {
+        $protection_mode = 'high';        
+    } else {
+        $protection_mode = 'custom';
     }
-    
-    
-    
-    
-    if ($res->numRows() > 1) { 
-   	$protection_mode = "custom";
-    } elseif ($res->numrows() ==1) {
-        $result = $res->fetchrow();	
-    	if (implode(',',$result) == implode(',',$protection['off'])){
-    		$protection_mode = 'off';		
-    	} elseif (implode(',',$result) == implode(',',$protection['low'])){
-    		$protection_mode = 'low';		
-    	} elseif(implode(',',$result) == implode(',',$protection['medium'])){
-    		$protection_mode = 'medium';		
-    	} elseif(implode(',',$result) == implode(',',$protection['high'])){
-    		$protection_mode = 'high';		
-    	} else {
-    		$protection_mode = 'custom';
-    	}
-    } else { 
+} else { 
     //ERROR?
-    	$protection_mode = "ERROR";	
-    }
+    $protection_mode = "ERROR";    
+}
 
     $smarty->assign("protection", $protection_mode);
    
    
-	if (isset($_SESSION["firsttime"])) {
-		$smarty->assign("firsttime",true);
-	} else {
-		$smarty->assign("firsttime",false);
-	}
-	$smarty->assign("lang",$lang);
-//	$smarty->assign("enable_false_negative_management", "T");
-//	$smarty->assign("showmail","T");
-	$smarty->assign("maxitemid",$maxitemid);
-	$smarty->assign("msid",$msid);
-	$smarty->assign("hamcount", $hamcount);
-	$smarty->assign("spamcount", $spamcount);
-	$smarty->assign("bannedcount", $bannedcount);
-	$smarty->assign("headercount", $headercount);
-	$smarty->assign("viruscount", $viruscount);
-	$smarty->assign("hamtext", sprintf($lang['text_cache_ham'], $hamcount, "list-cache.php{$msid}cache_type=ham"));
-	$smarty->assign("spamtext", sprintf($lang['text_cache_spam'], $spamcount, "list-cache.php{$msid}cache_type=spam"));
-	$smarty->assign("virustext", sprintf($lang['text_cache_virus'], $viruscount, "list-cache.php{$msid}cache_type=virus"));
-	$smarty->assign("bannedtext", sprintf($lang['text_cache_banned'], $bannedcount, "list-cache.php{$msid}cache_type=attachment"));
-	$smarty->assign("headertext", sprintf($lang['text_cache_header'], $headercount, "list-cache.php{$msid}cache_type=header"));
+if (isset($_SESSION["firsttime"])) {
+    $smarty->assign("firsttime", true);
+} else {
+    $smarty->assign("firsttime", false);
+}
+   $smarty->assign("lang", $lang);
+   //    $smarty->assign("enable_false_negative_management", "T");
+   //    $smarty->assign("showmail","T");
+   $smarty->assign("maxitemid", $maxitemid);
+   $smarty->assign("msid", $msid);
+   $smarty->assign("hamcount", $hamcount);
+   $smarty->assign("spamcount", $spamcount);
+   $smarty->assign("bannedcount", $bannedcount);
+   $smarty->assign("headercount", $headercount);
+   $smarty->assign("viruscount", $viruscount);
+   $smarty->assign("hamtext", sprintf($lang['text_cache_ham'], $hamcount, "list-cache.php{$msid}cache_type=ham"));
+   $smarty->assign("spamtext", sprintf($lang['text_cache_spam'], $spamcount, "list-cache.php{$msid}cache_type=spam"));
+   $smarty->assign("virustext", sprintf($lang['text_cache_virus'], $viruscount, "list-cache.php{$msid}cache_type=virus"));
+   $smarty->assign("bannedtext", sprintf($lang['text_cache_banned'], $bannedcount, "list-cache.php{$msid}cache_type=attachment"));
+   $smarty->assign("headertext", sprintf($lang['text_cache_header'], $headercount, "list-cache.php{$msid}cache_type=header"));
 
 
-	$smarty->assign("spam_for_user", count_items($euid, "spam"));
-	$smarty->assign("virus_for_user", count_items($euid, "virus"));
-	$smarty->assign("spam_for_system", count_items(0, "spam"));
-	$smarty->assign("virus_for_system", count_items(0, "virus"));
+   $smarty->assign("spam_for_user", count_items($euid, "spam"));
+   $smarty->assign("virus_for_user", count_items($euid, "virus"));
+   $smarty->assign("spam_for_system", count_items(0, "spam"));
+   $smarty->assign("virus_for_system", count_items(0, "virus"));
 
     $smarty->display("welcome.tpl");
 

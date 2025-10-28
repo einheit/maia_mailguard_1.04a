@@ -74,15 +74,15 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("maia_db.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "maia_db.php";
 
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-        header("Location: index.php" . $sid);
-        exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     $id = trim($_GET["id"]);
 
@@ -90,34 +90,34 @@
     // this specific user.
     $privilege = false;
 
-    if (is_a_domain_default_user($id)) {
+if (is_a_domain_default_user($id)) {
 
-        $domain_id = get_domain_id(get_user_name($id));
+    $domain_id = get_domain_id(get_user_name($id));
+    $privilege = is_admin_for_domain($uid, $domain_id);
+
+} else if (!is_superadmin($uid)) {
+
+    $select = "SELECT email FROM users WHERE maia_user_id = ?";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute($id);
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+
+    while (!$privilege && ($row = $res->fetchRow())) {
+        $domain_id = get_domain_id("@" . get_domain_from_email($row["email"]));
         $privilege = is_admin_for_domain($uid, $domain_id);
-
-    } else if (!is_superadmin($uid)) {
-
-        $select = "SELECT email FROM users WHERE maia_user_id = ?";
-        $sth = $dbh->prepare($select);
-        $res = $sth->execute($id);
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-
-        while (!$privilege && ($row = $res->fetchRow())) {
-            $domain_id = get_domain_id("@" . get_domain_from_email($row["email"]));
-            $privilege = is_admin_for_domain($uid, $domain_id);
-        }
-        $sth->free();
-
-    } else { // superadmin gets privs
-        $privilege = true;
     }
+    $sth->free();
 
-    if ($id < 1 || !$privilege) {
-        header("Location: admindex.php" . $sid);
-        exit();
-    }
+} else { // superadmin gets privs
+    $privilege = true;
+}
+
+if ($id < 1 || !$privilege) {
+    header("Location: admindex.php" . $sid);
+    exit();
+}
 
     // Assume the user's UID as our EUID
     $_SESSION["euid"] = $id;

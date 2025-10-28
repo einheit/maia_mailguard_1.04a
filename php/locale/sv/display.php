@@ -97,7 +97,7 @@
     $lang['text_false_negative'] =  "Falsk Negativ";
     $lang['powered_by'] = "Med kraft från Maia Mailguard - http://www.maiamailguard.com";
 
-						
+                        
     // Links
     $lang['link_systemwide'] =  "Visa systemvid statistik";
     $lang['link_personal'] =  "Visa din personliga Statistik";
@@ -277,4 +277,4 @@
                                       "bad_header"     => "Som procent av totala antalet mottagna mejl",
                                       "banned_file"    => "Som procent av totala antalet mottagna mejl",
                                       "oversized"      => "Som procent av totala antalet mottagna mejl");
-?>
+    ?>

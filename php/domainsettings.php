@@ -74,31 +74,32 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
-    require_once ("maia_db.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "display.php";
+    require_once "maia_db.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/domainsettings.php");
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/domainsettings.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // A domain ID value *must* be supplied.
-    if (isset($_GET["domain"])) {
-       $domain_id = trim($_GET["domain"]);
-    } else {
-       header("Location: admindomains.php" . $sid);
-    }
+if (isset($_GET["domain"])) {
+    $domain_id = trim($_GET["domain"]);
+} else {
+    header("Location: admindomains.php" . $sid);
+}
 
     // Only administrators with rights to this domain should be here.
-    if (!is_admin_for_domain($uid, $domain_id)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_admin_for_domain($uid, $domain_id)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
-    $sth = $dbh->prepare("SELECT virus_lover, " .
+    $sth = $dbh->prepare(
+        "SELECT virus_lover, " .
                      "spam_lover, " .
                      "banned_files_lover, " .
                      "bad_header_lover, " .
@@ -107,9 +108,9 @@
                      "bypass_banned_checks, " .
                      "bypass_header_checks, " .
                      "discard_viruses, " .
-  	             "discard_spam, " .
-  	             "discard_banned_files, " .
-  	             "discard_bad_headers, " .
+                   "discard_spam, " .
+                   "discard_banned_files, " .
+                   "discard_bad_headers, " .
                      "spam_modifies_subj, " .
                      "spam_tag_level, " .
                      "spam_tag2_level, " .
@@ -118,7 +119,8 @@
                      "policy_id " .
               "FROM users, policy " .
               "WHERE users.policy_id = policy.id " .
-              "AND users.maia_domain_id = ?");
+        "AND users.maia_domain_id = ?"
+    );
 
     $system_default = false;
     $res = $sth->execute(array($domain_id));
@@ -131,7 +133,7 @@
             $smarty->assign('address', $lang['text_system_default'] . " (@.)");
             $system_default = true;
         } else {
-			$smarty->assign('address', $address);
+            $smarty->assign('address', $address);
         }
         $smarty->assign("system_default", $system_default);
         $smarty->assign('policy_id', $row["policy_id"]);
@@ -145,12 +147,12 @@
         } else {
             $smarty->assign('v_l_checked', "");
             if ($row["discard_viruses"] == 'Y') {
-		$smarty->assign('v_q_checked', "");
-		$smarty->assign('v_d_checked', "checked");
-	    } else {
-		$smarty->assign('v_q_checked', "checked");
-		$smarty->assign('v_d_checked', "");
-	    }
+                $smarty->assign('v_q_checked', "");
+                $smarty->assign('v_d_checked', "checked");
+            } else {
+                $smarty->assign('v_q_checked', "checked");
+                $smarty->assign('v_d_checked', "");
+            }
         }
         if ($row["spam_lover"] == 'Y') {
             $smarty->assign('s_l_checked', "checked");
@@ -159,12 +161,12 @@
         } else {
             $smarty->assign('s_l_checked', "");
             if ($row["discard_spam"] == 'Y') {
-		$smarty->assign('s_q_checked', "");
-		$smarty->assign('s_d_checked', "checked");
-	    } else {
-		$smarty->assign('s_q_checked', "checked");
-		$smarty->assign('s_d_checked', "");
-	    }
+                $smarty->assign('s_q_checked', "");
+                $smarty->assign('s_d_checked', "checked");
+            } else {
+                $smarty->assign('s_q_checked', "checked");
+                $smarty->assign('s_d_checked', "");
+            }
         }
         if ($row["banned_files_lover"] == 'Y') {
             $smarty->assign('b_l_checked', "checked");
@@ -173,12 +175,12 @@
         } else {
             $smarty->assign('b_l_checked', "");
             if ($row["discard_banned_files"] == 'Y') {
-		$smarty->assign('b_q_checked', "");
-		$smarty->assign('b_d_checked', "checked");
-	    } else {
-		$smarty->assign('b_q_checked', "checked");
-		$smarty->assign('b_d_checked', "");
-	    }
+                $smarty->assign('b_q_checked', "");
+                $smarty->assign('b_d_checked', "checked");
+            } else {
+                $smarty->assign('b_q_checked', "checked");
+                $smarty->assign('b_d_checked', "");
+            }
         }
         if ($row["bad_header_lover"] == 'Y') {
             $smarty->assign('h_l_checked', "checked");
@@ -187,12 +189,12 @@
         } else {
             $smarty->assign('h_l_checked', "");
             if ($row["discard_bad_headers"] == 'Y') {
-		$smarty->assign('h_q_checked', "");
-		$smarty->assign('h_d_checked', "checked");
-	    } else {
-		$smarty->assign('h_q_checked', "checked");
-		$smarty->assign('h_d_checked', "");
-	    }
+                $smarty->assign('h_q_checked', "");
+                $smarty->assign('h_d_checked', "checked");
+            } else {
+                $smarty->assign('h_q_checked', "checked");
+                $smarty->assign('h_d_checked', "");
+            }
         }
         if ($row["bypass_virus_checks"] == 'Y') {
             $smarty->assign('bv_y_checked', "");
@@ -242,15 +244,17 @@
 
     $themes = array();
     while ($row = $res->fetchrow()) {
-       $themes[$row['id']] = $row['name'];
+        $themes[$row['id']] = $row['name'];
     }
     $smarty->assign("themes", $themes);
     $sth->free();
     
-    $sth = $dbh->prepare("SELECT maia_users.discard_ham, maia_domains.enable_user_autocreation, maia_users.theme_id " .
-  	                   "FROM maia_users, maia_domains " .
-  	                   "WHERE maia_domains.domain = maia_users.user_name " .
-  	                   "AND maia_domains.id = ?");
+    $sth = $dbh->prepare(
+        "SELECT maia_users.discard_ham, maia_domains.enable_user_autocreation, maia_users.theme_id " .
+                         "FROM maia_users, maia_domains " .
+                         "WHERE maia_domains.domain = maia_users.user_name " .
+                         "AND maia_domains.id = ?"
+    );
     $res = $sth->execute(array($domain_id));
     if ($row = $res->fetchrow()) {
         $smarty->assign('theme_id', $row["theme_id"]);
@@ -276,11 +280,13 @@
     }
     $sth->free();
     
-    $sth = $dbh->prepare("SELECT maia_users.user_name, maia_users.id " .
+    $sth = $dbh->prepare(
+        "SELECT maia_users.user_name, maia_users.id " .
               "FROM maia_users, maia_domain_admins " .
               "WHERE maia_users.id = maia_domain_admins.admin_id " .
               "AND maia_domain_admins.domain_id = ? " .
-              "ORDER BY maia_users.user_name ASC");
+        "ORDER BY maia_users.user_name ASC"
+    );
     $res = $sth->prepare(array($domain_id));
     if (PEAR::isError($sth)) {
         die($sth->getMessage());
@@ -299,10 +305,12 @@
 
     $sth->free();
 
-    $sth = $dbh->prepare("SELECT maia_users.id " .
+    $sth = $dbh->prepare(
+        "SELECT maia_users.id " .
               "FROM maia_users, maia_domain_admins " .
               "WHERE maia_users.id = maia_domain_admins.admin_id " .
-              "AND maia_domain_admins.domain_id = ?");
+        "AND maia_domain_admins.domain_id = ?"
+    );
     $res = $sth->execute(array($domain_id));
     if (PEAR::isError($sth)) {
         die($sth->getMessage());
@@ -345,4 +353,4 @@
     $smarty->assign('domain_id', $domain_id);
     $smarty->display('domainsettings.tpl');
     
-?>
+    ?>

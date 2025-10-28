@@ -72,7 +72,7 @@
      * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      *
      */
-	// Page subtitle
+    // Page subtitle
     $lang['banner_subtitle'] =  "Statistiques des r&egrave;gles de SpamAssassin";
 
     // Table headers

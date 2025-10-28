@@ -74,10 +74,10 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("auth.php");
-   require_once ("maia_db.php");
-   require_once ("mailtools.php");
+   require_once "core.php";
+   require_once "auth.php";
+   require_once "maia_db.php";
+   require_once "mailtools.php";
    
    $uid = 0;
    $euid = 0;
@@ -85,230 +85,230 @@
    $sid = ""; 
 
    // Get the expected form variables from the POST array
-   if (isset($_POST["language"])   && strlen($_POST["language"]) == 2 ) {
-      $display_language = trim($_POST["language"]);
-   } else {
-      $display_language = $default_display_language;
-   }
-   if (isset($_POST["offset"]) && is_numeric($_POST["offset"])) {
-      $clock_offset = intval($_POST["offset"]);
-   } else {
-      $clock_offset = 0;
-   }
+if (isset($_POST["language"])   && strlen($_POST["language"]) == 2 ) {
+    $display_language = trim($_POST["language"]);
+} else {
+    $display_language = $default_display_language;
+}
+if (isset($_POST["offset"]) && is_numeric($_POST["offset"])) {
+    $clock_offset = intval($_POST["offset"]);
+} else {
+    $clock_offset = 0;
+}
 
-   require_once ("./locale/$display_language/auth.php");
-   require_once ("./locale/$display_language/db.php");
-   require_once ("./locale/$display_language/display.php");
-   require_once ("./locale/$display_language/login.php");
-   require_once ("./locale/$display_language/xlogin.php");
-   require_once ("./locale/$display_language/errors.php");
+   require_once "./locale/$display_language/auth.php";
+   require_once "./locale/$display_language/db.php";
+   require_once "./locale/$display_language/display.php";
+   require_once "./locale/$display_language/login.php";
+   require_once "./locale/$display_language/xlogin.php";
+   require_once "./locale/$display_language/errors.php";
 
 
-   if (isset($_POST["username"])) {
-      $user_name = trim($_POST["username"]);
-   } else {
-      $user_name = "";
-   }
-   if (isset($_POST["pwd"])) {
-      $pwd = trim($_POST["pwd"]);
-      $pwd = stripslashes($pwd); // get rid of any escape characters
-   } else {
-      $pwd = "";
-   }
-   if (isset($_POST["domain"])) {
-      $nt_domain = trim($_POST["domain"]);
-   } else {
-      $nt_domain = "";
-   }
-   if (isset($_POST["address"])) {
-      $address = trim($_POST["address"]);
-   } else {
-      $address = "";
-   }
-   if (isset($_POST["super"])) {
-      $super = trim($_POST["super"]);
-   } else {
-      $super = "";
-   }
+if (isset($_POST["username"])) {
+    $user_name = trim($_POST["username"]);
+} else {
+    $user_name = "";
+}
+if (isset($_POST["pwd"])) {
+    $pwd = trim($_POST["pwd"]);
+    $pwd = stripslashes($pwd); // get rid of any escape characters
+} else {
+    $pwd = "";
+}
+if (isset($_POST["domain"])) {
+    $nt_domain = trim($_POST["domain"]);
+} else {
+    $nt_domain = "";
+}
+if (isset($_POST["address"])) {
+    $address = trim($_POST["address"]);
+} else {
+    $address = "";
+}
+if (isset($_POST["super"])) {
+    $super = trim($_POST["super"]);
+} else {
+    $super = "";
+}
    
    //we want to weed out linked emails during the login process, as it can result in security issues
    // and also db corruption, see ticket #427
-   function is_primary_email($email)
-   {
-       global $dbh;
+function is_primary_email($email)
+{
+    global $dbh;
 
-       $email_id = 0;
-       $sth = $dbh->prepare("SELECT users.id FROM users left join maia_users ON users.maia_user_id=maia_users.id WHERE maia_users.primary_email_id <> users.id and users.email = ?");
-       $res = $sth->execute(array($email));
-       if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-       }
+    $email_id = 0;
+    $sth = $dbh->prepare("SELECT users.id FROM users left join maia_users ON users.maia_user_id=maia_users.id WHERE maia_users.primary_email_id <> users.id and users.email = ?");
+    $res = $sth->execute(array($email));
+    if (PEAR::isError($sth)) {
+         die($sth->getMessage());
+    }
 
-       if ($row = $res->fetchrow()) {
-           $email_id = $row["id"];
-       }
-       $sth->free();
+    if ($row = $res->fetchrow()) {
+        $email_id = $row["id"];
+    }
+    $sth->free();
 
-       return $email_id == 0 ? true : false;
-   }
+    return $email_id == 0 ? true : false;
+}
 
-   if (isset($_GET["token"]) &&
-       isset($_GET["id"])    &&
-       isset($_GET["euid"])  &&
-       isset($_GET["action"])) {
-      //we are not entering by way of login form, but by way of special token.
-      $token = trim($_GET['token']);
-      $user_token = trim($_GET['user_token']);
-      $maia_user_id = trim($_GET['id']);
-      $euid = trim($_GET['euid']);
-      $action = trim($_GET['action']);
+if (isset($_GET["token"]) 
+    && isset($_GET["id"])    
+    && isset($_GET["euid"])  
+    && isset($_GET["action"])
+) {
+    //we are not entering by way of login form, but by way of special token.
+    $token = trim($_GET['token']);
+    $user_token = trim($_GET['user_token']);
+    $maia_user_id = trim($_GET['id']);
+    $euid = trim($_GET['euid']);
+    $action = trim($_GET['action']);
 
-      if ($action == "view.php" || $action == "rescue.php") {
+    if ($action == "view.php" || $action == "rescue.php") {
           $select = "SELECT recipient_id FROM maia_mail_recipients " .
                     "WHERE recipient_id=? " .
                     "AND token=?";
 
           $sth = $dbh->prepare($select);
           $res = $sth->execute(array($euid,$token));
-          if (PEAR::isError($sth)) {
-              die($sth->getMessage());
-          }
+        if (PEAR::isError($sth)) {
+            die($sth->getMessage());
+        }
 
-          if ($row = $res->fetchrow()) {
-             $select = "SELECT data FROM maia_tokens " .
-                        "WHERE data=? " .
-                        "AND token=? " .
-                        "AND token_system='digest'" ;
+        if ($row = $res->fetchrow()) {
+            $select = "SELECT data FROM maia_tokens " .
+                      "WHERE data=? " .
+                      "AND token=? " .
+                      "AND token_system='digest'" ;
 
-              $sth = $dbh->prepare($select);
-              $res = $sth->execute(array($maia_user_id,$user_token));
-              if (PEAR::isError($sth)) {
-                  die($sth->getMessage());
-              }
-              if ($row = $res->fetchrow()) {
+            $sth = $dbh->prepare($select);
+            $res = $sth->execute(array($maia_user_id,$user_token));
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+            if ($row = $res->fetchrow()) {
                 $uid = $maia_user_id;
                 $authenticated = true;
-              } else {
+            } else {
                 $authenticated = PEAR::raiseError($lang['invalid_token']);
-              }
-          } else {
+            }
+        } else {
             $authenticated = PEAR::raiseError($lang['invalid_token']);
-          }
-      } elseif ($action == "confirm.php") {
-          $select = "SELECT data FROM maia_tokens " .
-                    "WHERE data=? " .
-                    "AND token=? " .
-                    "AND token_system='digest'" ;
-          $sth = $dbh->prepare($select);
-          $res = $sth->execute(array($maia_user_id,$token));
-          if (PEAR::isError($sth)) {
-              die($sth->getMessage());
-          }
-          if ($row = $res->fetchrow()) {
+        }
+    } elseif ($action == "confirm.php") {
+        $select = "SELECT data FROM maia_tokens " .
+                 "WHERE data=? " .
+                 "AND token=? " .
+                 "AND token_system='digest'" ;
+        $sth = $dbh->prepare($select);
+        $res = $sth->execute(array($maia_user_id,$token));
+        if (PEAR::isError($sth)) {
+            die($sth->getMessage());
+        }
+        if ($row = $res->fetchrow()) {
             $uid = $maia_user_id;
             $authenticated = true;
-          } else {
+        } else {
             $logger->err("token or data not found");
             $authenticated = PEAR::raiseError($lang['invalid_token']);
-          }
+        }
 
-      } else {
-         $logger->err("unknown action");
-         $authenticated = PEAR::raiseError($lang['invalid_token']);
-      }
-      if (! ok_to_impersonate($euid, $uid)) {
+    } else {
+        $logger->err("unknown action");
+        $authenticated = PEAR::raiseError($lang['invalid_token']);
+    }
+    if (! ok_to_impersonate($euid, $uid)) {
         $logger->err("user $uid cannot impersonate $euid");
         $authenticated = PEAR::raiseError($lang['invalid_token']);
-      }
+    }
 
-   } else {
-      if ($auth_method == "imap") {
+} else {
+    if ($auth_method == "imap") {
           $imap_address = get_rewritten_email_address($address, $address_rewriting_type);
           $user_name = get_user_from_email($imap_address);
-      } elseif ($auth_method == "pop3" && empty($routing_domain)) {
-          $user_name = get_user_from_email($address);
-      } elseif ($auth_method == "external") {
-            $user_name = ereg_replace('@.*$','',$user_name);
-            // FIXME there has to be a better way to do this. It implements the
-            // assumption (valid here) that the LHS of all addresses that need to
-            // be authenticated against is the user name.  But some things just didn't
-            // work right until I added this code.
-      }
+    } elseif ($auth_method == "pop3" && empty($routing_domain)) {
+        $user_name = get_user_from_email($address);
+    } elseif ($auth_method == "external") {
+         $user_name = ereg_replace('@.*$', '', $user_name);
+         // FIXME there has to be a better way to do this. It implements the
+         // assumption (valid here) that the LHS of all addresses that need to
+         // be authenticated against is the user name.  But some things just didn't
+         // work right until I added this code.
+    }
 
-      list($authenticated, $email) = auth($user_name, $pwd, $address, $nt_domain);
-      if ($authenticated === true) {
+       list($authenticated, $email) = auth($user_name, $pwd, $address, $nt_domain);
+    if ($authenticated === true) {
         if (is_primary_email($email)) {
-          $owner_id = get_email_address_owner(get_email_address_id($email));
-          $uid = get_user_id($user_name, $email);
-          if ($owner_id != 0 && $owner_id != $uid) {
-            $authenticated = PEAR::raiseError($lang['error_case_mixup_rejected_html']);
-            $logger->warning(sprintf($lang['error_case_mixup_rejected_log'], $email, $address, $user_name, $uid, $owner_id));
-          }
+            $owner_id = get_email_address_owner(get_email_address_id($email));
+            $uid = get_user_id($user_name, $email);
+            if ($owner_id != 0 && $owner_id != $uid) {
+                $authenticated = PEAR::raiseError($lang['error_case_mixup_rejected_html']);
+                $logger->warning(sprintf($lang['error_case_mixup_rejected_log'], $email, $address, $user_name, $uid, $owner_id));
+            }
         } else {
             $authenticated = PEAR::raiseError(sprintf($lang['error_link_login_failed'], $email));
             $logger->warning(sprintf($lang['error_link_login_failed'], $email));
         }  
           
-      }
+    }
     
-   }
-   if ($authenticated === true)
-   {
-       session_start();
-       session_unset(); // clear any session data
+}
+if ($authenticated === true) {
+    session_start();
+    session_unset(); // clear any session data
 
-       // See if this user has an entry in the users table yet
-       // and if not, create one for him (with default values).
-       if ($uid == 0) {
-           $uid = add_user($user_name, $email);
-         $_SESSION["firsttime"] = true;
-       }
+    // See if this user has an entry in the users table yet
+    // and if not, create one for him (with default values).
+    if ($uid == 0) {
+        $uid = add_user($user_name, $email);
+        $_SESSION["firsttime"] = true;
+    }
 
-       if ($euid == 0) {
-         $euid = $uid;
-       }
+    if ($euid == 0) {
+        $euid = $uid;
+    }
 
-       $_SESSION["timeout"] = time() + $default_session_timeout * 60;
+    $_SESSION["timeout"] = time() + $default_session_timeout * 60;
 
-       $_SESSION["clock_offset"] = $clock_offset;
+    $_SESSION["clock_offset"] = $clock_offset;
        
-       // Set session variables
-       $_SESSION["uid"] = $uid;
-       $_SESSION["euid"] = $euid;
+    // Set session variables
+    $_SESSION["uid"] = $uid;
+    $_SESSION["euid"] = $euid;
        
-       // set up language preferences
-       $_SESSION["display_language"] = isset($_POST["language"]) ?
-                                          trim($_POST["language"]) :
-                                          get_display_language($euid);
+    // set up language preferences
+    $_SESSION["display_language"] = isset($_POST["language"]) ?
+                                       trim($_POST["language"]) :
+                                       get_display_language($euid);
 
-       // If the $super variable was set, try to process the
-       // (supposed) superuser's request.
-       if ($super == "register") {
-           if (get_superadmin_id() == 0) {
-               set_superadmin_id($uid);
-   	   }
-       } elseif ($super == "unregister") {
-           if (is_superadmin($uid)) {
-               unset_superadmin_id($uid);
-           }
-       }
+    // If the $super variable was set, try to process the
+    // (supposed) superuser's request.
+    if ($super == "register") {
+        if (get_superadmin_id() == 0) {
+            set_superadmin_id($uid);
+        }
+    } elseif ($super == "unregister") {
+        if (is_superadmin($uid)) {
+            unset_superadmin_id($uid);
+        }
+    }
 
-       // First time through, we don't know whether the user's
-       // browser accepts cookies, so we include the session ID
-       // in the GET just in case.
-       header('Location: index.php?' . session_name() . '=' . session_id() . '&' . $_SERVER['QUERY_STRING']);
-       exit();
-   } else {
-       $uid = 0;
-       $euid = 0;
-       $sid = "";
-   }
+    // First time through, we don't know whether the user's
+    // browser accepts cookies, so we include the session ID
+    // in the GET just in case.
+    header('Location: index.php?' . session_name() . '=' . session_id() . '&' . $_SERVER['QUERY_STRING']);
+    exit();
+} else {
+    $uid = 0;
+    $euid = 0;
+    $sid = "";
+}
 
-   if (PEAR::isError($authenticated)) {
+if (PEAR::isError($authenticated)) {
     $message = $authenticated->getMessage();
-   }
+}
    
-   require_once ("smarty.php");  // register smarty *after* uid's are set
+   require_once "smarty.php";  // register smarty *after* uid's are set
 
    
    

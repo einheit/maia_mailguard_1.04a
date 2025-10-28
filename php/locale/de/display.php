@@ -279,4 +279,4 @@
                                       "bad_header"     => "Prozentual aller empfangenen E-Mails",
                                       "banned_file"    => "Prozentual aller empfangenen E-Mails",
                                       "oversized"      => "Prozentual aller empfangenen E-Mails");
-?>
+    ?>

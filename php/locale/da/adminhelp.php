@@ -229,7 +229,7 @@
                                                "feature, ellers vil du se en pokkers masse bruger " .
                                                "kontoer blive oprettet, næste gang en spammer, " .
                                                "prober efter email adresser!";
-						
+                        
 
     $lang['adminhelp_internal_auth'] =  "<b>%s</b> giver Maia besked på at generere en 8-karakters adgangskode til nye " .
                                     "brugere og emaile deres midlertidige brugernavn og adgangskode ti ldem. Brugere kan " .
@@ -380,7 +380,7 @@
     $lang['adminhelp_reminder_template_file'] =  "<b>%s</b> fortæller hvilken fil (inklusiv den fulde sti, " .
                                              "eller relativ til din Maia installations mappe) som " .
                                              "Maia skal bruge som skabelon til at generere en reminder email. ".
-					     "Denne skabelon indeholder følgende variabler: " .
+                         "Denne skabelon indeholder følgende variabler: " .
                                              "<font color=\"red\">%%%%VIRUSCOUNT%%%%</font>, " .
                                              "<font color=\"red\">%%%%SPAMCOUNT%%%%</font>, " .
                                              "<font color=\"red\">%%%%BANNEDCOUNT%%%%</font>, " .

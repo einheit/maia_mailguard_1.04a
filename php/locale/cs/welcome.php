@@ -102,10 +102,10 @@
     $lang['button_change_protection'] = "Změnit úroveň";
     
     $lang['radio_protection'] = array(  'off' => "Vypnuto",
-		 								'low' => "Nízká",
-     								'medium' => "Střední",
-										'high' => "Vysoká",
-										'custom' => "Vlastní");
+                                         'low' => "Nízká",
+                                     'medium' => "Střední",
+                                        'high' => "Vysoká",
+                                        'custom' => "Vlastní");
     
     $lang['banner_subtitle'] = "Vítejte";
     

@@ -74,94 +74,94 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("mailtools.php");
-    require_once ("display.php");
-    require_once ("smtp.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "mailtools.php";
+    require_once "display.php";
+    require_once "smtp.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminusers.php"); // shared with adminusers.php
-    require_once ("./locale/$display_language/xadminusers.php");
-    require_once ("./locale/$display_language/smtp.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminusers.php"; // shared with adminusers.php
+    require_once "./locale/$display_language/xadminusers.php";
+    require_once "./locale/$display_language/smtp.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     $super = is_superadmin($uid);
 
     $button = '';
     
     // Find out which button we pushed to get here
-    if (isset($_POST["button_add"])) {
+if (isset($_POST["button_add"])) {
 
-        $button = "add";
-        $succeeded = false;
+    $button = "add";
+    $succeeded = false;
         
-        if (isset($_POST["new_email"])) {
+    if (isset($_POST["new_email"])) {
 
-            $smarty->assign('new_email', 1);
+        $smarty->assign('new_email', 1);
             
-            $new_email = trim($_POST["new_email"]);
+        $new_email = trim($_POST["new_email"]);
 
-            // Rewrite the e-mail address as necessary for POP3/IMAP, to make
-            // it match the routing address provided by the MTA-RX.
-            if ($auth_method == "pop3" && !empty($routing_domain)) {
-              $username = get_user_from_email($new_email);
-                $new_email = $username . "@" . $routing_domain;
-            } elseif ($auth_method == "imap") {
-              $new_email = get_rewritten_email_address($new_email, $address_rewriting_type);
-              $username = get_user_from_email($new_email);
-            } elseif ($auth_method == "internal") {
-              $new_email = get_rewritten_email_address($new_email, $address_rewriting_type);
-                $username = $new_email;
-            } else {
-              $username = get_user_from_email($new_email);
-            }
-            $bad_user = empty($username);
-            $smarty->assign("bad_user", $bad_user);
+        // Rewrite the e-mail address as necessary for POP3/IMAP, to make
+        // it match the routing address provided by the MTA-RX.
+        if ($auth_method == "pop3" && !empty($routing_domain)) {
+            $username = get_user_from_email($new_email);
+            $new_email = $username . "@" . $routing_domain;
+        } elseif ($auth_method == "imap") {
+            $new_email = get_rewritten_email_address($new_email, $address_rewriting_type);
+            $username = get_user_from_email($new_email);
+        } elseif ($auth_method == "internal") {
+            $new_email = get_rewritten_email_address($new_email, $address_rewriting_type);
+            $username = $new_email;
+        } else {
+            $username = get_user_from_email($new_email);
+        }
+        $bad_user = empty($username);
+        $smarty->assign("bad_user", $bad_user);
 
-            if (!$super && !$bad_user) {
+        if (!$super && !$bad_user) {
 
-              // Make sure the new address is in a domain that
-              // this administrator controls.
-                $domain = "@" . get_domain_from_email($new_email);
-                $select = "SELECT id " .
-                          "FROM maia_domains, maia_domain_admins " .
-                          "WHERE maia_domains.id = maia_domain_admins.domain_id " .
-                          "AND maia_domain_admins.admin_id = ? " .
-                          "AND maia_domains.domain = ?";
-                $sth = $dbh->prepare($select);
-                $res = $sth->execute(array($uid, $domain));
-                if (PEAR::isError($sth)) { 
-                    die($sth->getMessage()); 
-                } 
+            // Make sure the new address is in a domain that
+            // this administrator controls.
+            $domain = "@" . get_domain_from_email($new_email);
+            $select = "SELECT id " .
+                      "FROM maia_domains, maia_domain_admins " .
+                      "WHERE maia_domains.id = maia_domain_admins.domain_id " .
+                      "AND maia_domain_admins.admin_id = ? " .
+                      "AND maia_domains.domain = ?";
+            $sth = $dbh->prepare($select);
+            $res = $sth->execute(array($uid, $domain));
+            if (PEAR::isError($sth)) { 
+                die($sth->getMessage()); 
+            } 
 
-                $bad_domain = !$res->fetchrow();
-                $smarty->assign("bad_domain", $bad_domain);
-                $sth->free();
-            }
+            $bad_domain = !$res->fetchrow();
+            $smarty->assign("bad_domain", $bad_domain);
+            $sth->free();
+        }
 
-            if (($super || !$bad_domain) && !$bad_user) {
-                // Only add the new address if it doesn't already exist.
-                $sth = $dbh->prepare("SELECT maia_user_id FROM users WHERE email = ?");
-                $res = $sth->execute(array($new_email));
-                if (PEAR::isError($sth)) { 
-                    die($sth->getMessage()); 
-                } 
+        if (($super || !$bad_domain) && !$bad_user) {
+            // Only add the new address if it doesn't already exist.
+            $sth = $dbh->prepare("SELECT maia_user_id FROM users WHERE email = ?");
+            $res = $sth->execute(array($new_email));
+            if (PEAR::isError($sth)) { 
+                die($sth->getMessage()); 
+            } 
 
-                if (!$res->fetchrow()) {
-                    $new_user_id = add_user($username, $new_email);
-                    if ($new_user_id) {  // If there was an error, hopefully it was logged in the apache error log...
-                      $succeeded = true;
-                      if ($auth_method == "internal") {
+            if (!$res->fetchrow()) {
+                $new_user_id = add_user($username, $new_email);
+                if ($new_user_id) {  // If there was an error, hopefully it was logged in the apache error log...
+                    $succeeded = true;
+                    if ($auth_method == "internal") {
                         // Generate a random password and assign it to the new user
                         list($password, $digest) = generate_random_password();
                         $sthu = $dbh->prepare("UPDATE maia_users SET password = ? WHERE id = ?");
@@ -175,162 +175,166 @@
                         // temporary login credentials.
                             $sth2 = $dbh->prepare("SELECT admin_email, newuser_template_file, reminder_login_url, internal_auth FROM maia_config WHERE id = 0");
                             $res2 = $sth2->execute();
-                            if ($row = $res2->fetchrow()) {
-                                $admin_email = $row["admin_email"];
-                                $template_file = $row["newuser_template_file"];
-                                $login_url = $row["reminder_login_url"];
-                                $issue_password = ($row["internal_auth"] == "Y");
-                            }
+                        if ($row = $res2->fetchrow()) {
+                            $admin_email = $row["admin_email"];
+                            $template_file = $row["newuser_template_file"];
+                            $login_url = $row["reminder_login_url"];
+                            $issue_password = ($row["internal_auth"] == "Y");
+                        }
                             $sth2->free();
-                            if ($issue_password) {
-                              $fh = fopen($template_file, "r");
-                              $body = fread($fh, filesize($template_file));
-                              fclose($fh);
-                              $body = preg_replace("/%%ADMINEMAIL%%/", $admin_email, $body);
-                              $body = preg_replace("/%%LOGIN%%/", $username, $body);
-                              $body = preg_replace("/%%PASSWORD%%/", $password, $body);
-                              $body = preg_replace("/%%LOGINURL%%/", $login_url, $body);
-                              $result = smtp_send($admin_email, $new_email, $body);
-                              $succeeded = (strncmp($result, "2", 1) == 0) ;
-                              $smarty->assign('smtp_result', $result);
-                            }
-                      }
-                    } else {
-                      $succeeded = false;
-                      
+                        if ($issue_password) {
+                            $fh = fopen($template_file, "r");
+                            $body = fread($fh, filesize($template_file));
+                            fclose($fh);
+                            $body = preg_replace("/%%ADMINEMAIL%%/", $admin_email, $body);
+                            $body = preg_replace("/%%LOGIN%%/", $username, $body);
+                            $body = preg_replace("/%%PASSWORD%%/", $password, $body);
+                            $body = preg_replace("/%%LOGINURL%%/", $login_url, $body);
+                            $result = smtp_send($admin_email, $new_email, $body);
+                            $succeeded = (strncmp($result, "2", 1) == 0) ;
+                            $smarty->assign('smtp_result', $result);
+                        }
                     }
                 } else {
-                  $succeeded = false;
+                    $succeeded = false;
+                      
                 }
-                $sth->free();
-                if ($succeeded) {
-                  $lang['text_address_added'] = sprintf($lang['text_address_added'], $new_email);
-                } else {
-                  $lang['text_address_not_added'] = sprintf($lang['text_address_not_added'], $new_email);
-                }
+            } else {
+                $succeeded = false;
+            }
+            $sth->free();
+            if ($succeeded) {
+                $lang['text_address_added'] = sprintf($lang['text_address_added'], $new_email);
             } else {
                 $lang['text_address_not_added'] = sprintf($lang['text_address_not_added'], $new_email);
             }
         } else {
             $lang['text_address_not_added'] = sprintf($lang['text_address_not_added'], $new_email);
         }
-        $smarty->assign("succeeded", $succeeded);
+    } else {
+        $lang['text_address_not_added'] = sprintf($lang['text_address_not_added'], $new_email);
+    }
+    $smarty->assign("succeeded", $succeeded);
 
-    } elseif (isset($_POST["button_delete_email"])) {
+} elseif (isset($_POST["button_delete_email"])) {
 
-        $button = "delete_email";
+    $button = "delete_email";
         
-        if (isset($_POST["delete_email"])) {
+    if (isset($_POST["delete_email"])) {
 
-            $smarty->assign('delete_email', 1);
+        $smarty->assign('delete_email', 1);
             
-            // Note that $delete_email is an array
-            $delete_email = $_POST["delete_email"];
+        // Note that $delete_email is an array
+        $delete_email = $_POST["delete_email"];
 
-            $delete_failed = false;
-            foreach ($delete_email as $email_id) {
+        $delete_failed = false;
+        foreach ($delete_email as $email_id) {
 
-              $result = smart_delete_email_address($email_id);   // will return false if address is the primary and has aliases
+            $result = smart_delete_email_address($email_id);   // will return false if address is the primary and has aliases
 
-              if ($result == false) {
+            if ($result == false) {
                 $delete_failed = true;  // at least one failed.
-              }
             }
-            $smarty->assign("delete_failed", $delete_failed);
         }
+        $smarty->assign("delete_failed", $delete_failed);
+    }
 
-    } elseif (isset($_POST["button_delete_user"])) {
+} elseif (isset($_POST["button_delete_user"])) {
 
-        $button = "delete_user";
+    $button = "delete_user";
         
-        if (isset($_POST["del_user"])) {
+    if (isset($_POST["del_user"])) {
 
-            $smarty->assign('del_user', 1);
+        $smarty->assign('del_user', 1);
             
-            // Note that $del_user is an array
-            $delete_user = $_POST["del_user"];
+        // Note that $del_user is an array
+        $delete_user = $_POST["del_user"];
 
-            foreach ($delete_user as $user_id) {
-              if (!is_a_domain_default_user($user_id)) {
+        foreach ($delete_user as $user_id) {
+            if (!is_a_domain_default_user($user_id)) {
                     delete_user($user_id);
-                }
             }
         }
+    }
 
-    } elseif (isset($_POST["button_link"])) {
+} elseif (isset($_POST["button_link"])) {
 
-        $button = "link";
+    $button = "link";
         
-        if (isset($_POST["email"]) && isset($_POST["user"])) {
+    if (isset($_POST["email"]) && isset($_POST["user"])) {
 
-            $smarty->assign('email', 1);
-            $smarty->assign('user', 1);
+        $smarty->assign('email', 1);
+        $smarty->assign('user', 1);
             
-            // Note that $email is an array
-            $email = $_POST["email"];
-            $new_owner_id = trim($_POST["user"]);
-            $lang['text_address_linked_array'] = array();
-            if (is_a_domain_default_user($new_owner_id)) { //cannot link to domain deault accounts
-               $lang['text_address_linked_array'][] = $lang['text_address_not_linked'];
-            } else {
-              foreach ($email as $address_id) {
+        // Note that $email is an array
+        $email = $_POST["email"];
+        $new_owner_id = trim($_POST["user"]);
+        $lang['text_address_linked_array'] = array();
+        if (is_a_domain_default_user($new_owner_id)) { //cannot link to domain deault accounts
+            $lang['text_address_linked_array'][] = $lang['text_address_not_linked'];
+        } else {
+            foreach ($email as $address_id) {
                 $old_owner_id = get_email_address_owner($address_id);
                 $email_address = get_email_address_by_id($address_id);
                 transfer_email_address_to_user($old_owner_id, $new_owner_id, $email_address);
                   $lang['text_address_linked_array'][] = sprintf($lang['text_address_linked'], $email_address, get_user_name($new_owner_id));
-              }
             }
         }
+    }
 
-    } elseif (isset($_POST["button_find"])) {
+} elseif (isset($_POST["button_find"])) {
 
-        $button = "find";
+    $button = "find";
         
-        if (isset($_POST["lookup"])) {
+    if (isset($_POST["lookup"])) {
             
-            $smarty->assign('lookup', 1);
+        $smarty->assign('lookup', 1);
             
-            $lookup = trim($_POST["lookup"]);
-            $lookup = str_replace("*", ".*", $lookup);
-            $lookup = "/^" . $lookup . "$/";
+        $lookup = trim($_POST["lookup"]);
+        $lookup = str_replace("*", ".*", $lookup);
+        $lookup = "/^" . $lookup . "$/";
 
-            $domain_name = array();
-            $user = array();
-            if (!$super) {
+        $domain_name = array();
+        $user = array();
+        if (!$super) {
 
-              // Make a list of the domains this administrator can access.
-                $sth = $dbh->prepare("SELECT domain " .
-                          "FROM maia_domains, maia_domain_admins " .
-                          "WHERE maia_domains.id = maia_domain_admins.domain_id " .
-                          "AND maia_domain_admins.admin_id = ? " .
-                          "ORDER BY domain ASC");
-                $res = $sth->execute(array($uid));
+            // Make a list of the domains this administrator can access.
+            $sth = $dbh->prepare(
+                "SELECT domain " .
+                      "FROM maia_domains, maia_domain_admins " .
+                      "WHERE maia_domains.id = maia_domain_admins.domain_id " .
+                      "AND maia_domain_admins.admin_id = ? " .
+                      "ORDER BY domain ASC"
+            );
+            $res = $sth->execute(array($uid));
+            if (PEAR::isError($sth)) { 
+                die($sth->getMessage()); 
+            } 
+
+            while ($row = $res->fetchrow()) {
+                $domain_name[] = strtolower($row["domain"]);
+            }
+            $sth->free();
+
+            foreach ($domain_name as $dname) {
+
+                // List only the Regular (U)sers with e-mail addresses within the
+                // domains administered by this admin.
+                $sth = $dbh->prepare(
+                    "SELECT DISTINCT maia_users.user_name, maia_users.id " .
+                          "FROM maia_users, users " .
+                          "WHERE maia_users.id = users.maia_user_id " .
+                          "AND maia_users.user_level = 'U' " .
+                          "AND users.email LIKE '%" . $dname . "' " .
+                          "ORDER BY user_name ASC"
+                );
+                $res = $sth->execute();
                 if (PEAR::isError($sth)) { 
                     die($sth->getMessage()); 
                 } 
 
                 while ($row = $res->fetchrow()) {
-                    $domain_name[] = strtolower($row["domain"]);
-                }
-                $sth->free();
-
-                foreach ($domain_name as $dname) {
-
-                    // List only the Regular (U)sers with e-mail addresses within the
-                    // domains administered by this admin.
-                    $sth = $dbh->prepare("SELECT DISTINCT maia_users.user_name, maia_users.id " .
-                              "FROM maia_users, users " .
-                              "WHERE maia_users.id = users.maia_user_id " .
-                              "AND maia_users.user_level = 'U' " .
-                              "AND users.email LIKE '%" . $dname . "' " .
-                              "ORDER BY user_name ASC");
-                    $res = $sth->execute();
-                    if (PEAR::isError($sth)) { 
-                        die($sth->getMessage()); 
-                    } 
-
-                    while ($row = $res->fetchrow()) {
-                      if (preg_match($lookup, $row["user_name"])) {
+                    if (preg_match($lookup, $row["user_name"])) {
                             $user[$row["user_name"]] = array(
                                 'maia_user_id' => $row["id"],
                                 'spam' => 0,
@@ -340,53 +344,57 @@
                                 'header' => 0
 
                             );
-                        }
-                    }
-                    $sth->free();
-                }
-
-            } else {
-              // The superadmin can list all users in all domains.
-               $ssth = $dbh->prepare("SELECT user_name, id " .
-                          "FROM maia_users " .
-                          "ORDER BY user_name ASC");
-               $res = $ssth->execute();
-               if (PEAR::isError($ssth)) { 
-                   die($sth->getMessage()); 
-               } 
-               while ($row = $res->fetchrow()) {
-                    if (preg_match($lookup, $row["user_name"])) {
-                        $user[$row["user_name"]] = array(
-                            'maia_user_id' => $row["id"],
-                            'spam' => 0,
-                            'ham' => 0,
-                            'virus' => 0,
-                            'file' => 0,
-                            'header' => 0
-                        );
                     }
                 }
                 $sth->free();
-
             }
-            // add cache stats to the $user array
-            $sth = $dbh->prepare("select maia_mail_recipients.recipient_id, count(maia_mail_recipients.mail_id) as items, " .
-                      "maia_mail_recipients.type " .
-                      "FROM maia_mail_recipients " .
-                      "WHERE maia_mail_recipients.recipient_id = ? " .
-                      "GROUP BY maia_mail_recipients.type, maia_mail_recipients.recipient_id " .
-                      "ORDER BY maia_mail_recipients.recipient_id");
 
-            foreach( $user as $key => $value ) {
-              $result = $sth->execute(array($value['maia_user_id']));
-              if (PEAR::isError($sth)) { 
-                  die($sth->getMessage()); 
-              } 
-              while ($row = $result->fetchrow()) {
+        } else {
+            // The superadmin can list all users in all domains.
+            $ssth = $dbh->prepare(
+                "SELECT user_name, id " .
+                      "FROM maia_users " .
+                      "ORDER BY user_name ASC"
+            );
+            $res = $ssth->execute();
+            if (PEAR::isError($ssth)) { 
+                   die($sth->getMessage()); 
+            } 
+            while ($row = $res->fetchrow()) {
+                if (preg_match($lookup, $row["user_name"])) {
+                    $user[$row["user_name"]] = array(
+                        'maia_user_id' => $row["id"],
+                        'spam' => 0,
+                        'ham' => 0,
+                        'virus' => 0,
+                        'file' => 0,
+                        'header' => 0
+                    );
+                }
+            }
+                $sth->free();
+
+        }
+        // add cache stats to the $user array
+        $sth = $dbh->prepare(
+            "select maia_mail_recipients.recipient_id, count(maia_mail_recipients.mail_id) as items, " .
+                  "maia_mail_recipients.type " .
+                  "FROM maia_mail_recipients " .
+                  "WHERE maia_mail_recipients.recipient_id = ? " .
+                  "GROUP BY maia_mail_recipients.type, maia_mail_recipients.recipient_id " .
+                  "ORDER BY maia_mail_recipients.recipient_id"
+        );
+
+        foreach( $user as $key => $value ) {
+            $result = $sth->execute(array($value['maia_user_id']));
+            if (PEAR::isError($sth)) { 
+                die($sth->getMessage()); 
+            } 
+            while ($row = $result->fetchrow()) {
                 if ($row['type'] == "H") {
                     $user[$key]['ham'] = $row['items'];
                 } elseif ($row['type'] == "S" || $row['type'] == "P") {
-                  $user[$key]['spam'] += $row['items'];
+                    $user[$key]['spam'] += $row['items'];
                 } elseif ($row['type'] == "F") {
                     $user[$key]['file'] = $row['items'];
                 } elseif ($row['type'] == "V") {
@@ -394,17 +402,17 @@
                 } elseif ($row['type'] == "B") {
                     $user[$key]['header'] = $row['items']; 
                 }
-              }
-            }
-            $sth->free();
-            ksort($user);
-            $smarty->assign('user', $user);
-            if (count($user) > 0) {
-              $lang['text_user_found'] = sprintf($lang['text_user_found'], count($user));
             }
         }
+        $sth->free();
+        ksort($user);
+        $smarty->assign('user', $user);
+        if (count($user) > 0) {
+            $lang['text_user_found'] = sprintf($lang['text_user_found'], count($user));
+        }
     }
-    $smarty->assign('cols',7);
+}
+    $smarty->assign('cols', 7);
     $smarty->assign('button', $button);
     $smarty->assign('lang', $lang);
     

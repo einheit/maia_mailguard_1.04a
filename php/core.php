@@ -86,29 +86,33 @@
       $tempPath2 = explode('/', substr(ABSPATH, 0, -1));
       $tempPath3 = explode('/', str_replace('\\', '/', dirname($_SERVER['PHP_SELF'])));
 
-      for ($i = count($tempPath2); $i < count($tempPath1); $i++)
-          array_pop ($tempPath3);
+for ($i = count($tempPath2); $i < count($tempPath1); $i++) {
+    array_pop($tempPath3);
+}
 
       $urladdr = $_SERVER['HTTP_HOST'] . implode('/', $tempPath3);
 
-      if ($urladdr{strlen($urladdr) - 1}== '/')
-          define('URLADDR', 'http://' . $urladdr);
-      else
-          define('URLADDR', 'http://' . $urladdr . '/');
+if ($urladdr[strlen($urladdr) - 1] === '/') {
+    define('URLADDR', 'http://' . $urladdr);
+} else {
+    define('URLADDR', 'http://' . $urladdr . '/');
+}
 
       unset($tempPath1, $tempPath2, $tempPath3, $urladdr);
       /*  Now ABSPATH and URLADDR are set.  */
 
-     ini_set('include_path',ini_get('include_path').':./libs:');  
-     require_once('Log.php');
-     require_once("config.php");
+     ini_set('include_path', ini_get('include_path').':./libs:');  
+     require_once 'Log.php';
+     require_once "config.php";
 
-     require_once ("constants.php");
-     require_once ("maia_log.php");
+     require_once "constants.php";
+     require_once "maia_log.php";
 
      session_name(MAIA_SESSION);
-     session_set_cookie_params  ( 0,
-                                      dirname($_SERVER['PHP_SELF']),
-                                      strpos($_SERVER['SERVER_NAME'], '.') ? $_SERVER['SERVER_NAME'] : false,
-                                      !empty($_SERVER['HTTPS']));
-?>
+    session_set_cookie_params(
+        0,
+        dirname($_SERVER['PHP_SELF']),
+        strpos($_SERVER['SERVER_NAME'], '.') ? $_SERVER['SERVER_NAME'] : false,
+        !empty($_SERVER['HTTPS'])
+    );
+    ?>

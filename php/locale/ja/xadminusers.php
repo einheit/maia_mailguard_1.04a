@@ -78,10 +78,10 @@
      */
 
     // Headers for statistics
-    $lang['spam_header']	=  "スパム";
-    $lang['ham_header']		=  "正規メール";
-    $lang['virus_header'] 	=  "ウィルス";
-    $lang['banned_header'] 	=  "危険添付ファイル";
-    $lang['badheader_header'] 	=  "不正ヘッダ";
+    $lang['spam_header']    =  "スパム";
+    $lang['ham_header']        =  "正規メール";
+    $lang['virus_header']     =  "ウィルス";
+    $lang['banned_header']     =  "危険添付ファイル";
+    $lang['badheader_header']     =  "不正ヘッダ";
     $lang['text_search_results'] = 'Search Results';
 ?>

@@ -81,7 +81,7 @@
 
     // Users
     $lang['adminhelp_find_users'] =  "<b>%s</b> biedt de mogelijkheid te zoeken naar gebruikers " .
-		                             "in de database volgens een zoekpatroon. " .
+                                     "in de database volgens een zoekpatroon. " .
                                  "De '*' is een joker, deze kan gebruikt worden om slechts delen " .
                                  "van de naam op te hoeven geven. " .
                                  "Voorbeeld: zoeken naar \"Ja*n\" geeft als resultaat dat \"Jan\", " .

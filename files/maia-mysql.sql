@@ -430,10 +430,10 @@ CREATE TABLE maia_mail (
    size             int unsigned NOT NULL,
    sender_email     varbinary(255) NOT NULL,
    envelope_to      blob NOT NULL,
-   subject          varchar(255) NOT NULL COLLATE utf8_unicode_ci,
+   subject          varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
    contents         longblob NOT NULL,
    score            float, -- only supplied for (S)pam
-   autolearn_status varchar(15) DEFAULT 'unavailable',  -- 'ham', 'spam', 'no', 'disabled', 'failed', 'unavailable'
+   autolearn_status varchar(15) NOT NULL DEFAULT 'unavailable',  -- 'ham', 'spam', 'no', 'disabled', 'failed', 'unavailable'
 
    PRIMARY KEY (id)
 ) ENGINE=InnoDB;

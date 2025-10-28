@@ -74,32 +74,32 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("MDB2.php");     // Pear::DB
-    require_once ("mailtools.php");
-    require_once ("smtp.php");
-    if (extension_loaded('mcrypt')) {
-        require_once ("encrypt.php");
-    }
+    require_once "core.php";
+    require_once "MDB2.php";     // Pear::DB
+    require_once "mailtools.php";
+    require_once "smtp.php";
+if (extension_loaded('mcrypt')) {
+    include_once "encrypt.php";
+}
 
 
-    if (! isset($maia_sql_connect_options)) {
-       $maia_sql_connect_options = array();
-    }
+if (! isset($maia_sql_connect_options)) {
+    $maia_sql_connect_options = array();
+}
 
     // Establish a database connection.
     $dbh = MDB2::connect($maia_sql_dsn, $maia_sql_connect_options);
-    if (MDB2::isError($dbh)) {
-        die($lang['error_connect'] . $dbh->getMessage());
-    }
+if (MDB2::isError($dbh)) {
+    die($lang['error_connect'] . $dbh->getMessage());
+}
     $dbh->setFetchMode(MDB2_FETCHMODE_ASSOC);
 
     /* include files that were once in this file */
-    require_once ("maia_db/admin.php");
-    require_once ("maia_db/wblist.php");
-    require_once ("maia_db/stats.php");
-    require_once ("maia_db/util.php");
-    require_once ("maia_db/user_management.php");
-    require_once ("maia_db/domains.php");
-    require_once ("maia_db/addresses.php");
-    require_once ("maia_db/cache_management.php");
+    require_once "maia_db/admin.php";
+    require_once "maia_db/wblist.php";
+    require_once "maia_db/stats.php";
+    require_once "maia_db/util.php";
+    require_once "maia_db/user_management.php";
+    require_once "maia_db/domains.php";
+    require_once "maia_db/addresses.php";
+    require_once "maia_db/cache_management.php";

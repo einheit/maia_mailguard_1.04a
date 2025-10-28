@@ -75,21 +75,21 @@
      */
 
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("constants.php");
-    require_once ("maia_db.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "constants.php";
+    require_once "maia_db.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/stats.php");
+    require_once "./locale/$display_language/stats.php";
 
-    if (isset($_GET["id"])) {
-        $id = trim($_GET["id"]);
-        if (($id != 0) && (!is_an_administrator($uid))) {
-            $id = $euid;
-        }
-    } else {
+if (isset($_GET["id"])) {
+    $id = trim($_GET["id"]);
+    if (($id != 0) && (!is_an_administrator($uid))) {
         $id = $euid;
     }
+} else {
+    $id = $euid;
+}
     
     require 'Image/Graph.php';
     
@@ -98,29 +98,29 @@
     
     
      
-    if(!empty($_GET['thumb'])) {
-        $out = array(
-            'limit' => 7,
-            'width' => 400,
-            'height' => 200,
-            'center' => 100,
-            'margin_top' => 50,
-            'margin_bottom' => 20,
-            'margin_left' => 160,
-            'margin_right' => 30
-        );
-    } else {
-        $out = array(
-            'limit' => 25,
-            'width' => 700,
-            'height' => 500,
-            'center' => 250,
-            'margin_top' => 60,
-            'margin_bottom' => 30,
-            'margin_left' => 180,
-            'margin_right' => 30
-        );
-    }
+if(!empty($_GET['thumb'])) {
+    $out = array(
+        'limit' => 7,
+        'width' => 400,
+        'height' => 200,
+        'center' => 100,
+        'margin_top' => 50,
+        'margin_bottom' => 20,
+        'margin_left' => 160,
+        'margin_right' => 30
+    );
+} else {
+    $out = array(
+        'limit' => 25,
+        'width' => 700,
+        'height' => 500,
+        'center' => 250,
+        'margin_top' => 60,
+        'margin_bottom' => 30,
+        'margin_left' => 180,
+        'margin_right' => 30
+    );
+}
     
     // create the graph
     $Graph =& Image_Graph::factory('graph', array(400, 300));
@@ -154,7 +154,7 @@
     $Dataset =& Image_Graph::factory('dataset');
 
     if ($id == 0) {
-       $select = "SELECT SUM(total_suspected_ham_items) as sh, 
+        $select = "SELECT SUM(total_suspected_ham_items) as sh, 
                          SUM(total_ham_items) as h, 
                          SUM(total_wl_items) as wl, 
                          SUM(total_bl_items) as bl, 
@@ -167,24 +167,24 @@
                          SUM(total_banned_file_items) as bf,
                          SUM(total_oversized_items) as os
                   FROM maia_stats";
-      $sth = $dbh->query($select);
+        $sth = $dbh->query($select);
     } else {
-      $select = "SELECT total_suspected_ham_items as sh, total_ham_items as h, total_wl_items as wl, total_bl_items as bl, total_suspected_spam_items as ss, " .
+        $select = "SELECT total_suspected_ham_items as sh, total_ham_items as h, total_wl_items as wl, total_bl_items as bl, total_suspected_spam_items as ss, " .
                      "total_spam_items as s, total_fp_items as fp, total_fn_items as fn, total_virus_items as v, total_bad_header_items as bh, total_banned_file_items as bf, " .
                      "total_oversized_items as os " .
               "FROM maia_stats " .
               "WHERE user_id = $id";
-      $sth = $dbh->query($select);
+        $sth = $dbh->query($select);
     }
     $items = array();
     if($row = $sth->fetchrow()) {
-      foreach ($row as $key => $value) {
-       // print_r($value);
-        if ($value != 0) {
-          $Dataset->addPoint($lang['chart_stats'][$key], $value, $key);
-          $items[] = $key;
+        foreach ($row as $key => $value) {
+            // print_r($value);
+            if ($value != 0) {
+                $Dataset->addPoint($lang['chart_stats'][$key], $value, $key);
+                $items[] = $key;
+            }
         }
-      }
     }
     // create the 1st plot as smoothed area chart using the 1st dataset
     $Plot =& $Plotarea->addNew('Image_Graph_Plot_Pie', $Dataset);
@@ -198,7 +198,7 @@
     $FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
     $Plot->setFillStyle($FillArray);
     for ($i = 0 ; $i < count($items); $i++) {
-      $FillArray->addColor($chart_colors[$items[$i]]);
+        $FillArray->addColor($chart_colors[$items[$i]]);
     }
     
 
@@ -208,5 +208,5 @@
 
     // output the Graph
     $Graph->done();
-?>
+    ?>
 

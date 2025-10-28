@@ -91,4 +91,4 @@
                "bf"     => "Nemkívánt csatolmány",
                "os"     => "Túlméretes"    
                );
-?>
+    ?>

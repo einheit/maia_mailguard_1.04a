@@ -74,33 +74,33 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/adminsystem.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/adminsystem.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     $smarty->assign("auth_method", $auth_method);
     
     // Only the superadministrator should be here.
-    if (!is_superadmin($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_superadmin($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Cancel any impersonations currently in effect
     // by resetting EUID = UID and forcing a reload
     // of this page.
-    if ($uid != $euid) {
-       $euid = $uid;
-       $_SESSION["euid"] = $uid;
-       header("Location: adminsystem.php" . $sid);
-       exit();
-    }
+if ($uid != $euid) {
+    $euid = $uid;
+    $_SESSION["euid"] = $uid;
+    header("Location: adminsystem.php" . $sid);
+    exit();
+}
 
     $select = "SELECT enable_user_autocreation, " .
                      "enable_false_negative_management, " .
@@ -165,69 +165,69 @@
                      "reporter_password " .
               "FROM maia_config WHERE id = 0";
     $sth = $dbh->query($select);
-    if ($row = $sth->fetchrow()) {
-        $smarty->assign('enable_user_autocreation', ($row["enable_user_autocreation"] == 'Y'));
-        $smarty->assign('enable_false_negative_management', ($row["enable_false_negative_management"] == 'Y'));
-        $smarty->assign('enable_stats_tracking', ($row["enable_stats_tracking"] == 'Y'));
-        $smarty->assign('enable_virus_scanning', ($row["enable_virus_scanning"] == 'Y'));
-        $smarty->assign('enable_spam_filtering', ($row["enable_spam_filtering"] == 'Y'));
-        $smarty->assign('enable_banned_files_checking', ($row["enable_banned_files_checking"] == 'Y'));
-        $smarty->assign('enable_bad_header_checking', ($row["enable_bad_header_checking"] == 'Y'));
-        $smarty->assign('enable_charts', ($row["enable_charts"] == 'Y'));
-        $smarty->assign('enable_spamtraps', ($row["enable_spamtraps"] == 'Y'));
-        $smarty->assign('enable_stats_reporting', ($row["enable_stats_reporting"] == 'Y'));
-        $smarty->assign('enable_address_linking', ($row["enable_address_linking"] == 'Y'));
-  	$smarty->assign('enable_privacy_invasion', ($row["enable_privacy_invasion"] == 'Y'));
-  	$smarty->assign('enable_username_changes', ($row["enable_username_changes"] == 'Y'));
-        $smarty->assign('internal_auth', ($row["internal_auth"] == 'Y'));
-        $smarty->assign('system_default_user_is_local', ($row["system_default_user_is_local"] == 'Y'));
-        $smarty->assign('user_virus_scanning', ($row["user_virus_scanning"] == 'Y'));
-        $smarty->assign('user_spam_filtering', ($row["user_spam_filtering"] == 'Y'));
-        $smarty->assign('user_banned_files_checking', ($row["user_banned_files_checking"] == 'Y'));
-        $smarty->assign('user_bad_header_checking', ($row["user_bad_header_checking"] == 'Y'));
-        $smarty->assign('size_limit', $row["size_limit"]);
-        $smarty->assign('key_file',  $row["key_file"]);
-        $smarty->assign('oversize_policy', $row["oversize_policy"]);
-        $smarty->assign('admin_email', $row["admin_email"]);
-        $smarty->assign('expiry_period', $row["expiry_period"]);
-        $smarty->assign('ham_cache_expiry_period', $row["ham_cache_expiry_period"]);
-        $smarty->assign('reminder_threshold_count', $row["reminder_threshold_count"]);
-        $smarty->assign('reminder_threshold_size', $row["reminder_threshold_size"]);
-        $smarty->assign('reminder_template_file', $row["reminder_template_file"]);
-        $smarty->assign('reminder_login_url', $row["reminder_login_url"]);
-        $smarty->assign('smtp_server', strtolower($row["smtp_server"]));
-        $smarty->assign('smtp_port', $row["smtp_port"]);
-        $smarty->assign('newuser_template_file', $row["newuser_template_file"]);
-        $smarty->assign('currency_label', $row["currency_label"]);
-        $smarty->assign('bandwidth_cost', $row["bandwidth_cost"]);
-        $smarty->assign('chart_ham_colour', $row["chart_ham_colour"]);
-        $smarty->assign('chart_spam_colour', $row["chart_spam_colour"]);
-        $smarty->assign('chart_virus_colour', $row["chart_virus_colour"]);
-        $smarty->assign('chart_fp_colour', $row["chart_fp_colour"]);
-        $smarty->assign('chart_fn_colour', $row["chart_fn_colour"]);
-        $smarty->assign('chart_suspected_ham_colour', $row["chart_suspected_ham_colour"]);
-        $smarty->assign('chart_suspected_spam_colour', $row["chart_suspected_spam_colour"]);
-        $smarty->assign('chart_wl_colour', $row["chart_wl_colour"]);
-        $smarty->assign('chart_bl_colour', $row["chart_bl_colour"]);
-        $smarty->assign('chart_background_colour', $row["chart_background_colour"]);
-        $smarty->assign('chart_font_colour', $row["chart_font_colour"]);
-//        $smarty->assign('chart_autogeneration_interval', $row["chart_autogeneration_interval"]);
-        $smarty->assign('banner_title', $row["banner_title"]);
-        $smarty->assign('use_icons', ($row["use_icons"] == 'Y'));
-        $smarty->assign('use_logo', ($row["use_logo"] == 'Y'));
-        $smarty->assign('logo_url', $row["logo_url"]);
-        $smarty->assign('logo_file', $row["logo_file"]);
-        $smarty->assign('logo_alt_text', $row["logo_alt_text"]);
-        $smarty->assign('virus_info_url', $row["virus_info_url"]);
-        $smarty->assign('virus_lookup', $row["virus_lookup"]);
-        $smarty->assign('primary_report_server', strtolower($row["primary_report_server"]));
-        $smarty->assign('primary_report_port', $row["primary_report_port"]);
-        $smarty->assign('secondary_report_server', strtolower($row["secondary_report_server"]));
-        $smarty->assign('secondary_report_port', $row["secondary_report_port"]);
-        $smarty->assign('reporter_sitename', $row["reporter_sitename"]);
-        $smarty->assign('reporter_username', strtolower($row["reporter_username"]));
-        $smarty->assign('reporter_password', $row["reporter_password"]);
-    }
+if ($row = $sth->fetchrow()) {
+    $smarty->assign('enable_user_autocreation', ($row["enable_user_autocreation"] == 'Y'));
+    $smarty->assign('enable_false_negative_management', ($row["enable_false_negative_management"] == 'Y'));
+    $smarty->assign('enable_stats_tracking', ($row["enable_stats_tracking"] == 'Y'));
+    $smarty->assign('enable_virus_scanning', ($row["enable_virus_scanning"] == 'Y'));
+    $smarty->assign('enable_spam_filtering', ($row["enable_spam_filtering"] == 'Y'));
+    $smarty->assign('enable_banned_files_checking', ($row["enable_banned_files_checking"] == 'Y'));
+    $smarty->assign('enable_bad_header_checking', ($row["enable_bad_header_checking"] == 'Y'));
+    $smarty->assign('enable_charts', ($row["enable_charts"] == 'Y'));
+    $smarty->assign('enable_spamtraps', ($row["enable_spamtraps"] == 'Y'));
+    $smarty->assign('enable_stats_reporting', ($row["enable_stats_reporting"] == 'Y'));
+    $smarty->assign('enable_address_linking', ($row["enable_address_linking"] == 'Y'));
+    $smarty->assign('enable_privacy_invasion', ($row["enable_privacy_invasion"] == 'Y'));
+    $smarty->assign('enable_username_changes', ($row["enable_username_changes"] == 'Y'));
+    $smarty->assign('internal_auth', ($row["internal_auth"] == 'Y'));
+    $smarty->assign('system_default_user_is_local', ($row["system_default_user_is_local"] == 'Y'));
+    $smarty->assign('user_virus_scanning', ($row["user_virus_scanning"] == 'Y'));
+    $smarty->assign('user_spam_filtering', ($row["user_spam_filtering"] == 'Y'));
+    $smarty->assign('user_banned_files_checking', ($row["user_banned_files_checking"] == 'Y'));
+    $smarty->assign('user_bad_header_checking', ($row["user_bad_header_checking"] == 'Y'));
+    $smarty->assign('size_limit', $row["size_limit"]);
+    $smarty->assign('key_file',  $row["key_file"]);
+    $smarty->assign('oversize_policy', $row["oversize_policy"]);
+    $smarty->assign('admin_email', $row["admin_email"]);
+    $smarty->assign('expiry_period', $row["expiry_period"]);
+    $smarty->assign('ham_cache_expiry_period', $row["ham_cache_expiry_period"]);
+    $smarty->assign('reminder_threshold_count', $row["reminder_threshold_count"]);
+    $smarty->assign('reminder_threshold_size', $row["reminder_threshold_size"]);
+    $smarty->assign('reminder_template_file', $row["reminder_template_file"]);
+    $smarty->assign('reminder_login_url', $row["reminder_login_url"]);
+    $smarty->assign('smtp_server', strtolower($row["smtp_server"]));
+    $smarty->assign('smtp_port', $row["smtp_port"]);
+    $smarty->assign('newuser_template_file', $row["newuser_template_file"]);
+    $smarty->assign('currency_label', $row["currency_label"]);
+    $smarty->assign('bandwidth_cost', $row["bandwidth_cost"]);
+    $smarty->assign('chart_ham_colour', $row["chart_ham_colour"]);
+    $smarty->assign('chart_spam_colour', $row["chart_spam_colour"]);
+    $smarty->assign('chart_virus_colour', $row["chart_virus_colour"]);
+    $smarty->assign('chart_fp_colour', $row["chart_fp_colour"]);
+    $smarty->assign('chart_fn_colour', $row["chart_fn_colour"]);
+    $smarty->assign('chart_suspected_ham_colour', $row["chart_suspected_ham_colour"]);
+    $smarty->assign('chart_suspected_spam_colour', $row["chart_suspected_spam_colour"]);
+    $smarty->assign('chart_wl_colour', $row["chart_wl_colour"]);
+    $smarty->assign('chart_bl_colour', $row["chart_bl_colour"]);
+    $smarty->assign('chart_background_colour', $row["chart_background_colour"]);
+    $smarty->assign('chart_font_colour', $row["chart_font_colour"]);
+    //        $smarty->assign('chart_autogeneration_interval', $row["chart_autogeneration_interval"]);
+    $smarty->assign('banner_title', $row["banner_title"]);
+    $smarty->assign('use_icons', ($row["use_icons"] == 'Y'));
+    $smarty->assign('use_logo', ($row["use_logo"] == 'Y'));
+    $smarty->assign('logo_url', $row["logo_url"]);
+    $smarty->assign('logo_file', $row["logo_file"]);
+    $smarty->assign('logo_alt_text', $row["logo_alt_text"]);
+    $smarty->assign('virus_info_url', $row["virus_info_url"]);
+    $smarty->assign('virus_lookup', $row["virus_lookup"]);
+    $smarty->assign('primary_report_server', strtolower($row["primary_report_server"]));
+    $smarty->assign('primary_report_port', $row["primary_report_port"]);
+    $smarty->assign('secondary_report_server', strtolower($row["secondary_report_server"]));
+    $smarty->assign('secondary_report_port', $row["secondary_report_port"]);
+    $smarty->assign('reporter_sitename', $row["reporter_sitename"]);
+    $smarty->assign('reporter_username', strtolower($row["reporter_username"]));
+    $smarty->assign('reporter_password', $row["reporter_password"]);
+}
     $sth->free();
 
     $smarty->display('adminsystem.tpl');

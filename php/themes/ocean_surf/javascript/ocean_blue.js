@@ -73,12 +73,16 @@
   *
   */
   
-$(document).ready(function() {
+$(document).ready(
+    function () {
 
-$('#cachelist').simpletip('.HelpTipAnchor', {});
+        $('#cachelist').simpletip('.HelpTipAnchor', {});
 
-$('#messagebox div').effect("highlight", { 
-        color: "#FFD324" 
-    }, 
-    2000);
-});
+        $('#messagebox div').effect(
+            "highlight", { 
+                color: "#FFD324" 
+            }, 
+            2000
+        );
+    }
+);

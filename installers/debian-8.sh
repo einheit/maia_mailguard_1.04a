@@ -282,7 +282,7 @@ echo    "if everything passes, and you are creating a database for the"
 echo    "first time, (no existing database) create the initial maia user"
 echo    "by visiting http://$host/maia/internal-init.php"
 echo
-echo    "maia will send your login credentials to the email addess you"
+echo    "maia will send your login credentials to the email address you"
 echo    "supplied in the internal-init form. Use those credentials to"
 echo    "log into the url below (note the "super=register" arg)"
 echo    " http://${host}/maia/login.php?super=register"

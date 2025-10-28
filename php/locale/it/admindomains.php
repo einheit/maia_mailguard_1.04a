@@ -74,25 +74,25 @@
      */
 
     // Page subtitle
-    $lang['banner_subtitle']		=	"Amministrazione: Domini";
+    $lang['banner_subtitle']        =    "Amministrazione: Domini";
 
     // Table headers
-    $lang['header_domains_menu']	=	"Domini";
-    $lang['header_delete']		=	"Cancella";
-    $lang['header_domain']		=	"Dominio";
-    $lang['header_add_domain']		=	"Aggiungi Dominio";
+    $lang['header_domains_menu']    =    "Domini";
+    $lang['header_delete']        =    "Cancella";
+    $lang['header_domain']        =    "Dominio";
+    $lang['header_add_domain']        =    "Aggiungi Dominio";
 
     // Text messages
-    $lang['text_no_domains']		=	"Non hai domini da amministrare.";
-    $lang['text_no_domains_registered']	=	"Nessun dominio è stato registrato.";
-    $lang['text_new_domain_name']	=	"Nuovo dominio";
-    $lang['text_required']		=	"(richiesto)";
-    $lang['text_default']		=	"Sistema Predefinito";
+    $lang['text_no_domains']        =    "Non hai domini da amministrare.";
+    $lang['text_no_domains_registered']    =    "Nessun dominio è stato registrato.";
+    $lang['text_new_domain_name']    =    "Nuovo dominio";
+    $lang['text_required']        =    "(richiesto)";
+    $lang['text_default']        =    "Sistema Predefinito";
 
     // Buttons
-    $lang['button_delete']		=	"Cancella Dominio Selezionato";
-    $lang['button_add_domain']		=	"Aggiungi Dominio";
+    $lang['button_delete']        =    "Cancella Dominio Selezionato";
+    $lang['button_add_domain']        =    "Aggiungi Dominio";
 
     // Links
-    $lang['link_admin_menu']		=	"Ritorna al menù amministrazione";
+    $lang['link_admin_menu']        =    "Ritorna al menù amministrazione";
 ?>

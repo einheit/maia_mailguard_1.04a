@@ -279,4 +279,4 @@
                                       "bad_header"     => "Procentdel af alle modtaget emails",
                                       "blokerede_fil"    => "Procentdel af alle modtaget emails",
                                       "for store"      => "Procentdel af alle modtaget emails");
-?>
+    ?>

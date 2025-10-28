@@ -80,7 +80,8 @@
  *                 by simulating it for older browsers using
  *                 layers.
  */
-function show_tooltip(element, event, text){
+function show_tooltip(element, event, text)
+{
 
     /*
      * If this is IE (document.all) or a modern,
@@ -91,21 +92,23 @@ function show_tooltip(element, event, text){
 
         element.title = text
 
-    /*
-     * Otherwise this is an older Netscape browser (document.layers),
-     * so use layers to simulate the same thing.  Be sure to include a
-     * <div id="tooltip"> element after the <body> tag, otherwise this
-     * won't work.  e.g.
-     * <div id="tooltip" style="position:absolute;visibility:hidden"></div>
-     */
-    } else if (document.layers){
+        /*
+        * Otherwise this is an older Netscape browser (document.layers),
+        * so use layers to simulate the same thing.  Be sure to include a
+        * <div id="tooltip"> element after the <body> tag, otherwise this
+        * won't work.  e.g.
+        * <div id="tooltip" style="position:absolute;visibility:hidden"></div>
+        */
+    } else if (document.layers) {
 
-        document.tooltip.document.write('<layer bgColor="#FFFFE7" ' +
+        document.tooltip.document.write(
+            '<layer bgColor="#FFFFE7" ' +
                                                'style="border:1px solid black;' +
                                                       'font-size:12px;' +
                                                       'color:#000000;">' +
                                          text +
-                                        '</layer>')
+            '</layer>'
+        )
         document.tooltip.document.close()
         document.tooltip.left = event.pageX + 5
         document.tooltip.top = event.pageY + 5
@@ -118,7 +121,8 @@ function show_tooltip(element, event, text){
 /*
  * hide_tooltip(): Hide a tooltip.
  */
-function hide_tooltip() {
+function hide_tooltip()
+{
 
     /*
      * Modern browsers auto-hide tooltips after 5 seconds and

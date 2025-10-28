@@ -74,365 +74,377 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
-    require_once ("maia_db.php");
-    require_once ("auth.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "display.php";
+    require_once "maia_db.php";
+    require_once "auth.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/auth.php");
-    require_once ("./locale/$display_language/domainsettings.php"); // shared with domainsettings.php
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/auth.php";
+    require_once "./locale/$display_language/domainsettings.php"; // shared with domainsettings.php
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
-    if (isset($_POST["domain_id"])) {
-        $domain_id = trim($_POST["domain_id"]);
-    } else {
-    	$domain_id = 0;
-    }
+if (isset($_POST["domain_id"])) {
+    $domain_id = trim($_POST["domain_id"]);
+} else {
+    $domain_id = 0;
+}
 
     // Only administrators with rights to this domain should be here.
-    if (!is_admin_for_domain($uid, $domain_id)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_admin_for_domain($uid, $domain_id)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Is this administrator the superadmin, or just a
     // domain admin?
     $super = is_superadmin($uid);
 
     // Pressed the "Update This Domain's Settings" button
-    if (isset($_POST['update_domain'])) {
+if (isset($_POST['update_domain'])) {
 
-        $sth = $dbh->prepare("SELECT enable_charts, reminder_threshold_count, " .
-                         "enable_spamtraps " .
-                  "FROM maia_config WHERE id = 0");
-        $res = $sth->execute();
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        if ($row = $res->fetchrow()) {
-            $enable_charts = ($row["enable_charts"] == 'Y');
-            $reminder_threshold_count = $row["reminder_threshold_count"];
-            $enable_spamtraps = ($row["enable_spamtraps"] == 'Y');
-        }
-        $sth->free();
+    $sth = $dbh->prepare(
+        "SELECT enable_charts, reminder_threshold_count, " .
+                     "enable_spamtraps " .
+              "FROM maia_config WHERE id = 0"
+    );
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    if ($row = $res->fetchrow()) {
+        $enable_charts = ($row["enable_charts"] == 'Y');
+        $reminder_threshold_count = $row["reminder_threshold_count"];
+        $enable_spamtraps = ($row["enable_spamtraps"] == 'Y');
+    }
+    $sth->free();
 
-        if (isset($_POST["policy"])) {
-            $policy_id = trim($_POST["policy"]);
-        } else {
-            $policy_id = 0;
-        }
+    if (isset($_POST["policy"])) {
+        $policy_id = trim($_POST["policy"]);
+    } else {
+        $policy_id = 0;
+    }
 
-    	$sth = $dbh->prepare("SELECT virus_lover, " .
-    	                 "spam_lover, " .
-    	                 "banned_files_lover, " .
-    	                 "bad_header_lover, " .
-    	                 "bypass_virus_checks, " .
-    	                 "bypass_spam_checks, " .
-    	                 "bypass_banned_checks, " .
-    	                 "bypass_header_checks, " .
-                         "discard_viruses, " .
-  	                 "discard_spam, " .
-  	                 "discard_banned_files, " .
-  	                 "discard_bad_headers, " .
-    	                 "spam_modifies_subj, " .
-    	                 "spam_tag_level, " .
-    	                 "spam_tag2_level, " .
-    	                 "spam_kill_level " .
-    	          "FROM policy WHERE id = ?");
-    	$res = $sth->execute(array($policy_id));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-    	if ($row = $res->fetchRow()) {
-    	    $default_quarantine_viruses = ($row["virus_lover"] == "N");
-    	    $default_quarantine_spam = ($row["spam_lover"] == "N");
-    	    $default_quarantine_banned_files = ($row["banned_files_lover"] == "N");
-    	    $default_quarantine_bad_headers = ($row["bad_header_lover"] == "N");
-    	    $default_virus_scanning = ($row["bypass_virus_checks"] == "N");
-    	    $default_spam_filtering = ($row["bypass_spam_checks"] == "N");
-    	    $default_banned_files_checking = ($row["bypass_banned_checks"] == "N");
-    	    $default_bad_header_checking = ($row["bypass_header_checks"] == "N");
+    $sth = $dbh->prepare(
+        "SELECT virus_lover, " .
+                  "spam_lover, " .
+                  "banned_files_lover, " .
+                  "bad_header_lover, " .
+                  "bypass_virus_checks, " .
+                  "bypass_spam_checks, " .
+                  "bypass_banned_checks, " .
+                  "bypass_header_checks, " .
+                     "discard_viruses, " .
+                "discard_spam, " .
+                "discard_banned_files, " .
+                "discard_bad_headers, " .
+                  "spam_modifies_subj, " .
+                  "spam_tag_level, " .
+                  "spam_tag2_level, " .
+                  "spam_kill_level " .
+           "FROM policy WHERE id = ?"
+    );
+    $res = $sth->execute(array($policy_id));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    if ($row = $res->fetchRow()) {
+            $default_quarantine_viruses = ($row["virus_lover"] == "N");
+            $default_quarantine_spam = ($row["spam_lover"] == "N");
+            $default_quarantine_banned_files = ($row["banned_files_lover"] == "N");
+            $default_quarantine_bad_headers = ($row["bad_header_lover"] == "N");
+            $default_virus_scanning = ($row["bypass_virus_checks"] == "N");
+            $default_spam_filtering = ($row["bypass_spam_checks"] == "N");
+            $default_banned_files_checking = ($row["bypass_banned_checks"] == "N");
+            $default_bad_header_checking = ($row["bypass_header_checks"] == "N");
             $default_discard_viruses = ($row["discard_viruses"] == "Y");
-  	    $default_discard_spam = ($row["discard_spam"] == "Y");
-  	    $default_discard_banned_files = ($row["discard_banned_files"] == "Y");
-  	    $default_discard_bad_headers = ($row["discard_bad_headers"] == "Y");
-    	    $default_modify_subject = ($row["spam_modifies_subj"] == "Y");
-    	    $default_score_level_1 = $row["spam_tag_level"];
-    	    $default_score_level_2 = $row["spam_tag2_level"];
-    	    $default_score_level_3 = $row["spam_kill_level"];
-        }
+          $default_discard_spam = ($row["discard_spam"] == "Y");
+          $default_discard_banned_files = ($row["discard_banned_files"] == "Y");
+          $default_discard_bad_headers = ($row["discard_bad_headers"] == "Y");
+            $default_modify_subject = ($row["spam_modifies_subj"] == "Y");
+            $default_score_level_1 = $row["spam_tag_level"];
+            $default_score_level_2 = $row["spam_tag2_level"];
+            $default_score_level_3 = $row["spam_kill_level"];
+    }
         $sth->free();
-        $sth = $dbh->prepare("SELECT maia_users.id, maia_users.discard_ham, maia_domains.enable_user_autocreation, maia_users.theme_id " .
-  	                   "FROM maia_users, maia_domains " .
-  	                   "WHERE maia_domains.domain = maia_users.user_name " .
-  	                   "AND maia_domains.id = ?");
-  	$res = $sth->execute(array($domain_id));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-  	if ($row = $res->fetchrow()) {
-  	    $domain_user_id = $row["id"];
-  	    $default_discard_ham = ($row["discard_ham"] == "Y");
-  	    $default_enable_user_autocreation = ($row["enable_user_autocreation"] == "Y");
+        $sth = $dbh->prepare(
+            "SELECT maia_users.id, maia_users.discard_ham, maia_domains.enable_user_autocreation, maia_users.theme_id " .
+                  "FROM maia_users, maia_domains " .
+                  "WHERE maia_domains.domain = maia_users.user_name " .
+                  "AND maia_domains.id = ?"
+        );
+    $res = $sth->execute(array($domain_id));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    if ($row = $res->fetchrow()) {
+        $domain_user_id = $row["id"];
+        $default_discard_ham = ($row["discard_ham"] == "Y");
+        $default_enable_user_autocreation = ($row["enable_user_autocreation"] == "Y");
         $default_theme_id = $row["theme_id"];
-  	}
-  	$sth->free();
+    }
+    $sth->free();
 
-        if (isset($_POST["viruses"])) {
-            $viruses = trim($_POST["viruses"]);
-        } else {
-            $viruses = ($default_virus_scanning ? "yes" : "no");
-        }
-        if (isset($_POST["virus_destiny"])) {
-            $virus_destiny = trim($_POST["virus_destiny"]);
-        } else {
-            $virus_destiny = ($default_quarantine_viruses ? ($default_discard_viruses ? "discard" : "quarantine") : "label");
-        }
-        if (isset($_POST["spam"])) {
-            $spam = trim($_POST["spam"]);
-        } else {
-            $spam = ($default_spam_filtering ? "yes" : "no");
-        }
-        if (isset($_POST["spam_destiny"])) {
-            $spam_destiny = trim($_POST["spam_destiny"]);
-        } else {
-            $spam_destiny = ($default_quarantine_spam ? ($default_discard_spam ? "discard" : "quarantine") : "label");
-        }
-        if (isset($_POST["banned"])) {
-            $banned = trim($_POST["banned"]);
-        } else {
-            $banned = ($default_banned_files_checking ? "yes" : "no");
-        }
-        if (isset($_POST["banned_destiny"])) {
-            $banned_destiny = trim($_POST["banned_destiny"]);
-        } else {
-	    $banned_destiny = ($default_quarantine_banned_files ? ($default_discard_banned_files ? "discard" : "quarantine") : "label");
-        }
-        if (isset($_POST["headers"])) {
-            $headers = trim($_POST["headers"]);
-        } else {
-            $headers = ($default_bad_header_checking ? "yes" : "no");
-        }
-        if (isset($_POST["headers_destiny"])) {
-            $headers_destiny = trim($_POST["headers_destiny"]);
-        } else {
-	    $headers_destiny = ($default_quarantine_bad_headers ? ($default_discard_bad_headers ? "discard" : "quarantine") : "label");
-        }
-        if (isset($_POST["modify_subject"])) {
-            $modify_subject = trim($_POST["modify_subject"]);
-        } else {
-            $modify_subject = ($default_modify_subject ? "yes" : "no");
-        }
-        if (isset($_POST["level1"])) {
-            $level1 = trim($_POST["level1"]);
-        } else {
-            $level1 = $default_score_level_1;
-        }
-        if (isset($_POST["level2"])) {
-            $level2 = trim($_POST["level2"]);
-        } else {
-            $level2 = $default_score_level_2;
-        }
-        if (isset($_POST["level3"])) {
-            $level3 = trim($_POST["level3"]);
-        } else {
-            $level3 = $default_score_level_3;
-        }
-        if (isset($_POST["discard_ham"])) {
-            $discard_ham = trim($_POST["discard_ham"]);
-        } else {
-            $discard_ham = ($default_discard_ham ? "discard" : "cache");
-        }
-        if (isset($_POST["enable_user_autocreation"])) {
-  	        $enable_user_autocreation = trim($_POST["enable_user_autocreation"]);
-        } else {
-            $enable_user_autocreation = ($default_enable_user_autocreation ? "yes" : "no");
-        }
-        if (isset($_POST["theme_id"])) {
-            $theme_id = (trim($_POST["theme_id"]));
-        } else {
-            $theme_id = $default_theme_id;
-        }
+    if (isset($_POST["viruses"])) {
+        $viruses = trim($_POST["viruses"]);
+    } else {
+        $viruses = ($default_virus_scanning ? "yes" : "no");
+    }
+    if (isset($_POST["virus_destiny"])) {
+        $virus_destiny = trim($_POST["virus_destiny"]);
+    } else {
+        $virus_destiny = ($default_quarantine_viruses ? ($default_discard_viruses ? "discard" : "quarantine") : "label");
+    }
+    if (isset($_POST["spam"])) {
+        $spam = trim($_POST["spam"]);
+    } else {
+        $spam = ($default_spam_filtering ? "yes" : "no");
+    }
+    if (isset($_POST["spam_destiny"])) {
+        $spam_destiny = trim($_POST["spam_destiny"]);
+    } else {
+        $spam_destiny = ($default_quarantine_spam ? ($default_discard_spam ? "discard" : "quarantine") : "label");
+    }
+    if (isset($_POST["banned"])) {
+        $banned = trim($_POST["banned"]);
+    } else {
+        $banned = ($default_banned_files_checking ? "yes" : "no");
+    }
+    if (isset($_POST["banned_destiny"])) {
+        $banned_destiny = trim($_POST["banned_destiny"]);
+    } else {
+        $banned_destiny = ($default_quarantine_banned_files ? ($default_discard_banned_files ? "discard" : "quarantine") : "label");
+    }
+    if (isset($_POST["headers"])) {
+        $headers = trim($_POST["headers"]);
+    } else {
+        $headers = ($default_bad_header_checking ? "yes" : "no");
+    }
+    if (isset($_POST["headers_destiny"])) {
+        $headers_destiny = trim($_POST["headers_destiny"]);
+    } else {
+        $headers_destiny = ($default_quarantine_bad_headers ? ($default_discard_bad_headers ? "discard" : "quarantine") : "label");
+    }
+    if (isset($_POST["modify_subject"])) {
+        $modify_subject = trim($_POST["modify_subject"]);
+    } else {
+        $modify_subject = ($default_modify_subject ? "yes" : "no");
+    }
+    if (isset($_POST["level1"])) {
+        $level1 = trim($_POST["level1"]);
+    } else {
+        $level1 = $default_score_level_1;
+    }
+    if (isset($_POST["level2"])) {
+        $level2 = trim($_POST["level2"]);
+    } else {
+        $level2 = $default_score_level_2;
+    }
+    if (isset($_POST["level3"])) {
+        $level3 = trim($_POST["level3"]);
+    } else {
+        $level3 = $default_score_level_3;
+    }
+    if (isset($_POST["discard_ham"])) {
+        $discard_ham = trim($_POST["discard_ham"]);
+    } else {
+        $discard_ham = ($default_discard_ham ? "discard" : "cache");
+    }
+    if (isset($_POST["enable_user_autocreation"])) {
+        $enable_user_autocreation = trim($_POST["enable_user_autocreation"]);
+    } else {
+        $enable_user_autocreation = ($default_enable_user_autocreation ? "yes" : "no");
+    }
+    if (isset($_POST["theme_id"])) {
+        $theme_id = (trim($_POST["theme_id"]));
+    } else {
+        $theme_id = $default_theme_id;
+    }
 
-        $bypass_virus_checks = ($viruses == "yes" ? "N" : "Y");
-	$virus_lover = ($virus_destiny == "label" ? "Y" : "N");	
-	$discard_viruses = ($virus_destiny == "discard" ? "Y" : "N");
-        $bypass_spam_checks = ($spam == "yes" ? "N" : "Y");
-        $spam_lover = ($spam_destiny == "label" ? "Y" : "N");
-  	$discard_spam = ($spam_destiny == "discard" ? "Y" : "N");
-        $bypass_banned_checks = ($banned == "yes" ? "N" : "Y");
-        $banned_files_lover = ($banned_destiny == "label" ? "Y" : "N");
-  	$discard_banned_files = ($banned_destiny == "discard" ? "Y" : "N");
-        $bypass_header_checks = ($headers == "yes" ? "N" : "Y");
-	$bad_header_lover = ($headers_destiny == "label" ? "Y" : "N");
-  	$discard_bad_headers = ($headers_destiny == "discard" ? "Y" : "N");
-        $spam_modifies_subj = ($modify_subject == "yes" ? "Y" : "N");
-        $spam_tag_level = (double) $level1;
-        $spam_tag2_level = (double) $level2;
-        $spam_kill_level = (double) $level3;
-        $discard_ham = ($discard_ham == "cache" ? "N" : "Y");
-	$enable_user_autocreation = ($enable_user_autocreation == "yes" ? "Y" : "N");
+    $bypass_virus_checks = ($viruses == "yes" ? "N" : "Y");
+    $virus_lover = ($virus_destiny == "label" ? "Y" : "N");    
+    $discard_viruses = ($virus_destiny == "discard" ? "Y" : "N");
+    $bypass_spam_checks = ($spam == "yes" ? "N" : "Y");
+    $spam_lover = ($spam_destiny == "label" ? "Y" : "N");
+    $discard_spam = ($spam_destiny == "discard" ? "Y" : "N");
+    $bypass_banned_checks = ($banned == "yes" ? "N" : "Y");
+    $banned_files_lover = ($banned_destiny == "label" ? "Y" : "N");
+    $discard_banned_files = ($banned_destiny == "discard" ? "Y" : "N");
+    $bypass_header_checks = ($headers == "yes" ? "N" : "Y");
+    $bad_header_lover = ($headers_destiny == "label" ? "Y" : "N");
+    $discard_bad_headers = ($headers_destiny == "discard" ? "Y" : "N");
+    $spam_modifies_subj = ($modify_subject == "yes" ? "Y" : "N");
+    $spam_tag_level = (double) $level1;
+    $spam_tag2_level = (double) $level2;
+    $spam_kill_level = (double) $level3;
+    $discard_ham = ($discard_ham == "cache" ? "N" : "Y");
+    $enable_user_autocreation = ($enable_user_autocreation == "yes" ? "Y" : "N");
 
-        // Enforce tag_level <= tag2_level <= kill_level
-        if ($spam_tag2_level > $spam_kill_level) {
-            $spam_tag2_level = $spam_kill_level;
-        }
-        if ($spam_tag_level > $spam_tag2_level) {
-            $spam_tag_level = $spam_tag2_level;
-        }
-        // Enforce spam kill level according to spam destiny
-	if ($spam_destiny == "label") {
-  	    $spam_kill_level = 999;
-  	} else {
-  	    $spam_kill_level = $spam_tag2_level;
-  	}
+    // Enforce tag_level <= tag2_level <= kill_level
+    if ($spam_tag2_level > $spam_kill_level) {
+        $spam_tag2_level = $spam_kill_level;
+    }
+    if ($spam_tag_level > $spam_tag2_level) {
+        $spam_tag_level = $spam_tag2_level;
+    }
+    // Enforce spam kill level according to spam destiny
+    if ($spam_destiny == "label") {
+          $spam_kill_level = 999;
+    } else {
+        $spam_kill_level = $spam_tag2_level;
+    }
 
-        // Update the policy table with the new settings.
-        $sth = $dbh->prepare("UPDATE policy SET virus_lover = ?, " .
-                                    "spam_lover = ?, " .
-                                    "banned_files_lover = ?, " .
-                                    "bad_header_lover = ?, " .
-                                    "bypass_virus_checks = ?, " .
-                                    "bypass_spam_checks = ?, " .
-                                    "bypass_banned_checks = ?, " .
-                                    "bypass_header_checks = ?, " .
-                                    "discard_viruses = ?, " .
-                                    "discard_spam = ?, " .
-                                    "discard_banned_files = ?, " .
-                                    "discard_bad_headers = ?, " .
-                                    "spam_modifies_subj = ?, " .
-                                    "spam_tag_level = ?, " .
-                                    "spam_tag2_level = ?, " .
-                                    "spam_kill_level = ? " .
-                  "WHERE id = ?");
-        $sth->execute(array($virus_lover,
-                                   $spam_lover,
-                                   $banned_files_lover,
-                                   $bad_header_lover,
-                                   $bypass_virus_checks,
-                                   $bypass_spam_checks,
-                                   $bypass_banned_checks,
-                                   $bypass_header_checks,
-                                   $discard_viruses,
-                                   $discard_spam,
-                                   $discard_banned_files,
-                                   $discard_bad_headers,
-                                   $spam_modifies_subj,
-                                   $spam_tag_level,
-                                   $spam_tag2_level,
-                                   $spam_kill_level,
-                                   $policy_id));
-        if (PEAR::isError($sth)) {
+    // Update the policy table with the new settings.
+    $sth = $dbh->prepare(
+        "UPDATE policy SET virus_lover = ?, " .
+                                "spam_lover = ?, " .
+                                "banned_files_lover = ?, " .
+                                "bad_header_lover = ?, " .
+                                "bypass_virus_checks = ?, " .
+                                "bypass_spam_checks = ?, " .
+                                "bypass_banned_checks = ?, " .
+                                "bypass_header_checks = ?, " .
+                                "discard_viruses = ?, " .
+                                "discard_spam = ?, " .
+                                "discard_banned_files = ?, " .
+                                "discard_bad_headers = ?, " .
+                                "spam_modifies_subj = ?, " .
+                                "spam_tag_level = ?, " .
+                                "spam_tag2_level = ?, " .
+                                "spam_kill_level = ? " .
+              "WHERE id = ?"
+    );
+    $sth->execute(
+        array($virus_lover,
+                               $spam_lover,
+                               $banned_files_lover,
+                               $bad_header_lover,
+                               $bypass_virus_checks,
+                               $bypass_spam_checks,
+                               $bypass_banned_checks,
+                               $bypass_header_checks,
+                               $discard_viruses,
+                               $discard_spam,
+                               $discard_banned_files,
+                               $discard_bad_headers,
+                               $spam_modifies_subj,
+                               $spam_tag_level,
+                               $spam_tag2_level,
+                               $spam_kill_level,
+                               $policy_id)
+    );
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $sth->free();
+
+    $sth = $dbh->prepare("UPDATE maia_users SET discard_ham = ?, theme_id = ? WHERE id = ?");
+    $sth->execute(array($discard_ham, $theme_id, $domain_user_id));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
+    $sth->free();
+
+    $sth = $dbh->prepare("UPDATE maia_domains SET enable_user_autocreation = ? WHERE id = ?");
+    $sth->execute(array($enable_user_autocreation, $domain_id));                    if (PEAR::isError($sth)) {
             die($sth->getMessage());
-        }
-        $sth->free();
+    }
+    $sth->free();
 
-        $sth = $dbh->prepare("UPDATE maia_users SET discard_ham = ?, theme_id = ? WHERE id = ?");
-        $sth->execute(array($discard_ham, $theme_id, $domain_user_id));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        $sth->free();
-
-	$sth = $dbh->prepare("UPDATE maia_domains SET enable_user_autocreation = ? WHERE id = ?");
-  	$sth->execute(array($enable_user_autocreation, $domain_id));	                if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
-        $sth->free();
-
-        $message = $lang['text_settings_updated'];
+    $message = $lang['text_settings_updated'];
     // Pressed the "Revoke Administrator Privileges" button
-    } elseif ($super && (isset($_POST['revoke']))) {
+} elseif ($super && (isset($_POST['revoke']))) {
 
-        // Register the full set of POST variables.
-        foreach($_POST as $varname => $value)
-        {
-            $formVars[$varname] = trim($value);
-        }
+    // Register the full set of POST variables.
+    foreach($_POST as $varname => $value)
+    {
+        $formVars[$varname] = trim($value);
+    }
 
-        $sth = $dbh->prepare("SELECT maia_users.id, maia_users.user_name " .
-                  "FROM maia_users, maia_domain_admins " .
-                  "WHERE maia_users.id = maia_domain_admins.admin_id " .
-                  "AND maia_domain_admins.domain_id = ?");
-        $res = $sth->execute(array($domain_id));
-        if (PEAR::isError($sth)) {
-            die($sth->getMessage());
-        }
+    $sth = $dbh->prepare(
+        "SELECT maia_users.id, maia_users.user_name " .
+              "FROM maia_users, maia_domain_admins " .
+              "WHERE maia_users.id = maia_domain_admins.admin_id " .
+              "AND maia_domain_admins.domain_id = ?"
+    );
+    $res = $sth->execute(array($domain_id));
+    if (PEAR::isError($sth)) {
+        die($sth->getMessage());
+    }
 
-        while ($row = $res->fetchrow()) {
+    while ($row = $res->fetchrow()) {
 
-            $admin_name = $row["user_name"];
-            $admin_var_name = str_replace(".", "_", $admin_name);
-            $admin_var_name = str_replace("[", "{", $admin_var_name);
-            $admin_var_name = str_replace("]", "}", $admin_var_name);
-            $admin_id = $row["id"];
+        $admin_name = $row["user_name"];
+        $admin_var_name = str_replace(".", "_", $admin_name);
+        $admin_var_name = str_replace("[", "{", $admin_var_name);
+        $admin_var_name = str_replace("]", "}", $admin_var_name);
+        $admin_id = $row["id"];
 
-            if (isset($formVars[$admin_var_name]) && trim($formVars[$admin_var_name]) == $admin_id) {
+        if (isset($formVars[$admin_var_name]) && trim($formVars[$admin_var_name]) == $admin_id) {
 
-            	// Remove the link between this administrator and this domain
-                $sth2 = $dbh->prepare("DELETE FROM maia_domain_admins WHERE domain_id = ? AND admin_id = ?");
-                $sth2->execute(array($domain_id, $admin_id));
-                if (PEAR::isError($sth2)) {
-                    die($sth2->getMessage());
-                }
-                $sth2->free9();
-
-                // If this administrator doesn't control any remaining domains,
-                // demote him to a regular (U)ser.
-                $sth2 = $dbh->prepare("SELECT domain_id FROM maia_domain_admins WHERE admin_id = ?");
-                $res2 = $sth2->execute(array($admin_id));
-                if (PEAR::isError($sth2)) {
-                    die($sth2->getMessage());
-                }
-                if (!$res2->fetchrow()) {
-         	    $sth3 = $dbh->prepare("UPDATE maia_users SET user_level = 'U' WHERE id = ?");
-        	    $sth3->execute(array($admin_id));
-                    if (PEAR::isError($sth)) {
-                        die($sth->getMessage());
-                    }
-                    $sth3->free();
-        	}
-        	$sth2->free();
+            // Remove the link between this administrator and this domain
+            $sth2 = $dbh->prepare("DELETE FROM maia_domain_admins WHERE domain_id = ? AND admin_id = ?");
+            $sth2->execute(array($domain_id, $admin_id));
+            if (PEAR::isError($sth2)) {
+                die($sth2->getMessage());
             }
-        }
-        $sth->free();
+            $sth2->free9();
 
-        $message = $lang['text_admins_revoked'];
-
-    // Pressed the "Grant Administrator Privileges" button
-    } elseif ($super && (isset($_POST['grant']))) {
-
-        // Note that $admins is an array
-        if (isset($_POST["administrators"])) {
-            $admins = $_POST["administrators"];
-
-            foreach ($admins as $admin_id) {
-
-            	// Link the administrator to this domain
-            	$sth = $dbh->prepare("INSERT INTO maia_domain_admins (admin_id, domain_id) VALUES (?, ?)");
-            	$sth->execute(array($admin_id, $domain_id));
-                if (PEAR::isError($sth)) {
-                   die($sth->getMessage());
-                }
-                $sth->free();
-
-            	// Change the user's privilege level to Domain (A)dministrator
-            	$sth = $dbh->prepare("UPDATE maia_users SET user_level = 'A' WHERE id = ?");
-            	$sth->execute(array($admin_id));
+            // If this administrator doesn't control any remaining domains,
+            // demote him to a regular (U)ser.
+            $sth2 = $dbh->prepare("SELECT domain_id FROM maia_domain_admins WHERE admin_id = ?");
+            $res2 = $sth2->execute(array($admin_id));
+            if (PEAR::isError($sth2)) {
+                die($sth2->getMessage());
+            }
+            if (!$res2->fetchrow()) {
+                $sth3 = $dbh->prepare("UPDATE maia_users SET user_level = 'U' WHERE id = ?");
+                $sth3->execute(array($admin_id));
                 if (PEAR::isError($sth)) {
                     die($sth->getMessage());
                 }
-                $sth->free();
-
-            	$message = $lang['text_administrators_added'];
-
+                $sth3->free();
             }
+            $sth2->free();
         }
     }
+    $sth->free();
+
+    $message = $lang['text_admins_revoked'];
+
+    // Pressed the "Grant Administrator Privileges" button
+} elseif ($super && (isset($_POST['grant']))) {
+
+    // Note that $admins is an array
+    if (isset($_POST["administrators"])) {
+        $admins = $_POST["administrators"];
+
+        foreach ($admins as $admin_id) {
+
+            // Link the administrator to this domain
+            $sth = $dbh->prepare("INSERT INTO maia_domain_admins (admin_id, domain_id) VALUES (?, ?)");
+            $sth->execute(array($admin_id, $domain_id));
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+            $sth->free();
+
+            // Change the user's privilege level to Domain (A)dministrator
+            $sth = $dbh->prepare("UPDATE maia_users SET user_level = 'A' WHERE id = ?");
+            $sth->execute(array($admin_id));
+            if (PEAR::isError($sth)) {
+                die($sth->getMessage());
+            }
+            $sth->free();
+
+            $message = $lang['text_administrators_added'];
+
+        }
+    }
+}
     $smarty->assign('message', $message);
     $smarty->assign('domain_id', $domain_id);
     

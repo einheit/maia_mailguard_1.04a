@@ -117,7 +117,7 @@
     $lang['text_new_primary_email'] =  "%s is now your primary e-mail address.";
     $lang['text_language'] =  "Display Language";
     $lang['text_charset'] =  "Display Character Set";
-    $lang['text_theme']	= "Theme";
+    $lang['text_theme']    = "Theme";
     $lang['text_spamtrap'] =  "Is this a spam-trap account?";
     $lang['text_auto_whitelist'] =  "Add senders of rescued mail to your whitelist?";
     $lang['text_items_per_page'] =  "Mail items to be displayed on each page?";

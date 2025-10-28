@@ -74,80 +74,80 @@
      *
      */
 
-   require_once ("core.php");
-   require_once ("maia_db.php");
+   require_once "core.php";
+   require_once "maia_db.php";
 
 
    /*
     * rewrite_google_virus_name(): Rewrites a virus name to conform to the
     *                              format required by Google's search URLs.
     */
-   function rewrite_google_virus_name($virus)
-   {
-      // Literal search, fine as is
-      return ($virus);
-   }
+function rewrite_google_virus_name($virus)
+{
+    // Literal search, fine as is
+    return ($virus);
+}
 
 
    /*
     * rewrite_sophos_virus_name(): Rewrites a virus name to conform to the
     *                              format required by Sophos' website URLs.
     */
-   function rewrite_sophos_virus_name($virus)
-   {
-      // "W32/Sobig-D" needs to become "w32sobigd"
-      $virus = str_replace("/", "", $virus);
-      $virus = str_replace("-", "", $virus);
-      return (strtolower($virus));
-   }
+function rewrite_sophos_virus_name($virus)
+{
+    // "W32/Sobig-D" needs to become "w32sobigd"
+    $virus = str_replace("/", "", $virus);
+    $virus = str_replace("-", "", $virus);
+    return (strtolower($virus));
+}
 
 
    /*
     * rewrite_fprot_virus_name(): Rewrites a virus name to conform to the
     *                             format required by F-Prot's website URLs.
     */
-   function rewrite_fprot_virus_name($virus)
-   {
-      // "W32/Sobig.D@mm" needs to become "sobig_d"
-      $pos = strpos($virus, '@');
-      if (!($pos === false)) {
+function rewrite_fprot_virus_name($virus)
+{
+    // "W32/Sobig.D@mm" needs to become "sobig_d"
+    $pos = strpos($virus, '@');
+    if (!($pos === false)) {
          $virus = substr($virus, 0, $pos);
-      }
-      $pos = strpos($virus, '/');
-      if (!($pos === false)) {
-         $virus = substr($virus, $pos + 1);
-      }
-      $virus = str_replace(".", "_", $virus);
-      return (strtolower($virus));
-   }
+    }
+       $pos = strpos($virus, '/');
+    if (!($pos === false)) {
+        $virus = substr($virus, $pos + 1);
+    }
+       $virus = str_replace(".", "_", $virus);
+       return (strtolower($virus));
+}
 
 
    /*
     * rewrite_fsecure_virus_name(): Rewrites a virus name to conform to the
     *                               format required by F-Secure's website URLs.
     */
-   function rewrite_fsecure_virus_name($virus)
-   {
-      // "Sobig.D" needs to become "sobig_d"
-      $virus = str_replace(".", "_", $virus);
-      return (strtolower($virus));
-   }
+function rewrite_fsecure_virus_name($virus)
+{
+    // "Sobig.D" needs to become "sobig_d"
+    $virus = str_replace(".", "_", $virus);
+    return (strtolower($virus));
+}
 
 
    /*
     * rewrite_nod32_virus_name(): Rewrites a virus name to conform to the
     *                             format required by NOD32's website URLs.
     */
-   function rewrite_nod32_virus_name($virus)
-   {
-      // "Win32/Sobig.D" needs to become "sobigd"
-      $pos = strpos($virus, '/');
-      if (!($pos === false)) {
+function rewrite_nod32_virus_name($virus)
+{
+    // "Win32/Sobig.D" needs to become "sobigd"
+    $pos = strpos($virus, '/');
+    if (!($pos === false)) {
          $virus = substr($virus, $pos + 1);
-      }
-      $virus = str_replace(".", "", $virus);
-      return (strtolower($virus));
-   }
+    }
+       $virus = str_replace(".", "", $virus);
+       return (strtolower($virus));
+}
 
 
    /*
@@ -155,47 +155,47 @@
     *                              format required by Norman Virus Control's
     *                              website URLs.
     */
-   function rewrite_norman_virus_name($virus)
-   {
-      // "W32/Sobig.D@mm" needs to become "w32_sobig_d_mm"
-      $virus = str_replace("/", "_", $virus);
-      $virus = str_replace(".", "_", $virus);
-      $virus = str_replace("@", "_", $virus);
-      return (strtolower($virus));
-   }
+function rewrite_norman_virus_name($virus)
+{
+    // "W32/Sobig.D@mm" needs to become "w32_sobig_d_mm"
+    $virus = str_replace("/", "_", $virus);
+    $virus = str_replace(".", "_", $virus);
+    $virus = str_replace("@", "_", $virus);
+    return (strtolower($virus));
+}
 
 
    /*
     * rewrite_trend_virus_name(): Rewrites a virus name to conform to the
     *                             format required by Trend Micro's website URLs.
     */
-   function rewrite_trend_virus_name($virus)
-   {
-      // "WORM_SOBIG.D" is fine as is
-      return ($virus);
-   }
+function rewrite_trend_virus_name($virus)
+{
+    // "WORM_SOBIG.D" is fine as is
+    return ($virus);
+}
 
 
    /*
     * rewrite_symantec_virus_name(): Rewrites a virus name to conform to the
     *                                format required by Symantec's website URLs.
     */
-   function rewrite_symantec_virus_name($virus)
-   {
-      // "W32.Sobig.D@MM" needs to become "w32.sobig.d@mm"
-      return (strtolower($virus));
-   }
+function rewrite_symantec_virus_name($virus)
+{
+    // "W32.Sobig.D@MM" needs to become "w32.sobig.d@mm"
+    return (strtolower($virus));
+}
 
 
    /*
     * rewrite_mcafee_virus_name(): Rewrites a virus name to conform to the
     *                              format required by McAfee's website URLs.
     */
-   function rewrite_mcafee_virus_name($virus)
-   {
-      // "W32/Sobig.d@MM" is fine as is
-      return ($virus);
-   }
+function rewrite_mcafee_virus_name($virus)
+{
+    // "W32/Sobig.d@MM" is fine as is
+    return ($virus);
+}
 
 
    /*
@@ -211,32 +211,32 @@
     * get_virus_info_url(): Returns a URL pointing to a website where information
     *                       about a specific virus can be found.
     */
-   function get_virus_info_url($virus)
-   {
-      global $dbh;
-      global $rewrite_virus_name;
+function get_virus_info_url($virus)
+{
+    global $dbh;
+    global $rewrite_virus_name;
 
-      $select = "SELECT virus_lookup, virus_info_url FROM maia_config WHERE id = 0";
-      $sth = $dbh->prepare($select);
-      $res = $sth->execute();
-      if (PEAR::isError($sth)) {
+    $select = "SELECT virus_lookup, virus_info_url FROM maia_config WHERE id = 0";
+    $sth = $dbh->prepare($select);
+    $res = $sth->execute();
+    if (PEAR::isError($sth)) {
          die($sth->getMessage());
-      }
-      if ($row = $res->fetchrow()) {
-          $virus_lookup = $row["virus_lookup"];
-          $virus_info_url = $row["virus_info_url"];
-      }
-      $sth->free();
+    }
+    if ($row = $res->fetchrow()) {
+        $virus_lookup = $row["virus_lookup"];
+        $virus_info_url = $row["virus_info_url"];
+    }
+       $sth->free();
 
-      // Exit if we don't want any link at all.
-      if (($virus_lookup == "") || ($virus_info_url == "")) {
-         return "";
-      }
+       // Exit if we don't want any link at all.
+    if (($virus_lookup == "") || ($virus_info_url == "")) {
+        return "";
+    }
 
-      // Rewrite the virus name as necessary.
-      $vname = $rewrite_virus_name($virus);
+       // Rewrite the virus name as necessary.
+       $vname = $rewrite_virus_name($virus);
 
-      // Insert the (fixed) virus name into the URL and return it.
-      return (str_replace("%%VIRUSNAME%%", $vname, $virus_info_url));
-   }
+       // Insert the (fixed) virus name into the URL and return it.
+       return (str_replace("%%VIRUSNAME%%", $vname, $virus_info_url));
+}
 ?>

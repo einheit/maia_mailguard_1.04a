@@ -116,7 +116,7 @@
     $lang['text_new_primary_email'] =  "%s je od teď vaší primární emailovou adresou.";
     $lang['text_language'] =  "Jazyk";
     $lang['text_charset'] =  "Znaková sada";
-    $lang['text_theme']	= "Motiv";
+    $lang['text_theme']    = "Motiv";
     $lang['text_spamtrap'] =  "Slouží tento účet jako spam-trap?";
     $lang['text_auto_whitelist'] =  "Přidat odesílatele zachráněného emailu do whitelistu?";
     $lang['text_items_per_page'] =  "Kolik emailových zpráv se má zobrazit na stránku?";

@@ -74,75 +74,75 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
-    require_once ("maia_db.php");
-    require_once ("mailtools.php");
+    require_once "core.php";
+    require_once "authcheck.php";
+    require_once "display.php";
+    require_once "maia_db.php";
+    require_once "mailtools.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/wblist.php");
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/wblist.php";
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      switch ($_REQUEST['action']) {
-        case 'addallow';
-          $result = add_address_to_wb_list($euid, $_REQUEST['newaddr'], 'W');
-          break;
-        case 'addblock';
-          $result = add_address_to_wb_list($euid, $_REQUEST['newaddr'], 'B');
-          break;
-        case 'block';
-          $result = set_wb_status($euid, $_REQUEST['id'], 'B');
-          $actiontext = $lang['text_allow_address'];
-          break;
-        case 'allow';
-          $result = set_wb_status($euid, $_REQUEST['id'], 'W');
-          $actiontext = $lang['text_block_address'];
-          break;
-        case 'remove';
-          $result = delete_wb_entry($euid, $_REQUEST['id']);
-          $actiontext = $lang['text_remove_rule'];
-          break;
-      }
-      if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == 'true') {
-         ?>
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    switch ($_REQUEST['action']) {
+    case 'addallow';
+        $result = add_address_to_wb_list($euid, $_REQUEST['newaddr'], 'W');
+        break;
+    case 'addblock';
+        $result = add_address_to_wb_list($euid, $_REQUEST['newaddr'], 'B');
+        break;
+    case 'block';
+        $result = set_wb_status($euid, $_REQUEST['id'], 'B');
+        $actiontext = $lang['text_allow_address'];
+        break;
+    case 'allow';
+        $result = set_wb_status($euid, $_REQUEST['id'], 'W');
+        $actiontext = $lang['text_block_address'];
+        break;
+    case 'remove';
+        $result = delete_wb_entry($euid, $_REQUEST['id']);
+        $actiontext = $lang['text_remove_rule'];
+        break;
+    }
+    if (isset($_REQUEST['ajax']) && $_REQUEST['ajax'] == 'true') {
+        ?>
           $('#viewmessage').html('<div class="messagebox"><?php echo htmlspecialchars($lang[$result]); ?></div>');
           $('#viewmessage div').effect("highlight", {
                      color: "#FFD324"
                  },
                  2000);
-          <?php
-          if ($_REQUEST['id']) {
-            $id = $_REQUEST['id'];
-            if ($_REQUEST['action'] == 'remove') {
-               ?>
+            <?php
+            if ($_REQUEST['id']) {
+                $id = $_REQUEST['id'];
+                if ($_REQUEST['action'] == 'remove') {
+                    ?>
                   if ($('#wb<?php echo $id; ?>').size() > 0) {
                     $('#wb<?php echo $id; ?>').remove();
                   }
-                <?php
-            } else {
-                ?>
+                    <?php
+                } else {
+                    ?>
                   if ($('#wb<?php echo $id; ?>').size() > 0) {
                     $('#wb<?php echo $id; ?> span.wbball').toggleClass('wbBball').toggleClass('wbWball');
                     $('#wb<?php echo $id; ?> span.actionicon').toggleClass('wballow').toggleClass('wbblock');
                     $('#wb<?php echo $id; ?> span.actiontext').html("<?php echo $actiontext; ?>");
                     $('#wb<?php echo $id; ?> a.wb_action').attr('href', "wblist.php?action=allow&id=<?php echo $id ?>&ajax=true")
                   }
-                <?php
+                    <?php
+                }
             }
-          }
-          exit;
-      } else {
+            exit;
+    } else {
         $_SESSION["message"] = $lang[$result];
         header("Location: wblist.php{$sid}");
         exit;
-      }
-    } else {
-      if (isset($_REQUEST['action'])) {
-        $message = $lang['text_activate_javascript'];
-      }
     }
+} else {
+    if (isset($_REQUEST['action'])) {
+        $message = $lang['text_activate_javascript'];
+    }
+}
 
     $rows = get_user_wb_rows($dbh, $euid);
 
@@ -150,23 +150,26 @@
 
     $system_rows = get_system_wb_rows($dbh);
 
-    require_once("smarty.php");
-    $smarty->assign("show_user_table", count($rows) > 0 ? true : false );
+    require_once "smarty.php";
+    $smarty->assign("show_user_table", count($rows) > 0 ? true : false);
     $smarty->assign("rows", $rows);
-    $smarty->assign("show_domain_table", count($domain_rows) > 0 ? (! is_a_domain_default_user($euid)) : false );
+    $smarty->assign("show_domain_table", count($domain_rows) > 0 ? (! is_a_domain_default_user($euid)) : false);
     $smarty->assign("domain_rows", $domain_rows);
-    $smarty->assign("show_system_table", count($system_rows) > 0 ? (! is_system_default_user($euid)) : false );
+    $smarty->assign("show_system_table", count($system_rows) > 0 ? (! is_system_default_user($euid)) : false);
     $smarty->assign("system_rows", $system_rows);
     $smarty->display("wblist.tpl");
 
     exit;
 
-function get_user_wb_rows($dbh, $user_id) {
-    $sth = $dbh->prepare("SELECT mailaddr.email, mailaddr.id, wblist.wb " .
+function get_user_wb_rows($dbh, $user_id)
+{
+    $sth = $dbh->prepare(
+        "SELECT mailaddr.email, mailaddr.id, wblist.wb " .
               "FROM mailaddr, wblist " .
               "WHERE mailaddr.id = wblist.sid " .
               "AND wblist.rid = ? " .
-              "ORDER BY mailaddr.email ASC");
+        "ORDER BY mailaddr.email ASC"
+    );
 
     $res = $sth->execute(array($user_id));
     if (PEAR::isError($sth)) {
@@ -175,23 +178,24 @@ function get_user_wb_rows($dbh, $user_id) {
     $rows = array();
 
     if ($res->numRows() > 0) {
-      $count = 0;
+        $count = 0;
         while ($row = $res->fetchRow())
         {
-          $rows[$count]['email'] = $row['email'];
-          $rows[$count]['id'] = $row['id'];
-          $rows[$count]['type'] = $row['wb'];
-          $count++;
+            $rows[$count]['email'] = $row['email'];
+            $rows[$count]['id'] = $row['id'];
+            $rows[$count]['type'] = $row['wb'];
+            $count++;
         }
     }
     $sth->free();
     return $rows;
 }
 
-function get_domain_wb_rows($dbh, $maia_user_id) {
-  global $logger;
-  if (substr(get_database_type($dbh),0,5) == "mysql") {
-    $query =<<<EOQ
+function get_domain_wb_rows($dbh, $maia_user_id)
+{
+    global $logger;
+    if (substr(get_database_type($dbh), 0, 5) == "mysql") {
+        $query =<<<EOQ
       SELECT mailaddr.email, wb, user_name
         FROM mailaddr LEFT JOIN wblist ON mailaddr.id = wblist.sid
              LEFT JOIN maia_users ON wblist.rid=maia_users.id
@@ -201,8 +205,8 @@ function get_domain_wb_rows($dbh, $maia_user_id) {
                      WHERE maia_users.id=?)
         ORDER BY mailaddr.email ASC
 EOQ;
-  } else {
-    $query =<<<EOQ
+    } else {
+        $query =<<<EOQ
       SELECT mailaddr.email, wb, user_name
         FROM mailaddr LEFT JOIN wblist ON mailaddr.id = wblist.sid
              LEFT JOIN maia_users ON wblist.rid=maia_users.id
@@ -212,30 +216,31 @@ EOQ;
                      WHERE maia_users.id=?)
         ORDER BY mailaddr.email ASC
 EOQ;
-  }
-  $rows = array();
+    }
+    $rows = array();
 
-  $sth = $dbh->prepare($query);
-  $res = $sth->execute(array($maia_user_id));
-   if (PEAR::isError($sth)) {
-     $logger->err("Error getting domain wblist: " . $sth->getMessage() . " Query: " . $query . "User: " . $maia_user_id );
-     return $rows;
-   }
-  if ($res->numRows() > 0) {
-    $count = 0;
-      while ($row = $res->fetchRow())
-      {
-        $rows[$count]['email'] = $row['email'];
-        $rows[$count]['domain'] = $row['user_name'];
-        $rows[$count]['type'] = $row['wb'];
-        $count++;
-      }
-  }
-  $sth->free();
-  return $rows;
+    $sth = $dbh->prepare($query);
+    $res = $sth->execute(array($maia_user_id));
+    if (PEAR::isError($sth)) {
+        $logger->err("Error getting domain wblist: " . $sth->getMessage() . " Query: " . $query . "User: " . $maia_user_id);
+        return $rows;
+    }
+    if ($res->numRows() > 0) {
+        $count = 0;
+        while ($row = $res->fetchRow())
+        {
+            $rows[$count]['email'] = $row['email'];
+            $rows[$count]['domain'] = $row['user_name'];
+            $rows[$count]['type'] = $row['wb'];
+            $count++;
+        }
+    }
+    $sth->free();
+    return $rows;
 }
 
-function get_system_wb_rows($dbh) {
+function get_system_wb_rows($dbh)
+{
     $select =<<<EOQ
       SELECT mailaddr.email, mailaddr.id, wblist.wb
           FROM mailaddr LEFT JOIN wblist ON  mailaddr.id = wblist.sid 
@@ -252,13 +257,13 @@ EOQ;
     $rows = array();
 
     if ($res->numRows() > 0) {
-      $count = 0;
+        $count = 0;
         while ($row = $res->fetchRow())
         {
-          $rows[$count]['email'] = $row['email'];
-          $rows[$count]['domain'] = $row['user_name'];
-          $rows[$count]['type'] = $row['wb'];
-          $count++;
+            $rows[$count]['email'] = $row['email'];
+            $rows[$count]['domain'] = $row['user_name'];
+            $rows[$count]['type'] = $row['wb'];
+            $count++;
         }
     }
     $sth->free();

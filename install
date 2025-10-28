@@ -1,85 +1,27 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 DBG=0
 DEF=0
 
 # get os
-if [ -f /etc/oracle-release ]; then
-  export LXTYPE=RHEL
-elif [ -f /etc/redhat-release ]; then
-  export LXTYPE=RHEL
-elif [ -f /etc/SuSE-release ]; then
-  export LXTYPE=SUSE
-elif [ -f /etc/SUSE-brand ]; then
-  export LXTYPE=SUSE
-elif [ -f /etc/debian_version ]; then
-  export LXTYPE=DEBIAN
-elif [ -f /etc/gentoo-release ]; then
-  export LXTYPE=GENTOO
+
+if [ -r /etc/os-release ]; then
+  . /etc/os-release
+#  echo "OS: " $ID
+  VER=`echo $VERSION | awk '{print $1 }' | awk -F\. '{ print $1 }'`
+#  echo "Version: " $VER
+
+    if [ -f installers/${ID}-${VER}.sh ]; then
+	echo "copy & paste the following command to begin the install:"
+	echo
+	echo " sh installers/${ID}-${VER}.sh | tee install.log 2>&1"
+	echo
+    else 
+	echo "$ID version $VER detected, but specific installer not found"
+	echo "You can try the installer that seems most closely related to this OS"
+	echo "(scripts in the installers directory)"
+    fi
+else 
+    echo "OS detection did not provide unambiguous results."
+    echo "refer to the docs directory for manual install procedures"
 fi
-
-if [ $LXTYPE == "RHEL" ]; then
-# RHEL variant -
-  if [ -f /etc/os-release ]; then
-    RHID=`grep '^ID=' /etc/os-release|awk -F= '{ print $2 }' | tr -d \"`
-    RREL=`grep '^VERSION_ID=' /etc/os-release | awk -F= '{ print $2 }' | tr -d \" | cut -c1-1`
-  else
-    # looks like an older release
-    RAWVER=`cat /etc/redhat-release`
-    RREL=`echo $RAWVER|tr -d [A-Za-z\(\)]|tr -d " "|awk -F\. ' { print $1 }'`
-    RHID=`echo $RAWVER|tr -d [0-9\(\)]|awk '{print $1 }'| tr [A-Z] [a-z]`
-  fi
-  if [ $DBG -ne 0 ]; then
-    echo
-    echo "### DEBUG ###"
-    echo "redhat-release: $RAWVER"
-    echo "VERSION_ID from os-release: $RHID"
-    echo "ID from os-release: $RREL"
-    echo "installer: ${RHID}-${RREL}.sh"
-    echo "### DEBUG ###"
-    echo
-  fi
-  if [ $RHID == 'ol' ];
-  then
-      RHID=oracle
-      RREL=`echo $RREL | awk -F\. '{ print $1 }'`
-  fi
-  if [ -f installers/${RHID}-${RREL}.sh ]; then
-    DEF=1
-    echo "copy & paste the following command to begin the install:"
-    echo
-    echo " bash installers/${RHID}-${RREL}.sh | tee installer.log 2>&1"
-    echo
-  fi
-fi
-
-if [ $LXTYPE == "DEBIAN" ]; then
-  ID=`grep ^ID= /etc/os-release | awk -F\= '{ print $2 }'`
-  VER=`grep ^VERSION_ID= /etc/os-release | awk -F\= '{ print $2 }'| tr -d \"`
-
-  if [ -f installers/${ID}-${VER}.sh ]; then
-    DEF=1
-    echo "copy & paste the following command to begin the install:"
-    echo
-    echo " bash installers/${ID}-${VER}.sh | tee installer.log 2>&1"
-    echo
-  fi
-  if [ $DBG -ne 0 ]; then
-    echo
-    echo "### DEBUG ###"
-    echo "Debian or derivative detected:"
-    echo "RVER = $RVER"
-    echo "$ID version $VER"
-    echo "### DEBUG ###"
-    echo
-  fi
- 
-fi
-
-if [ $DEF == 0 ]; then
-  echo "$LXTYPE type system detected, you can try the installer that seems"
-  echo "most closely related to yours (scripts in the installers directory)"
-  echo "or refer to manual-install.txt for generic install procedures"
-fi
-
-

@@ -74,18 +74,18 @@
      */
 
     // Page subtitle
-    $lang['banner_subtitle']	=	"Amministrazione";
+    $lang['banner_subtitle']    =    "Amministrazione";
 
     // Table headers
-    $lang['header_admin_menu']	=	"Menu Amministrazione";
+    $lang['header_admin_menu']    =    "Menu Amministrazione";
 
     // Menu items
-    $lang['menu_users']		=	"Utenti";
-    $lang['menu_domains']	=	"Domini";
-    $lang['menu_viruses']	=	"Virus Alias";
-    $lang['menu_languages']	=	"Lingue";
-    $lang['menu_themes']	=	"Temi";
-    $lang['menu_system']	=	"Configurazione del Sistema";
-    $lang['menu_statistics']	=	"Statistiche";
-    $lang['menu_help']		=	"Aiuto";
+    $lang['menu_users']        =    "Utenti";
+    $lang['menu_domains']    =    "Domini";
+    $lang['menu_viruses']    =    "Virus Alias";
+    $lang['menu_languages']    =    "Lingue";
+    $lang['menu_themes']    =    "Temi";
+    $lang['menu_system']    =    "Configurazione del Sistema";
+    $lang['menu_statistics']    =    "Statistiche";
+    $lang['menu_help']        =    "Aiuto";
 ?>

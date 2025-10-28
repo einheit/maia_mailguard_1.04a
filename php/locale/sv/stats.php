@@ -78,17 +78,17 @@
     $lang['text_as_of']      =  "Gällande:";
  
     $lang['chart_stats'] = array(
-    	"h"      => "Bekräftad Icke-spam",
-	"sh"     => "Förmodad Icke-spam",
-	"wl"     => "ŽWhiteŽ-listade",
-	"bl"     => "Svartlistade",
-	"ss"     => "Misstänkt Spam",
-	"s"      => "Bekräftad Spam",
-	"fp"     => "Falska Positiva",
-	"fn"     => "Falska Negativa",
-	"v"      => "Virus",
-	"bh"     => "Felaktigt brevhuvud",
-	"bf"     => "Förbjudna bilagor",
-	"os"     => "Över storlek"
+        "h"      => "Bekräftad Icke-spam",
+    "sh"     => "Förmodad Icke-spam",
+    "wl"     => "ŽWhiteŽ-listade",
+    "bl"     => "Svartlistade",
+    "ss"     => "Misstänkt Spam",
+    "s"      => "Bekräftad Spam",
+    "fp"     => "Falska Positiva",
+    "fn"     => "Falska Negativa",
+    "v"      => "Virus",
+    "bh"     => "Felaktigt brevhuvud",
+    "bf"     => "Förbjudna bilagor",
+    "os"     => "Över storlek"
     );
-?>
+    ?>

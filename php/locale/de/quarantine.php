@@ -132,5 +132,5 @@
     $lang['link_prev']                 = "Zurück";
     $lang['link_next']                 = "Weiter";
     $lang['link_quarantine']           = "Zurück zum Quarantänemenü";
-    $lang['link_welcome']		    = "Zurück zur Willkommen-Seite";
+    $lang['link_welcome']            = "Zurück zur Willkommen-Seite";
 ?>

@@ -87,9 +87,9 @@
      $lang['button_change_protection'] = "Level ändern";
      $lang['radio_protection'] = array( 'off'    => "Aus",
                                         'low'    => "Niedrig",
-					'medium' => "Mittel",
-					'high'   => "Hoch",
-					'custom' => "Benutzerdefiniert"); 
+                    'medium' => "Mittel",
+                    'high'   => "Hoch",
+                    'custom' => "Benutzerdefiniert"); 
      $lang['banner_subtitle'] = "Willkommen";
      $lang['text_cache_spam'] = "Sie haben <b>%d</b> E-Mails in Ihrem Spam-Zwischenspeicher.  <br>Klicken Sie <a href=\"%s\">hier</a> um diese zu melden, oder eine versehentlich blockierte E-Mail erneut zuzustellen.";
      $lang['text_cache_virus'] = "Sie haben <b>%d</b> E-Mails in Ihrem Viren-Zwischenspeicher.  <br>Klicken Sie <a href=\"%s\">hier</a> um diese zu löschen, oder eine versehentlich blockierte E-Mail erneut zuzustellen.";

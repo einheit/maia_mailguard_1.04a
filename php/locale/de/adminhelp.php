@@ -140,7 +140,7 @@
                                             "die E-Mail-Adressen in dieser Domains haben. " .
                                             "Die Benutzer können natürlich diese Einstellungen " .
                                             "für sich selber überschreiben und anpassen, falls dies " .
-					    "in den Systemeinstellungen zugelassen wird. ";
+                        "in den Systemeinstellungen zugelassen wird. ";
 
     $lang['adminhelp_add_domain'] = "<b>%s</b> lässt den Superadministrator neue Domains zum System hinzufügen. " .
                                  "Die Standardeinstellungen werden von der System-Domain (@.) kopiert. " .
@@ -254,7 +254,7 @@
                                        "Alle E-Mails werden sofort als \"bestätigte Spam-E-Mail\" " .
                                        "behandelt und <b>gelöscht</b>. Die Funktion kann hier komplett " .
                                        "deaktiviert werden. ";
-				       
+                       
     $lang['adminhelp_enable_address_linking'] = "<b>%s</b> lässt Sie einstellen ob Benutzer E-Mail-Adressen zu einem " .
                                              "Benutzerkonto verknüpfen dürfen. Wenn diese Option deaktiviert ist können nur Administratoren " .
                                              "diese Funktion verwenden.";
@@ -327,7 +327,7 @@
     $lang['adminhelp_ham_cache_expiry_period'] = "<b>%s</b> legt fest wie lange verdächtiger Kein-Spam im Zwischenspeicher " .
                                               "gelagert wird, bevor er automatisch gelöscht wird. Beachten Sie, dass \"bestätigter\" Kein-Spam " .
                                               "sofort verarbeitet und anschließend gelöscht wird. Diese Einstellung ist nur " .
-                                    	      "für Benutzer, die Ihren Quarantäne-Bereich längere Zeit nicht besuchen.";
+                                              "für Benutzer, die Ihren Quarantäne-Bereich längere Zeit nicht besuchen.";
 
     $lang['adminhelp_reminder_threshold_count'] = "<b>%s</b> legt den Punkt fest, ab welchem die Erinnerungsemail " .
                                               "an den Benutzer gesendet wird, basierend auf der Anzahl " .

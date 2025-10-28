@@ -74,31 +74,31 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
-    require_once ("authcheck.php");
-    require_once ("display.php");
+    require_once "core.php";
+    require_once "maia_db.php";
+    require_once "authcheck.php";
+    require_once "display.php";
     $display_language = get_display_language($euid);
-    require_once ("./locale/$display_language/db.php");
-    require_once ("./locale/$display_language/display.php");
-    require_once ("./locale/$display_language/admindex.php");
-    require_once ("./locale/$display_language/adminviruses.php");
-    require_once ("./locale/$display_language/adminusers.php");
-    require_once ("./locale/$display_language/admindomains.php");
-    require_once ("./locale/$display_language/domainsettings.php");
-    require_once ("./locale/$display_language/adminlanguages.php");
-    require_once ("./locale/$display_language/adminthemes.php");
-    require_once ("./locale/$display_language/adminstats.php");
-    require_once ("./locale/$display_language/adminsystem.php");
-    require_once ("./locale/$display_language/adminhelp.php");
+    require_once "./locale/$display_language/db.php";
+    require_once "./locale/$display_language/display.php";
+    require_once "./locale/$display_language/admindex.php";
+    require_once "./locale/$display_language/adminviruses.php";
+    require_once "./locale/$display_language/adminusers.php";
+    require_once "./locale/$display_language/admindomains.php";
+    require_once "./locale/$display_language/domainsettings.php";
+    require_once "./locale/$display_language/adminlanguages.php";
+    require_once "./locale/$display_language/adminthemes.php";
+    require_once "./locale/$display_language/adminstats.php";
+    require_once "./locale/$display_language/adminsystem.php";
+    require_once "./locale/$display_language/adminhelp.php";
 
-    require_once ("smarty.php");
+    require_once "smarty.php";
     
     // Only administrators should be here.
-    if (!is_an_administrator($uid)) {
-       header("Location: index.php" . $sid);
-       exit();
-    }
+if (!is_an_administrator($uid)) {
+    header("Location: index.php" . $sid);
+    exit();
+}
 
     // Is this administrator the superadmin, or just a
     // domain admin?
@@ -109,10 +109,11 @@
     $lang['adminhelp_link_email_address'] = sprintf($lang['adminhelp_link_email_address'], $lang['header_link_email']);
     $lang['adminhelp_delete_email_address'] = sprintf($lang['adminhelp_delete_email_address'], $lang['header_delete_email'], $lang['header_delete_user']);
     $lang['adminhelp_delete_user'] = sprintf($lang['adminhelp_delete_user'], $lang['header_delete_user'], $lang['text_enable_user_autocreation']);
-    $lang['adminhelp_impersonate'] = sprintf($lang['adminhelp_impersonate'], 
-                                             sprintf($lang['text_user_found'], "1"),
-                                                     '<a href="adminindex.php' . $sid . '">[' . $lang['menu_admin'] . ']</a>'
-                                             );
+    $lang['adminhelp_impersonate'] = sprintf(
+        $lang['adminhelp_impersonate'], 
+        sprintf($lang['text_user_found'], "1"),
+        '<a href="adminindex.php' . $sid . '">[' . $lang['menu_admin'] . ']</a>'
+    );
     $lang['adminhelp_domain_administration'] = sprintf($lang['adminhelp_domain_administration'], $lang['header_domains_menu']);
     $lang['adminhelp_add_domain'] = sprintf($lang['adminhelp_add_domain'], $lang['header_add_domain']);
     $lang['adminhelp_domain_settings'] = sprintf($lang['adminhelp_domain_settings'], $lang['header_domain'], '<a href="help.php' . $sid . '">[' . $lang['menu_help'] . ']</a>');
@@ -123,7 +124,7 @@
     $lang['adminhelp_add_virus_alias'] = sprintf($lang['adminhelp_add_virus_alias'], $lang['header_add_alias']);
     $lang['adminhelp_languages'] = sprintf($lang['adminhelp_languages'], $lang['header_languages_menu']);
     $lang['adminhelp_install_languages'] = sprintf($lang['adminhelp_install_languages'], $lang['header_install_language']);
-	$lang['adminhelp_themes'] = sprintf($lang['adminhelp_themes'], $lang['header_themes_menu']);
+    $lang['adminhelp_themes'] = sprintf($lang['adminhelp_themes'], $lang['header_themes_menu']);
     $lang['adminhelp_install_themes'] = sprintf($lang['adminhelp_install_themes'], $lang['header_install_theme']);
     $lang['adminhelp_enable_user_autocreation'] = sprintf($lang['adminhelp_enable_user_autocreation'], $lang['text_enable_user_autocreation']);
     $lang['adminhelp_internal_auth'] = sprintf($lang['adminhelp_internal_auth'], $lang['text_internal_auth'], $lang['text_enable_user_autocreation']);
@@ -192,4 +193,4 @@
     
     $smarty->display('adminhelp.tpl');
     
-?>
+    ?>

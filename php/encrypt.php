@@ -82,71 +82,71 @@
      * get_encryption_key(): Reads the encryption key from a file
      *                       specified in maia_config.key_file.
      */
-    function get_encryption_key()
-    {
-        $key_file = get_config_value("key_file");
-        $fh = fopen($key_file, "r") or die("Can't open key file " . $key_file);
-        $key = fread($fh, filesize($key_file));
-        fclose($fh);
+function get_encryption_key()
+{
+    $key_file = get_config_value("key_file");
+    $fh = fopen($key_file, "r") or die("Can't open key file " . $key_file);
+    $key = fread($fh, filesize($key_file));
+    fclose($fh);
 
-        return $key;
-    }
+    return $key;
+}
 
 
     /*
      * text_is_encrypted(): Returns true if the string has an encryption
      *                      header, false otherwise.
      */
-    function text_is_encrypted($text)
-    {
-        return (preg_match("/^RandomIV/", $text));
-    }
+function text_is_encrypted($text)
+{
+    return (preg_match("/^RandomIV/", $text));
+}
 
 
     /*
      * get_initialization_vector(): Gets the initialization vector from the
      *                              header of the encrypted string.
      */
-    function get_initialization_vector($ciphertext)
-    {
-        global $algorithm;
-        global $block_mode;
+function get_initialization_vector($ciphertext)
+{
+    global $algorithm;
+    global $block_mode;
 
-        $iv_size = mcrypt_get_iv_size($algorithm, $block_mode);
-        if (preg_match("/^RandomIV(.{" . $iv_size . "})/", $ciphertext, $match)) {
-            $iv = $match[1];
-        } else {
-            $iv = substr($ciphertext, strlen("RandomIV"), $iv_size);
-        }
-
-        return array($iv, $iv_size);
+    $iv_size = mcrypt_get_iv_size($algorithm, $block_mode);
+    if (preg_match("/^RandomIV(.{" . $iv_size . "})/", $ciphertext, $match)) {
+        $iv = $match[1];
+    } else {
+        $iv = substr($ciphertext, strlen("RandomIV"), $iv_size);
     }
+
+    return array($iv, $iv_size);
+}
 
 
     /*
      * decrypt_text(): Decrypts an encrypted string, using the
      *                 supplied key.
      */
-    function decrypt_text($key, $ciphertext)
-    {
-        global $algorithm;
-        global $block_mode;
+function decrypt_text($key, $ciphertext)
+{
+    global $algorithm;
+    global $block_mode;
 
-        if (text_is_encrypted($ciphertext)) {
+    if (text_is_encrypted($ciphertext)) {
 
-            list($iv, $iv_size) = get_initialization_vector($ciphertext);
-            $ciphertext = substr($ciphertext, strlen("RandomIV") + $iv_size);
-            $plaintext = mcrypt_decrypt($algorithm, $key, $ciphertext, $block_mode, $iv);
-            if (($len = strpos($plaintext, chr(0))) !== false) {
-                $plaintext = substr($plaintext, 0, $len);
-            }
-            return $plaintext;
-
-        } else {
-
-            return $ciphertext;
-
+        list($iv, $iv_size) = get_initialization_vector($ciphertext);
+        $ciphertext = substr($ciphertext, strlen("RandomIV") + $iv_size);
+        $plaintext = mcrypt_decrypt($algorithm, $key, $ciphertext, $block_mode, $iv);
+        if (($len = strpos($plaintext, chr(0))) !== false) {
+            $plaintext = substr($plaintext, 0, $len);
         }
+        return $plaintext;
+
+    } else {
+
+        return $ciphertext;
+
     }
+}
 
 ?>

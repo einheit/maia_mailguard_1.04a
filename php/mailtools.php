@@ -74,47 +74,47 @@
      *
      */
 
-    require_once ("core.php");
-    require_once ("maia_db.php");
+    require_once "core.php";
+    require_once "maia_db.php";
 
 
     /*
      * get_user_from_email(): extracts the "user" portion of a "user@domain" address,
      *                        or "" if the address contains no '@'.
      */
-    function get_user_from_email($email)
-    {
-    	global $auth_method;
-    	global $address_rewriting_type;
+function get_user_from_email($email)
+{
+    global $auth_method;
+    global $address_rewriting_type;
 
-    	if (($auth_method == "imap" || $auth_method == "pop3") && ($address_rewriting_type == 4)) {
-    	    $user = $email;
-    	} else {
-            $user = "";
-            $pos = strpos($email, '@');
-            if (!($pos === false)) {
-                $user = substr($email, 0, $pos);
-            }
+    if (($auth_method == "imap" || $auth_method == "pop3") && ($address_rewriting_type == 4)) {
+            $user = $email;
+    } else {
+        $user = "";
+        $pos = strpos($email, '@');
+        if (!($pos === false)) {
+            $user = substr($email, 0, $pos);
         }
+    }
 
         return $user;
-    }
+}
 
 
     /*
      * get_domain_from_email(): Extracts the "domain" portion of a "user@domain"
      *                          address, or "" if the address contains no '@'.
      */
-    function get_domain_from_email($email)
-    {
-        $domain = "";
-        $pos = strpos($email, '@');
-        if (!($pos === false)) {
-            $domain = substr($email, $pos+1);
-        }
-
-        return strtolower($domain);
+function get_domain_from_email($email)
+{
+    $domain = "";
+    $pos = strpos($email, '@');
+    if (!($pos === false)) {
+        $domain = substr($email, $pos+1);
     }
+
+    return strtolower($domain);
+}
 
 
 
@@ -123,34 +123,34 @@
      *                           for a routing domain and any server-specific
      *                           conventions, if specified.
      */
-    function get_rewritten_email_address($email, $format)
-    {
-    	global $dbh;
-    	global $routing_domain;
+function get_rewritten_email_address($email, $format)
+{
+    global $dbh;
+    global $routing_domain;
 
-        if ($format == 1) { // user.domain@isp
+    if ($format == 1) { // user.domain@isp
 
-            $address = str_replace("@", ".", $email) .
-                            "@" . $routing_domain;
+        $address = str_replace("@", ".", $email) .
+                        "@" . $routing_domain;
 
-        } elseif ($format == 2) { // user_domain@isp
+    } elseif ($format == 2) { // user_domain@isp
 
-            $tmp = str_replace("@", "_", $email);
-            $tmp = str_replace(".", "_", $tmp);
-            $address = $tmp . "@" . $routing_domain;
+        $tmp = str_replace("@", "_", $email);
+        $tmp = str_replace(".", "_", $tmp);
+        $address = $tmp . "@" . $routing_domain;
 
-        } elseif ($format == 3) { // user@domain@isp
+    } elseif ($format == 3) { // user@domain@isp
 
-            $address = $email . "@" . $routing_domain;
+        $address = $email . "@" . $routing_domain;
 
-        } else { // no rewriting
+    } else { // no rewriting
 
-            $address = $email;
+        $address = $email;
 
-        }
-
-        return $address;
     }
+
+    return $address;
+}
 
 
     /*
@@ -161,17 +161,17 @@
      *                     1 : "@domain"
      *                     2 : "user@domain"
      */
-    function get_address_type($email)
-    {
-        $pos = strpos($email, '@');
-        if ($pos === false) {  // "domain"
-            return 0;
-        } elseif ($pos > 0) {  // "user@domain"
-            return 2;
-        } else {               // "@domain"
-            return 1;
-        }
+function get_address_type($email)
+{
+    $pos = strpos($email, '@');
+    if ($pos === false) {  // "domain"
+        return 0;
+    } elseif ($pos > 0) {  // "user@domain"
+        return 2;
+    } else {               // "@domain"
+        return 1;
     }
+}
 
 
     /*
@@ -191,30 +191,30 @@
      *                               e.g. "user@example.com" = 12
      *                                    "user@mail.example.com" = 14
      */
-    function get_email_address_priority($email)
-    {
-        $address_type = get_address_type($email);
-        if ($address_type == 2) {   // "user@domain"
-            $base = 10;
-        } else {
-            $base = 0;
-        }
-
-        return ($base + 2 * substr_count($email, "."));
+function get_email_address_priority($email)
+{
+    $address_type = get_address_type($email);
+    if ($address_type == 2) {   // "user@domain"
+        $base = 10;
+    } else {
+        $base = 0;
     }
+
+    return ($base + 2 * substr_count($email, "."));
+}
 
 
     /*
      * fix_address(): Makes sure that e-mail addresses are either in
      *                "user@domain" format or "@domain" format.
      */
-    function fix_address($email)
-    {
-       if (get_address_type($email) == 0) {
+function fix_address($email)
+{
+    if (get_address_type($email) == 0) {
           $my_addr = "@" . $email;
-       } else {
-          $my_addr = $email;
-       }
-       return $my_addr;
+    } else {
+        $my_addr = $email;
     }
+        return $my_addr;
+}
 ?>

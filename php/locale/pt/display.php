@@ -279,4 +279,4 @@
                                       "bad_header"     => "Como percentagem do total de email recebido",
                                       "banned_file"    => "Como percentagem do total de email recebido",
                                       "oversized"      => "Como percentagem do total de email recebido");
-?>
+    ?>

@@ -104,10 +104,10 @@
     $lang['button_change_protection'] = "Изменить уровень";
     
     $lang['radio_protection'] = array(  'off' => "отключить",
-		 								'low' => "низкий",
-     									'medium' => "средний",
-										'high' => "высокий",
-										'custom' => "выборочный");
+                                         'low' => "низкий",
+                                         'medium' => "средний",
+                                        'high' => "высокий",
+                                        'custom' => "выборочный");
     
     $lang['banner_subtitle'] = "Добро пожаловать";
     
